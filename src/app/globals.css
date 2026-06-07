@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-color: var(--bg-border);
+    outline-color: var(--ring);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* ── DARK THEME (default) ── */
+  :root {
+    --bg-deep: #060609;
+    --bg-surface: #0C0C14;
+    --bg-card: #11111C;
+    --bg-border: #1A1A2A;
+    --text-primary: #EDE8E0;
+    --text-secondary: #9A958A;
+    --text-muted: #5C5852;
+    --gold-primary: #D4A843;
+    --gold-bright: #F0C85A;
+    --gold-pale: #C49A3C;
+    --gold-dim: #8B6914;
+    --gold-ghost: rgba(212, 168, 67, 0.08);
+    --gold-glow: rgba(212, 168, 67, 0.25);
+    --border-gold: rgba(212, 168, 67, 0.2);
+    --red: #E8483B;
+    --green: #3BA87E;
+    --ring: var(--gold-primary);
+  }
+
+  /* ── LIGHT THEME ── */
+  [data-theme="light"] {
+    --bg-deep: #F5F3EE;
+    --bg-surface: #FFFFFF;
+    --bg-card: #F9F8F5;
+    --bg-border: #E5E0D5;
+    --text-primary: #1A1815;
+    --text-secondary: #5C5852;
+    --text-muted: #9A958A;
+    --gold-primary: #B8922E;
+    --gold-bright: #D4A843;
+    --gold-pale: #A07D28;
+    --gold-dim: #6B5A1E;
+    --gold-ghost: rgba(184, 146, 46, 0.08);
+    --gold-glow: rgba(184, 146, 46, 0.15);
+    --border-gold: rgba(184, 146, 46, 0.25);
+    --red: #D9352E;
+    --green: #2D8F5E;
+    --ring: var(--gold-primary);
+  }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  [data-theme="light"] body::before {
+    opacity: 0.015;
+  }
+
+  /* Gold shimmer line at top */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    z-index: 10000;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--gold-primary), var(--gold-bright), var(--gold-primary), transparent);
+    animation: shimmer 4s ease-in-out infinite;
+  }
+
+  /* ── prefers-reduced-motion: disable all animations ── */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    body::after {
+      animation: none;
+    }
+  }
+
+  /* Gold vein decorative lines — fixed background */
+  .gold-veins {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.04;
+  }
+  [data-theme="light"] .gold-veins {
+    opacity: 0.03;
+  }
+  .gold-veins .v1 { position: absolute; left: 8%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent 0%, var(--gold-primary) 20%, var(--gold-bright) 50%, var(--gold-primary) 80%, transparent 100%); }
+  .gold-veins .v2 { position: absolute; left: 25%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent 0%, var(--gold-primary) 30%, transparent 70%); }
+  .gold-veins .v3 { position: absolute; right: 12%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent 0%, var(--gold-primary) 15%, var(--gold-bright) 40%, var(--gold-primary) 85%, transparent 100%); }
+  .gold-veins .h1 { position: absolute; left: 0; right: 0; top: 30%; height: 1px; background: linear-gradient(to right, transparent 0%, var(--gold-primary) 25%, transparent 50%, var(--gold-primary) 75%, transparent 100%); }
+  .gold-veins .h2 { position: absolute; left: 0; right: 0; top: 70%; height: 1px; background: linear-gradient(to right, transparent 0%, var(--gold-primary) 40%, transparent 100%); }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+
+  /* Selection */
+  ::selection {
+    background: var(--gold-glow);
+    color: var(--text-primary);
+  }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid var(--bg-border);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .theme-toggle:hover {
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+    background: var(--gold-ghost);
+  }
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--gold-primary);
+    outline-offset: 2px;
+  }
+
+  /* Smooth transitions on theme-aware elements */
+  body * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
