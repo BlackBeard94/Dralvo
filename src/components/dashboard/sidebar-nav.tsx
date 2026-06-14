@@ -4,10 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  TrendingUp,
-  Activity,
-  GitGraph,
+  DatabaseZap,
   Bell,
+  History,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +15,8 @@ import {
 
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/shared/brand";
+import { useLocale } from "@/hooks/use-locale";
+import { DASHBOARD_COPY } from "@/lib/i18n";
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
@@ -28,7 +29,7 @@ export interface SidebarNavProps {
 
 interface NavItem {
   id: string;
-  label: string;
+  labelKey: keyof typeof DASHBOARD_COPY.en.nav;
   icon: LucideIcon;
   href: string;
 }
@@ -38,12 +39,11 @@ interface NavItem {
 /* -------------------------------------------------------------------------- */
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-  { id: "chart", label: "XAUUSD Chart", icon: TrendingUp, href: "/dashboard/chart" },
-  { id: "indicators", label: "Indicators", icon: Activity, href: "/dashboard/indicators" },
-  { id: "correlation", label: "Correlation", icon: GitGraph, href: "/dashboard/correlation" },
-  { id: "alerts", label: "Alerts", icon: Bell, href: "/dashboard/alerts" },
-  { id: "settings", label: "Settings", icon: Settings, href: "/dashboard/settings" },
+  { id: "dashboard", labelKey: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
+  { id: "drivers", labelKey: "drivers", icon: DatabaseZap, href: "/dashboard/drivers" },
+  { id: "alerts", labelKey: "monitors", icon: Bell, href: "/dashboard/alerts" },
+  { id: "replay", labelKey: "replay", icon: History, href: "/dashboard/replay" },
+  { id: "settings", labelKey: "settings", icon: Settings, href: "/dashboard/settings" },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -52,6 +52,8 @@ const NAV_ITEMS: NavItem[] = [
 
 export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
   const pathname = usePathname();
+  const { locale } = useLocale();
+  const copy = DASHBOARD_COPY[locale].nav;
 
   return (
     <aside
@@ -81,6 +83,7 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
         <ul className="flex flex-col gap-0.5 px-2">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
+            const label = copy[item.labelKey];
             const isActive =
               item.href === "/dashboard"
                 ? pathname === "/dashboard"
@@ -120,7 +123,7 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
 
                   {!collapsed && (
                     <span className="text-[13px] font-medium whitespace-nowrap truncate">
-                      {item.label}
+                      {label}
                     </span>
                   )}
 
@@ -137,7 +140,7 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
                         "shadow-lg shadow-black/40",
                       )}
                     >
-                      {item.label}
+                      {label}
                     </span>
                   )}
                 </Link>
@@ -158,11 +161,13 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
             "transition-colors duration-200",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
           )}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? copy.expand : copy.collapse}
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           {!collapsed && (
-            <span className="ml-2 text-xs font-medium text-text-muted">Collapse</span>
+            <span className="ml-2 text-xs font-medium text-text-muted">
+              {copy.collapse}
+            </span>
           )}
         </button>
       </div>

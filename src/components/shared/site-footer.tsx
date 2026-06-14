@@ -4,16 +4,15 @@ import { DralvoWordmark, LogoMark } from "@/components/shared/brand";
 
 const productLinks = [
   { label: "Features", href: "/#features" },
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Pricing", href: "/#pricing" },
-  { label: "Docs", href: "/#docs" },
+  { label: "Methodology", href: "/methodology" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Start free", href: "/signup" },
 ];
 
 const companyLinks = [
   { label: "About", href: "/#about" },
-  { label: "Waitlist", href: "/#waitlist" },
-  { label: "Twitter", href: "https://x.com/dralvo" },
-  { label: "GitHub", href: "https://github.com/dralvo" },
+  { label: "Sign in", href: "/login" },
+  { label: "Create account", href: "/signup" },
 ];
 
 const legalLinks = [
@@ -58,8 +57,8 @@ export function SiteFooter() {
               <DralvoWordmark className="text-lg" />
             </div>
             <p className="text-sm text-text-muted leading-relaxed max-w-[260px]">
-              Gold-specific technical analysis for XAUUSD traders. Informational only,
-              never financial advice.
+              Gold decision intelligence built from traceable market evidence.
+              Informational only, never financial advice.
             </p>
           </div>
 
@@ -95,9 +94,9 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h4 className="text-[11px] tracking-[0.15em] uppercase text-text-muted mb-4">
+      <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted mb-4">
         {title}
-      </h4>
+      </div>
       <div className="flex flex-col gap-2">
         {links.map((link) => (
           <FooterLink key={link.label} {...link} />

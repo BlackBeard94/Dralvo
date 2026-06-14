@@ -12,6 +12,8 @@ const config: Config = {
         gold: {
           DEFAULT: "var(--gold-primary)",
           bright: "var(--gold-bright)",
+          action: "var(--gold-action)",
+          actionHover: "var(--gold-action-hover)",
           pale: "var(--gold-pale)",
           dim: "var(--gold-dim)",
           ghost: "var(--gold-ghost)",
@@ -29,7 +31,7 @@ const config: Config = {
         green: "var(--green)",
       },
       fontFamily: {
-        display: ["DM Serif Display", "Georgia", "serif"],
+        display: ["Inter", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       borderRadius: {

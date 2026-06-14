@@ -1,47 +1,35 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
 import { LegalPage, PolicySection } from "@/components/shared/legal-page";
+import { LEGAL_COPY, LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Financial Disclaimer | Dralvo",
-  description: "Important financial disclaimer for Dralvo's XAUUSD analysis platform.",
+  title: "Financial Disclaimer",
+  description: "Important financial disclaimer for Dralvo's gold market information.",
+  alternates: { canonical: "/disclaimer" },
 };
 
-export default function DisclaimerPage() {
+export default async function DisclaimerPage() {
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const legal = LEGAL_COPY[locale];
+  const copy = legal.disclaimer;
+
   return (
-    <LegalPage badge="Important" title="Financial" accent="Disclaimer">
-      <PolicySection title="Informational Purposes Only">
-        <p>
-          Dralvo is for informational purposes only, not financial advice. Nothing
-          on Dralvo should be interpreted as a recommendation to buy, sell, hold,
-          or trade gold, XAUUSD, CFDs, futures, ETFs, crypto, or any other instrument.
-        </p>
-      </PolicySection>
-
-      <PolicySection title="No Investment Advisory Relationship">
-        <p>
-          Dralvo is not a broker, dealer, investment adviser, commodity trading
-          adviser, or financial planner. Use of Dralvo does not create an advisory
-          relationship.
-        </p>
-      </PolicySection>
-
-      <PolicySection title="Trading Risk">
-        <p>
-          Trading XAUUSD, CFDs, futures, leveraged products, and other financial
-          instruments involves substantial risk and may result in losses exceeding
-          initial capital. Past performance and historical indicator behavior do
-          not guarantee future results.
-        </p>
-      </PolicySection>
-
-      <PolicySection title="Data Limitations">
-        <p>
-          Market data and derived indicators may be delayed, inaccurate, incomplete,
-          or unavailable. Users must independently verify information before making
-          decisions.
-        </p>
-      </PolicySection>
+    <LegalPage
+      badge={legal.badgeImportant}
+      title={copy.title}
+      accent={copy.accent}
+      updated={legal.updated}
+      backLabel={legal.backHome}
+      updatedLabel={legal.updatedLabel}
+    >
+      {copy.sections.map(([title, body]) => (
+        <PolicySection key={title} title={title}>
+          <p>{body}</p>
+        </PolicySection>
+      ))}
     </LegalPage>
   );
 }

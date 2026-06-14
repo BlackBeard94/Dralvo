@@ -29,12 +29,16 @@ export function LegalPage({
   title,
   accent,
   updated = "June 2026",
+  backLabel = "Back to Home",
+  updatedLabel = "Last updated",
   children,
 }: {
   badge: string;
   title: string;
   accent: string;
   updated?: string;
+  backLabel?: string;
+  updatedLabel?: string;
   children: ReactNode;
 }) {
   return (
@@ -46,7 +50,7 @@ export function LegalPage({
             href="/"
             className="text-sm text-text-secondary hover:text-gold transition-colors no-underline tracking-[0.02em]"
           >
-            Back to Home
+            {backLabel}
           </Link>
         </div>
       </nav>
@@ -63,7 +67,7 @@ export function LegalPage({
             <h1 className="font-display text-[clamp(40px,6vw,64px)] font-normal leading-[1.1] tracking-[-0.02em] text-text-primary mb-4">
               {title} <span className="text-gold italic">{accent}</span>
             </h1>
-            <p className="text-text-muted text-sm">Last updated: {updated}</p>
+            <p className="text-text-muted text-sm">{updatedLabel}: {updated}</p>
           </div>
         </section>
 

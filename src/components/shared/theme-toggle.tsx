@@ -3,6 +3,8 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 type Theme = "dark" | "light";
 
 function getSystemTheme(): Theme {
@@ -23,7 +25,7 @@ function applyTheme(theme: Theme) {
   }
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const [theme, setTheme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
@@ -60,13 +62,13 @@ export function ThemeToggle() {
   };
 
   if (!mounted) {
-    return <div className="theme-toggle opacity-0" aria-hidden="true" />;
+    return <div className={cn("theme-toggle opacity-0", className)} aria-hidden="true" />;
   }
 
   return (
     <button
       type="button"
-      className="theme-toggle"
+      className={cn("theme-toggle", className)}
       onClick={toggle}
       aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
       title={theme === "dark" ? "Light mode" : "Dark mode"}

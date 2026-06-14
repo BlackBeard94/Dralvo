@@ -1,0 +1,102 @@
+name: Production Scheduler
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: production-scheduler
+  cancel-in-progress: false
+
+jobs:
+  scheduler:
+    name: Call production cron routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Alert evaluator
+        run: |
+          curl --fail --show-error --silent \
+            --retry 2 \
+            --retry-delay 5 \
+            --max-time 60 \
+            -H "Authorization: Bearer $DRALVO_CRON_SECRET" \
+            "$DRALVO_SITE_URL/api/alerts/evaluate"
+        env:
+          DRALVO_SITE_URL: ${{ vars.DRALVO_SITE_URL || 'https://www.dralvo.com' }}
+          DRALVO_CRON_SECRET: ${{ secrets.DRALVO_CRON_SECRET }}
+
+      - name: Hourly due source ingest
+        if: github.event.schedule == '*/5 * * * *' && github.run_number != ''
+        run: |
+          minute="$(date -u +%M)"
+          if [ "$minute" != "00" ]; then
+            echo "Skipping due ingest outside minute 00"
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --retry 2 \
+            --retry-delay 5 \
+            --max-time 240 \
+            -H "Authorization: Bearer $DRALVO_CRON_SECRET" \
+            "$DRALVO_SITE_URL/api/ingest"
+        env:
+          DRALVO_SITE_URL: ${{ vars.DRALVO_SITE_URL || 'https://www.dralvo.com' }}
+          DRALVO_CRON_SECRET: ${{ secrets.DRALVO_CRON_SECRET }}
+
+      - name: Daily thesis generation
+        run: |
+          minute="$(date -u +%M)"
+          if [ "$minute" != "10" ]; then
+            echo "Skipping thesis generation outside minute 10"
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --retry 2 \
+            --retry-delay 5 \
+            --max-time 120 \
+            -H "Authorization: Bearer $DRALVO_CRON_SECRET" \
+            "$DRALVO_SITE_URL/api/ingest/thesis"
+        env:
+          DRALVO_SITE_URL: ${{ vars.DRALVO_SITE_URL || 'https://www.dralvo.com' }}
+          DRALVO_CRON_SECRET: ${{ secrets.DRALVO_CRON_SECRET }}
+
+      - name: SePay reconciliation fallback
+        run: |
+          minute="$(date -u +%M)"
+          if [ "$minute" != "15" ]; then
+            echo "Skipping SePay reconciliation outside minute 15"
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --retry 2 \
+            --retry-delay 5 \
+            --max-time 120 \
+            -H "Authorization: Bearer $DRALVO_CRON_SECRET" \
+            "$DRALVO_SITE_URL/api/sepay/reconcile"
+        env:
+          DRALVO_SITE_URL: ${{ vars.DRALVO_SITE_URL || 'https://www.dralvo.com' }}
+          DRALVO_CRON_SECRET: ${{ secrets.DRALVO_CRON_SECRET }}
+
+      - name: Source-health alert
+        run: |
+          minute="$(date -u +%M)"
+          if [ "$minute" != "20" ]; then
+            echo "Skipping source-health alert outside minute 20"
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --retry 2 \
+            --retry-delay 5 \
+            --max-time 120 \
+            -H "Authorization: Bearer $DRALVO_CRON_SECRET" \
+            "$DRALVO_SITE_URL/api/ops/source-alerts"
+        env:
+          DRALVO_SITE_URL: ${{ vars.DRALVO_SITE_URL || 'https://www.dralvo.com' }}
+          DRALVO_CRON_SECRET: ${{ secrets.DRALVO_CRON_SECRET }}

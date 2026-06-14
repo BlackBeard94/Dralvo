@@ -2,7 +2,23 @@
   "crons": [
     {
       "path": "/api/ingest",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/alerts/evaluate",
+      "schedule": "5 0 * * *"
+    },
+    {
+      "path": "/api/ingest/thesis",
+      "schedule": "10 0 * * *"
+    },
+    {
+      "path": "/api/sepay/reconcile",
+      "schedule": "15 0 * * *"
+    },
+    {
+      "path": "/api/ops/source-alerts",
+      "schedule": "20 0 * * *"
     }
   ]
 }

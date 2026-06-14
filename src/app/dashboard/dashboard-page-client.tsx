@@ -1,35 +1,210 @@
 "use client";
 
-import { useMemo } from "react";
-import { Activity, TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Lock, X, ArrowRight, Download } from "lucide-react";
+import Link from "next/link";
 
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { MarketHeader } from "@/components/dashboard/market-header";
 import { XauusdChart } from "@/components/dashboard/xauusd-chart";
 import { IndicatorDetailCard } from "@/components/dashboard/indicator-detail-card";
-import { CorrelationMatrix } from "@/components/dashboard/correlation-matrix";
+import { AlertList } from "@/components/dashboard/alert-list";
+import { NotificationPreferences } from "@/components/dashboard/notification-preferences";
+import { TodayThesis } from "@/components/dashboard/today-thesis";
+import { ThesisTimeline } from "@/components/dashboard/thesis-timeline";
+import { AlertNotifications } from "@/components/dashboard/alert-notifications";
 import { useIndicatorStream } from "@/hooks/use-indicator-stream";
+import { useLocale } from "@/hooks/use-locale";
+import { DASHBOARD_COPY } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
-export function DashboardPageClient() {
-  const { snapshots, justUpdated } = useIndicatorStream();
+/* -------------------------------------------------------------------------- */
+/*  Props                                                                     */
+/* -------------------------------------------------------------------------- */
 
-  const stats = useMemo(() => {
-    const bullish = snapshots.filter((s) => s.status === "bullish").length;
-    const neutral = snapshots.filter((s) => s.status === "neutral").length;
-    const bearish = snapshots.filter((s) => s.status === "bearish").length;
-    return { bullish, neutral, bearish, total: snapshots.length };
-  }, [snapshots]);
+export interface DashboardPageClientProps {
+  planTier?: string;
+}
 
-  const sentimentLabel = useMemo(() => {
-    if (stats.bullish >= 4) return { text: "Strongly Bullish", color: "text-green" };
-    if (stats.bullish >= 3) return { text: "Moderately Bullish", color: "text-green/80" };
-    if (stats.bearish >= 4) return { text: "Strongly Bearish", color: "text-red" };
-    if (stats.bearish >= 3) return { text: "Moderately Bearish", color: "text-red/80" };
-    return { text: "Neutral / Mixed", color: "text-gold" };
-  }, [stats]);
+/* -------------------------------------------------------------------------- */
+/*  Upgrade Banner                                                            */
+/* -------------------------------------------------------------------------- */
+
+const UPGRADE_BANNER_KEY = "dralvo-upgrade-banner-dismissed";
+
+function UpgradeBanner() {
+  const [dismissed, setDismissed] = useState(true);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const stored = localStorage.getItem(UPGRADE_BANNER_KEY);
+      if (!stored) setDismissed(false);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  const handleDismiss = useCallback(() => {
+    localStorage.setItem(UPGRADE_BANNER_KEY, "true");
+    setDismissed(true);
+  }, []);
+
+  if (dismissed) return null;
 
   return (
-    <DashboardShell>
+    <div
+      className={cn(
+        "relative flex items-center justify-between gap-4 px-5 py-4 rounded-xl",
+        "bg-gradient-to-r from-gold/10 via-gold/5 to-surface",
+        "border border-border-gold",
+        "animate-fade-in-up",
+      )}
+    >
+      {/* Left: icon + message */}
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="shrink-0 w-9 h-9 rounded-lg bg-gold/15 flex items-center justify-center">
+          <Lock className="w-4 h-4 text-gold" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-text-primary">
+            You are on the Free plan
+          </p>
+          <p className="text-xs text-text-muted mt-0.5">
+            Upgrade to Pro for the complete verified evidence surface, custom alerts, exports, and research workflows.
+          </p>
+        </div>
+      </div>
+
+      {/* Right: CTA + dismiss */}
+      <div className="flex items-center gap-3 shrink-0">
+        <Link
+          href="/pricing"
+          className={cn(
+            "flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold tracking-[0.03em]",
+            "bg-gold-action text-[#060609] hover:bg-gold-actionHover transition-all duration-300",
+            "hover:shadow-[0_4px_16px_rgba(212,168,67,0.25)]",
+            "no-underline whitespace-nowrap",
+          )}
+        >
+          Upgrade to Pro
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+        <button
+          type="button"
+          onClick={handleDismiss}
+          className="shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface transition-colors"
+          aria-label="Dismiss upgrade banner"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+type CheckoutStatus = "success" | "sync_failed" | "missing_session";
+
+function CheckoutStatusBanner() {
+  const { locale } = useLocale();
+  const copy = DASHBOARD_COPY[locale].checkout;
+  const [status, setStatus] = useState<CheckoutStatus | null>(null);
+
+  useEffect(() => {
+    const checkout = new URLSearchParams(window.location.search).get("checkout");
+    if (
+      checkout === "success" ||
+      checkout === "sync_failed" ||
+      checkout === "missing_session"
+    ) {
+      setStatus(checkout);
+    }
+  }, []);
+
+  if (!status) return null;
+
+  const isSuccess = status === "success";
+  const title =
+    status === "success"
+      ? copy.successTitle
+      : status === "sync_failed"
+        ? copy.syncFailedTitle
+        : copy.missingSessionTitle;
+  const body =
+    status === "success"
+      ? copy.successBody
+      : status === "sync_failed"
+        ? copy.syncFailedBody
+        : copy.missingSessionBody;
+
+  return (
+    <div
+      role="status"
+      className={cn(
+        "relative flex items-start justify-between gap-4 rounded-xl border px-5 py-4",
+        isSuccess
+          ? "border-green/30 bg-green/10"
+          : "border-border-gold bg-gold/10",
+      )}
+    >
+      <div>
+        <p className="text-sm font-medium text-text-primary">{title}</p>
+        <p className="mt-1 text-xs leading-5 text-text-muted">{body}</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => setStatus(null)}
+        className="shrink-0 rounded-md p-1 text-text-muted transition-colors hover:bg-surface hover:text-text-primary"
+        aria-label="Dismiss checkout status"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Pro Feature Lock Overlay                                                  */
+/* -------------------------------------------------------------------------- */
+
+function ProLockBadge({ featureName }: { featureName: string }) {
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-deep/70 backdrop-blur-[2px]">
+      <div className="w-10 h-10 rounded-full bg-gold/10 border border-border-gold flex items-center justify-center">
+        <Lock className="w-4 h-4 text-gold" />
+      </div>
+      <div className="text-center px-4">
+        <p className="text-sm font-medium text-text-primary mb-1">
+          {featureName}
+        </p>
+        <p className="text-xs text-text-muted mb-3">
+          Available on Pro plan
+        </p>
+        <Link
+          href="/pricing"
+          className={cn(
+            "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold tracking-[0.03em]",
+            "bg-gold-action text-[#060609] hover:bg-gold-actionHover transition-all duration-300",
+            "no-underline",
+          )}
+        >
+          Upgrade
+          <ArrowRight className="w-3 h-3" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Main Component                                                            */
+/* -------------------------------------------------------------------------- */
+
+export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientProps) {
+  const { snapshots, justUpdated, historyByKey } = useIndicatorStream();
+
+  const isPro = planTier === "Pro";
+
+  return (
+    <>
       {/* ── Market Header ── */}
       <MarketHeader />
 
@@ -37,35 +212,13 @@ export function DashboardPageClient() {
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 lg:p-6 space-y-5 max-w-[1440px] mx-auto">
 
-          {/* ── Sentiment Bar ── */}
-          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-lg border border-border bg-surface/50">
-            <div className="flex items-center gap-3">
-              <Activity className="w-4 h-4 text-gold" />
-              <span className="text-xs tracking-[0.14em] uppercase text-text-muted">
-                Composite Sentiment
-              </span>
-              <span className={`text-sm font-semibold font-display ${sentimentLabel.color}`}>
-                {sentimentLabel.text}
-              </span>
-            </div>
-            <div className="flex items-center gap-4 text-xs text-text-muted">
-              <span className="flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-green" />
-                <span className="text-green font-mono">{stats.bullish}</span>
-                <span>Bullish</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5 text-gold-dim" />
-                <span className="text-gold-dim font-mono">{stats.neutral}</span>
-                <span>Neutral</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <TrendingDown className="w-3.5 h-3.5 text-red" />
-                <span className="text-red font-mono">{stats.bearish}</span>
-                <span>Bearish</span>
-              </span>
-            </div>
-          </div>
+          {/* ── Upgrade Banner (Free users only) ── */}
+          <CheckoutStatusBanner />
+
+          {!isPro && <UpgradeBanner />}
+
+          <TodayThesis />
+          <ThesisTimeline />
 
           {/* ── XAUUSD Chart ── */}
           <section>
@@ -75,50 +228,135 @@ export function DashboardPageClient() {
                 XAUUSD Price Chart
               </h2>
               <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
-                Candlestick · SMA 9/20 · Volume
+                Verified 4H candles · provider-backed
               </span>
             </div>
             <XauusdChart />
           </section>
 
-          {/* ── Indicator Surface ── */}
+          {/* ── Optional technical context ── */}
           <section>
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex flex-wrap items-center gap-3 mb-3">
               <div className="w-1 h-5 rounded-full bg-gold" />
               <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
-                Indicator Surface
+                Optional Technical Context
               </h2>
               <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
-                6 indicators · live mock stream
+                Not part of the thesis score
               </span>
+              {isPro && (
+                <a
+                  href="/api/export/csv"
+                  download
+                  className="ml-auto flex items-center gap-1.5 rounded-md border border-border-gold/30 px-3 py-1.5 font-mono text-[11px] text-gold no-underline transition-all duration-200 hover:border-border-gold hover:bg-gold/10"
+                >
+                  <Download className="h-3 w-3" />
+                  Export evidence CSV
+                </a>
+              )}
             </div>
+            {snapshots.length === 0 ? (
+              <div className="rounded-2xl border border-border bg-surface/60 p-8 text-center">
+                <p className="font-display text-xl text-text-primary">
+                  No verified technical snapshots yet
+                </p>
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-text-muted">
+                  Run the production ingestion pipeline and verify source health.
+                  Dralvo will not fill this surface with simulated market values.
+                </p>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {snapshots.map((indicator) => (
-                <IndicatorDetailCard
-                  key={indicator.key}
-                  indicator={indicator}
-                  justUpdated={justUpdated.has(indicator.key)}
-                />
-              ))}
+              {snapshots.map((indicator, i) => {
+                // For Free users, only the first 3 indicators are fully accessible
+                const isLocked = !isPro && i >= 3;
+
+                return (
+                  <div key={indicator.key} className="relative">
+                    <IndicatorDetailCard
+                      indicator={indicator}
+                      history={historyByKey[indicator.key]}
+                      justUpdated={justUpdated.has(indicator.key)}
+                    />
+                    {isLocked && <ProLockBadge featureName={indicator.name} />}
+                  </div>
+                );
+              })}
             </div>
+            )}
           </section>
 
-          {/* ── Correlation Matrix ── */}
+          {/* ── Thesis monitors ── */}
           <section>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-1 h-5 rounded-full bg-gold" />
               <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
-                Cross-Asset Correlation
+                Thesis Monitors
               </h2>
               <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
-                7×7 Heatmap
+                Thesis, driver, and evidence conditions
               </span>
+              {!isPro && (
+                <span className="text-[10px] text-text-muted flex items-center gap-1 ml-auto">
+                  <Lock className="w-3 h-3" />
+                  Pro feature
+                </span>
+              )}
             </div>
-            <CorrelationMatrix />
+            {isPro ? (
+              <AlertList />
+            ) : (
+              <div className="relative rounded-2xl border border-border bg-surface/30 p-8 min-h-[200px] flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gold/10 border border-border-gold flex items-center justify-center">
+                    <Lock className="w-5 h-5 text-gold" />
+                  </div>
+                  <div className="text-center max-w-[320px]">
+                    <p className="text-sm font-medium text-text-primary mb-1">
+                      Thesis monitors
+                    </p>
+                    <p className="text-xs text-text-muted mb-4">
+                      Monitor thesis state, driver transitions, or numeric
+                      evidence thresholds and receive an explanation.
+                    </p>
+                    <Link
+                      href="/pricing"
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-[0.03em]",
+                        "bg-gold-action text-[#060609] hover:bg-gold-actionHover transition-all duration-300",
+                        "no-underline",
+                      )}
+                    >
+                      Upgrade to Pro
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
+
+          {/* ── Notifications & Preferences (Pro only) ── */}
+          {isPro && (
+            <section>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-1 h-5 rounded-full bg-gold" />
+                <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
+                  Notifications
+                </h2>
+                <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
+                  Alert history & channels
+                </span>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <AlertNotifications />
+                <NotificationPreferences />
+              </div>
+            </section>
+          )}
 
         </div>
       </div>
-    </DashboardShell>
+    </>
   );
 }

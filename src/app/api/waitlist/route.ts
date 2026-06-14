@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limit";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -10,6 +11,16 @@ type WaitlistBody = {
 };
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit({
+    key: rateLimitKey(request, "waitlist:post"),
+    limit: 5,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit.resetAt);
+  }
+
   let body: WaitlistBody;
 
   try {

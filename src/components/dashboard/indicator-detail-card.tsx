@@ -3,34 +3,38 @@
 import { useMemo } from "react";
 import { TrendingDown, TrendingUp, Minus } from "lucide-react";
 
-import type { IndicatorSnapshot } from "@/data/indicators";
+import type {
+  IndicatorHistoryPoint,
+  IndicatorSnapshot,
+} from "@/data/indicators";
 import { cn } from "@/lib/utils";
 
-/* ─── Types ─── */
+/* Types */
 
 export interface IndicatorDetailCardProps {
   indicator: IndicatorSnapshot;
+  history?: IndicatorHistoryPoint[];
   justUpdated?: boolean;
 }
 
-/* ─── Category config ─── */
+/* Category config */
 
 const categoryConfig: Record<string, { label: string; className: string }> = {
-  "sge-premium": {
-    label: "Demand",
-    className: "text-amber-400/80 border-amber-400/20 bg-amber-400/8",
+  "xauusd-spot": {
+    label: "Price",
+    className: "text-gold-400/80 border-gold-400/20 bg-gold-400/8",
   },
-  "cot-swap-dealer": {
-    label: "Positioning",
+  "xauusd-rsi": {
+    label: "Momentum",
     className: "text-sky-400/80 border-sky-400/20 bg-sky-400/8",
   },
-  "comex-inventory": {
-    label: "Supply",
+  "xauusd-macd": {
+    label: "Trend",
     className: "text-violet-400/80 border-violet-400/20 bg-violet-400/8",
   },
-  "etf-flows": {
-    label: "Demand",
-    className: "text-amber-400/80 border-amber-400/20 bg-amber-400/8",
+  "xauusd-sma": {
+    label: "Trend",
+    className: "text-indigo-400/80 border-indigo-400/20 bg-indigo-400/8",
   },
   "tips-yields": {
     label: "Macro",
@@ -42,7 +46,26 @@ const categoryConfig: Record<string, { label: string; className: string }> = {
   },
 };
 
-/* ─── Signal logic ─── */
+const dataQualityConfig = {
+  live: {
+    label: "Live",
+    className: "border-emerald-400/25 bg-emerald-400/10 text-emerald-300",
+  },
+  delayed: {
+    label: "Delayed",
+    className: "border-sky-400/25 bg-sky-400/10 text-sky-300",
+  },
+  estimated: {
+    label: "Estimated",
+    className: "border-amber-400/25 bg-amber-400/10 text-amber-300",
+  },
+  simulated: {
+    label: "Simulated",
+    className: "border-zinc-400/25 bg-zinc-400/10 text-zinc-300",
+  },
+} as const;
+
+/* Signal logic */
 
 interface SignalInfo {
   signal: "bullish" | "bearish" | "neutral";
@@ -50,102 +73,75 @@ interface SignalInfo {
 }
 
 function getSignalInfo(indicator: IndicatorSnapshot): SignalInfo {
-  const { key, value } = indicator;
-
-  // Parse numeric value from formatted string
-  const numericValue = parseNumericValue(value);
+  const { key, status } = indicator;
 
   switch (key) {
-    case "sge-premium":
+    case "xauusd-spot":
       return {
-        signal: numericValue > 20 ? "bullish" : numericValue > 0 ? "neutral" : "bearish",
+        signal: status,
         text:
-          numericValue > 20
-            ? "Premium elevated — strong physical demand"
-            : numericValue > 0
-              ? "Premium normal — steady demand"
-              : "Discount — demand weakness",
+          status === "bullish"
+            ? "Gold price rising - bullish momentum"
+            : status === "bearish"
+              ? "Gold price declining - bearish pressure"
+              : "Gold price stable - consolidation phase",
       };
-    case "cot-swap-dealer":
+    case "xauusd-rsi":
       return {
-        signal: numericValue > 0 ? "bullish" : "bearish",
+        signal: status,
         text:
-          numericValue > 0
-            ? "Swaps net long — smart money bullish"
-            : "Swaps net short — caution",
+          status === "bullish"
+            ? "RSI above 60 - strong upward momentum"
+            : status === "bearish"
+              ? "RSI below 40 - oversold, potential reversal"
+              : "RSI in neutral zone - no directional bias",
       };
-    case "comex-inventory":
+    case "xauusd-macd":
       return {
-        signal: numericValue < 0 ? "bullish" : "bearish",
+        signal: status,
         text:
-          numericValue < 0
-            ? "Inventory declining — supply tightening"
-            : "Inventory stable or rising",
+          status === "bullish"
+            ? "MACD above signal line - uptrend confirmed"
+            : status === "bearish"
+              ? "MACD below signal line - downtrend in play"
+              : "MACD at signal line - trend transition",
       };
-    case "etf-flows":
+    case "xauusd-sma":
       return {
-        signal: numericValue > 10 ? "bullish" : numericValue > 0 ? "neutral" : "bearish",
+        signal: status,
         text:
-          numericValue > 10
-            ? "Strong ETF inflows — institutional demand"
-            : numericValue > 0
-              ? "Modest inflows — demand stabilizing"
-              : "ETF outflows — rotation away from gold",
+          status === "bullish"
+            ? "Golden Cross active - long-term uptrend"
+            : status === "bearish"
+              ? "Death Cross active - long-term downtrend"
+              : "SMAs converging - trend uncertainty",
       };
     case "tips-yields":
       return {
-        signal: numericValue < 0 ? "bullish" : "bearish",
+        signal: status,
         text:
-          numericValue < 0
-            ? "Real yields falling — gold attractive"
-            : "Real yields rising — headwind for gold",
+          status === "bullish"
+            ? "Real yields falling - gold attractive"
+            : status === "bearish"
+              ? "Real yields rising - headwind for gold"
+              : "Real yields stable - neutral macro backdrop",
       };
     case "gold-btc-correlation":
       return {
-        signal: numericValue < 0 ? "bullish" : "neutral",
+        signal: status,
         text:
-          numericValue < 0
-            ? "Negative correlation — gold as safe haven"
-            : "Positive correlation — risk-on mode",
+          status === "bullish"
+            ? "Negative correlation - gold as safe haven"
+            : status === "bearish"
+              ? "High positive correlation - risk-on mode"
+              : "Low correlation - gold trades on own drivers",
       };
     default:
       return { signal: "neutral", text: "" };
   }
 }
 
-/** Extract a numeric value from a formatted indicator value string. */
-function parseNumericValue(formatted: string): number {
-  // Strip currency symbols, units, and extract the first number
-  const cleaned = formatted.replace(/[+$%a-zA-Z/]/g, "").trim();
-  const num = parseFloat(cleaned);
-  return Number.isNaN(num) ? 0 : num;
-}
-
-/* ─── Sparkline data generation ─── */
-
-function generateSparklineData(currentValue: number, points: number = 24): number[] {
-  // Use a deterministic seed based on the current value so it's stable between renders
-  const seed = Math.round(currentValue * 1000);
-  let s = seed;
-
-  function pseudoRandom(): number {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  }
-
-  const data: number[] = [currentValue];
-  let val = currentValue;
-
-  for (let i = 1; i < points; i++) {
-    const change = (pseudoRandom() - 0.48) * Math.max(Math.abs(currentValue), 0.01) * 0.02;
-    val = val - change;
-    data.unshift(val);
-  }
-
-  return data;
-}
-
-/* ─── Sparkline SVG sub-component ─── */
+/* Sparkline SVG sub-component */
 
 export interface SparklineProps {
   data: number[];
@@ -255,8 +251,7 @@ export function Sparkline({
     </svg>
   );
 }
-
-/* ─── Mini stat helpers ─── */
+/* Mini stat helpers */
 
 interface MiniStats {
   high7d: number;
@@ -264,30 +259,26 @@ interface MiniStats {
   avg30d: number;
 }
 
-function computeMiniStats(
-  currentValue: number,
-  indicatorKey: string,
-): MiniStats {
-  // Derive plausible 7d high/low and 30d avg from the sparkline data
-  const sparkData = generateSparklineData(currentValue, 30);
+function computeMiniStats(data: number[]): MiniStats | null {
+  if (data.length < 2) return null;
 
-  const high7d = Math.max(...sparkData.slice(-7));
-  const low7d = Math.min(...sparkData.slice(-7));
-  const avg30d = sparkData.reduce((a, b) => a + b, 0) / sparkData.length;
+  const high7d = Math.max(...data);
+  const low7d = Math.min(...data);
+  const avg30d = data.reduce((a, b) => a + b, 0) / data.length;
 
   return { high7d, low7d, avg30d };
 }
 
 function formatStatValue(value: number, indicatorKey: string): string {
   switch (indicatorKey) {
-    case "sge-premium":
+    case "xauusd-spot":
       return `$${value.toFixed(1)}`;
-    case "cot-swap-dealer":
-      return `${value.toFixed(1)}k`;
-    case "comex-inventory":
-      return `${value.toFixed(1)}%`;
-    case "etf-flows":
-      return `${value.toFixed(1)}t`;
+    case "xauusd-rsi":
+      return value.toFixed(1);
+    case "xauusd-macd":
+      return value.toFixed(4);
+    case "xauusd-sma":
+      return `$${value.toFixed(1)}`;
     case "tips-yields":
       return `${value.toFixed(2)}%`;
     case "gold-btc-correlation":
@@ -297,10 +288,11 @@ function formatStatValue(value: number, indicatorKey: string): string {
   }
 }
 
-/* ─── Main card component ─── */
+/* Main card component */
 
 export function IndicatorDetailCard({
   indicator,
+  history = [],
   justUpdated = false,
 }: IndicatorDetailCardProps) {
   const signalInfo = useMemo(() => getSignalInfo(indicator), [indicator]);
@@ -308,21 +300,30 @@ export function IndicatorDetailCard({
     label: "Other",
     className: "text-zinc-400/80 border-zinc-400/20 bg-zinc-400/8",
   };
+  const dataQuality = indicator.dataQuality ?? "delayed";
+  const quality = dataQualityConfig[dataQuality] ?? dataQualityConfig.delayed;
 
-  const numericValue = useMemo(
-    () => parseNumericValue(indicator.value),
-    [indicator.value],
+  const snapshotHistory = useMemo(
+    () => history.map((point) => point.value),
+    [history],
   );
-
+  const hasSnapshotHistory = snapshotHistory.length >= 2;
+  const hasSourceSeries = Boolean(indicator.sparkline && indicator.sparkline.length >= 2);
   const sparkData = useMemo(
-    () => generateSparklineData(numericValue, 24),
-    [numericValue],
+    () =>
+      hasSnapshotHistory
+        ? snapshotHistory
+        : hasSourceSeries
+          ? indicator.sparkline!
+          : [],
+    [
+      hasSnapshotHistory,
+      hasSourceSeries,
+      indicator.sparkline,
+      snapshotHistory,
+    ],
   );
-
-  const miniStats = useMemo(
-    () => computeMiniStats(numericValue, indicator.key),
-    [numericValue, indicator.key],
-  );
+  const miniStats = useMemo(() => computeMiniStats(sparkData), [sparkData]);
 
   // Determine if change is positive
   const changeIsPositive = indicator.change.startsWith("+");
@@ -351,7 +352,7 @@ export function IndicatorDetailCard({
         ],
       )}
     >
-      {/* ── Header row ── */}
+      {/* Header row */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           {/* Status dot */}
@@ -375,18 +376,28 @@ export function IndicatorDetailCard({
           </h3>
         </div>
 
-        {/* Category badge */}
-        <span
-          className={cn(
-            "shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
-            category.className,
-          )}
-        >
-          {category.label}
-        </span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span
+            className={cn(
+              "rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
+              quality.className,
+            )}
+            title={indicator.qualityNote ?? `Data quality: ${quality.label}`}
+          >
+            {quality.label}
+          </span>
+          <span
+            className={cn(
+              "rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
+              category.className,
+            )}
+          >
+            {category.label}
+          </span>
+        </div>
       </div>
 
-      {/* ── Current value ── */}
+      {/* Current value */}
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex flex-col">
           <span className="font-mono text-3xl font-semibold tracking-tight text-[var(--gold-bright)]">
@@ -417,8 +428,20 @@ export function IndicatorDetailCard({
         </div>
       </div>
 
-      {/* ── Sparkline chart ── */}
+      {/* Sparkline chart */}
       <div className="relative -mx-1">
+        <div className="mb-1 flex items-center justify-between px-1">
+          <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            {hasSnapshotHistory
+              ? "Snapshot history"
+              : hasSourceSeries
+                ? "Source series"
+                : "Collecting history"}
+          </span>
+          <span className="rounded-full border border-[var(--bg-border)] px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            {sparkData.length} point{sparkData.length === 1 ? "" : "s"}
+          </span>
+        </div>
         <Sparkline
           data={sparkData}
           width={280}
@@ -433,7 +456,7 @@ export function IndicatorDetailCard({
         />
       </div>
 
-      {/* ── Signal interpretation ── */}
+      {/* Signal interpretation */}
       <div className="flex items-start gap-2 rounded-lg bg-[var(--gold-ghost)] px-3 py-2.5">
         {/* Signal icon */}
         <span className="mt-0.5 shrink-0">
@@ -451,35 +474,35 @@ export function IndicatorDetailCard({
         </p>
       </div>
 
-      {/* ── Mini stats row ── */}
+      {/* Mini stats row */}
       <div className="grid grid-cols-3 gap-2 border-t border-[var(--bg-border)] pt-3.5">
         <div className="flex flex-col items-center gap-0.5">
           <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
-            7D High
+            History High
           </span>
           <span className="font-mono text-xs font-medium text-[var(--text-primary)]">
-            {formatStatValue(miniStats.high7d, indicator.key)}
+            {miniStats ? formatStatValue(miniStats.high7d, indicator.key) : "-"}
           </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
           <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
-            7D Low
+            History Low
           </span>
           <span className="font-mono text-xs font-medium text-[var(--text-primary)]">
-            {formatStatValue(miniStats.low7d, indicator.key)}
+            {miniStats ? formatStatValue(miniStats.low7d, indicator.key) : "-"}
           </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
           <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
-            30D Avg
+            History Avg
           </span>
           <span className="font-mono text-xs font-medium text-[var(--text-primary)]">
-            {formatStatValue(miniStats.avg30d, indicator.key)}
+            {miniStats ? formatStatValue(miniStats.avg30d, indicator.key) : "-"}
           </span>
         </div>
       </div>
 
-      {/* ── Footer: source + timestamp ── */}
+      {/* Footer: source + timestamp */}
       <div className="flex items-center justify-between border-t border-[var(--bg-border)] pt-3 text-[10px] text-[var(--text-muted)]">
         <span className="truncate max-w-[60%]" title={indicator.source}>
           {indicator.source}
@@ -489,3 +512,4 @@ export function IndicatorDetailCard({
     </article>
   );
 }
+

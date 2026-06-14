@@ -2,9 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Menu, Sun, Moon } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
+import { UserMenu } from "@/components/dashboard/user-menu";
+import { ProductAnalyticsTracker } from "@/components/dashboard/product-analytics-tracker";
+import { useLocale } from "@/hooks/use-locale";
+import { DASHBOARD_COPY } from "@/lib/i18n";
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
@@ -12,6 +17,9 @@ import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 
 export interface DashboardShellProps {
   children: React.ReactNode;
+  userEmail?: string | null;
+  planTier?: string;
+  planStatus?: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -29,7 +37,27 @@ function formatUTCTime(date: Date): string {
 /*  Component                                                                 */
 /* -------------------------------------------------------------------------- */
 
-export function DashboardShell({ children }: DashboardShellProps) {
+export function DashboardShell({
+  children,
+  userEmail,
+  planTier = "Free",
+  planStatus = "free",
+}: DashboardShellProps) {
+  const pathname = usePathname();
+  const { locale } = useLocale();
+  const navCopy = DASHBOARD_COPY[locale].nav;
+  const pageTitle = pathname.startsWith("/dashboard/drivers")
+    ? navCopy.drivers
+    : pathname.startsWith("/dashboard/alerts")
+      ? navCopy.monitors
+      : pathname.startsWith("/dashboard/replay")
+        ? navCopy.replay
+        : pathname.startsWith("/dashboard/settings")
+          ? navCopy.settings
+          : pathname.startsWith("/dashboard/chart")
+            ? navCopy.chart
+            : navCopy.dashboard;
+
   /* ---- sidebar state ---- */
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -39,7 +67,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const stored = document.documentElement.getAttribute("data-theme") as "dark" | "light" | null;
+      const stored = document.documentElement.getAttribute("data-theme") as
+        | "dark"
+        | "light"
+        | null;
       if (stored === "light") setTheme("light");
     });
     return () => window.cancelAnimationFrame(frame);
@@ -57,12 +88,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const [timeString, setTimeString] = useState(() => formatUTCTime(new Date()));
 
   useEffect(() => {
-    const id = setInterval(() => setTimeString(formatUTCTime(new Date())), 1000);
+    const id = setInterval(
+      () => setTimeString(formatUTCTime(new Date())),
+      1000,
+    );
     return () => clearInterval(id);
   }, []);
 
   /* ---- close mobile sidebar on route change (handled via overlay click) ---- */
-  const closeMobileSidebar = useCallback(() => setMobileSidebarOpen(false), []);
+  const closeMobileSidebar = useCallback(
+    () => setMobileSidebarOpen(false),
+    [],
+  );
 
   /* ---- keyboard shortcut: Ctrl+B toggles sidebar ---- */
   useEffect(() => {
@@ -77,7 +114,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-deep">
+    <div className="flex h-dvh overflow-hidden bg-deep">
+      <ProductAnalyticsTracker />
       {/* ── Desktop sidebar ── */}
       <div className="hidden md:flex h-full shrink-0">
         <SidebarNav
@@ -92,9 +130,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
           {/* Backdrop */}
           <button
             type="button"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
             onClick={closeMobileSidebar}
-            aria-label="Close sidebar"
+            aria-label={navCopy.closeSidebar}
           />
           {/* Drawer */}
           <div className="relative z-50 h-full w-60 animate-slide-in-left">
@@ -121,7 +159,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
             )}
             onClick={() => setMobileSidebarOpen(true)}
-            aria-label="Open sidebar"
+            aria-label={navCopy.openSidebar}
           >
             <Menu size={18} />
           </button>
@@ -129,12 +167,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
           {/* Center: page title / breadcrumb */}
           <div className="flex-1 min-w-0">
             <span className="text-xs font-medium text-text-muted tracking-wider uppercase select-none">
-              Dashboard
+              {pageTitle}
             </span>
           </div>
 
-          {/* Right: status, clock, theme */}
-          <div className="flex items-center gap-4">
+          {/* Right: status, clock, theme, user */}
+          <div className="flex items-center gap-3">
             {/* Connection status */}
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="relative flex h-2 w-2">
@@ -142,13 +180,13 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
               </span>
               <span className="text-[11px] text-text-muted font-medium tracking-wider uppercase">
-                Live
+                {navCopy.live}
               </span>
             </div>
 
             {/* UTC clock */}
             <time
-              className="text-xs font-mono text-text-secondary tabular-nums select-none"
+              className="hidden sm:block text-xs font-mono text-text-secondary tabular-nums select-none"
               dateTime={new Date().toISOString()}
               suppressHydrationWarning
             >
@@ -165,15 +203,32 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
               )}
               onClick={toggleTheme}
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+              aria-label={
+                theme === "dark"
+                  ? navCopy.switchToLight
+                  : navCopy.switchToDark
+              }
             >
               {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
+
+            {/* ── User menu ── */}
+            {userEmail && (
+              <div className="border-l border-border pl-3 ml-1">
+                <UserMenu
+                  userEmail={userEmail}
+                  planTier={planTier}
+                  planStatus={planStatus}
+                />
+              </div>
+            )}
           </div>
         </header>
 
         {/* ── Content ── */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          {children}
+        </main>
       </div>
 
       {/* ── Slide-in animation for mobile sidebar ── */}

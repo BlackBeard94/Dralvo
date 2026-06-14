@@ -1,11 +1,27 @@
-import type { IndicatorSnapshot } from "@/data/indicators";
+﻿import type { IndicatorSnapshot } from "@/data/indicators";
 
-/** Result of fetching a single indicator — either success with data or an error. */
+export type EvidenceQuality = "verified" | "delayed" | "estimated";
+
+export type EvidenceObservation = {
+  sourceKey: string;
+  driverKey: string;
+  seriesKey: string;
+  numericValue: number;
+  unit: string;
+  observedAt: string;
+  releasedAt?: string | null;
+  sourceUrl: string;
+  quality: EvidenceQuality;
+  metadata?: Record<string, unknown>;
+};
+
+/** Result of fetching a single indicator - either success with data or an error. */
 export type IngestionResult =
   | {
       key: string;
       status: "success";
       data: IndicatorSnapshot;
+      observations?: EvidenceObservation[];
     }
   | {
       key: string;

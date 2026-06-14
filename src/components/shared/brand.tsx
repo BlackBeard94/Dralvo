@@ -64,11 +64,19 @@ export function DralvoWordmark({ className }: { className?: string }) {
   );
 }
 
-export function BrandLink({ className }: { className?: string }) {
+export function BrandLink({
+  className,
+  logoSize = 36,
+  wordmarkClassName = "text-xl transition-colors group-hover:text-text-primary",
+}: {
+  className?: string;
+  logoSize?: number;
+  wordmarkClassName?: string;
+}) {
   return (
     <Link href="/" className={cn("flex items-center gap-3 no-underline group", className)}>
-      <LogoMark size={36} />
-      <DralvoWordmark className="text-xl transition-colors group-hover:text-text-primary" />
+      <LogoMark size={logoSize} />
+      <DralvoWordmark className={wordmarkClassName} />
       <span className="sr-only">Dralvo home</span>
     </Link>
   );

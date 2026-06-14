@@ -1,76 +1,96 @@
 import { NextResponse } from "next/server";
+
 import type { CandleOHLC } from "@/data/indicators";
-import { dashboardCandles as fallbackCandles, XAUUSD_SPOT } from "@/data/indicators";
+import { rateLimitedTwelveDataFetch } from "@/data/ingestion/twelve-data-limiter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-interface TwelveDataCandle {
+type TwelveDataCandle = {
   datetime: string;
   open: string;
   high: string;
   low: string;
   close: string;
+};
+
+type TwelveDataResponse = {
+  values?: TwelveDataCandle[];
+  status?: string;
+  message?: string;
+};
+
+export function parseXauusdCandles(data: TwelveDataResponse) {
+  if (data.status === "error") {
+    throw new Error(data.message ?? "Twelve Data error");
+  }
+
+  const candles: CandleOHLC[] = (data.values ?? [])
+    .map((candle) => ({
+      open: Number(candle.open),
+      high: Number(candle.high),
+      low: Number(candle.low),
+      close: Number(candle.close),
+    }))
+    .filter(
+      (candle) =>
+        Number.isFinite(candle.open) &&
+        Number.isFinite(candle.high) &&
+        Number.isFinite(candle.low) &&
+        Number.isFinite(candle.close) &&
+        candle.open > 0 &&
+        candle.high >= candle.low,
+    )
+    .reverse();
+
+  if (candles.length < 2) {
+    throw new Error("Twelve Data did not return enough valid XAU/USD candles");
+  }
+
+  return candles;
 }
 
 export async function GET() {
   const apiKey = process.env.TWELVE_DATA_API_KEY;
-
   if (!apiKey) {
-    return NextResponse.json({
-      ok: true,
-      source: "fallback",
-      spot: XAUUSD_SPOT,
-      candles: fallbackCandles,
-    });
+    return NextResponse.json(
+      {
+        ok: false,
+        source: "unavailable",
+        error: "TWELVE_DATA_API_KEY not set",
+        candles: [],
+      },
+      { status: 503 },
+    );
   }
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
-    const res = await fetch(
-      `https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=4h&outputsize=30&apikey=${apiKey}`,
-      { signal: controller.signal },
+    const response = await rateLimitedTwelveDataFetch(
+      `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent("XAU/USD")}&interval=4h&outputsize=30&apikey=${apiKey}`,
     );
-
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      throw new Error(`Twelve Data returned ${res.status}`);
+    if (!response.ok) {
+      throw new Error(`Twelve Data returned ${response.status}`);
     }
 
-    const json = await res.json();
-
-    if (json.status === "error") {
-      throw new Error(json.message ?? "Twelve Data error");
-    }
-
-    const rawCandles: TwelveDataCandle[] = json.values ?? [];
-    const candles: CandleOHLC[] = rawCandles
-      .map((c) => ({
-        open: parseFloat(c.open),
-        high: parseFloat(c.high),
-        low: parseFloat(c.low),
-        close: parseFloat(c.close),
-      }))
-      .filter((c) => !isNaN(c.open))
-      .reverse(); // Twelve Data returns newest first
-
-    const spot = candles.length > 0 ? candles[candles.length - 1].close : XAUUSD_SPOT;
+    const candles = parseXauusdCandles(
+      (await response.json()) as TwelveDataResponse,
+    );
 
     return NextResponse.json({
       ok: true,
       source: "twelve-data",
-      spot,
+      spot: candles.at(-1)!.close,
       candles,
     });
-  } catch {
-    return NextResponse.json({
-      ok: true,
-      source: "fallback",
-      spot: XAUUSD_SPOT,
-      candles: fallbackCandles,
-    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        ok: false,
+        source: "unavailable",
+        error: error instanceof Error ? error.message : String(error),
+        candles: [],
+      },
+      { status: 502 },
+    );
   }
 }

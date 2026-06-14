@@ -1,6 +1,7 @@
-import type { IndicatorSnapshot } from "@/data/indicators";
+﻿import type { IndicatorSnapshot } from "@/data/indicators";
 import type { IngestionResult } from "@/data/ingestion/types";
 import { formatObservedLabel } from "@/data/ingestion/types";
+import { rateLimitedTwelveDataFetch } from "@/data/ingestion/twelve-data-limiter";
 
 /**
  * Gold-BTC Correlation fetcher.
@@ -9,11 +10,11 @@ import { formatObservedLabel } from "@/data/ingestion/types";
  * regime indicator. When correlation is low (<0.3), gold trades on its own
  * macro drivers (real yields, USD, physical demand). When correlation rises
  * above 0.5, gold and BTC move together, often driven by liquidity or
- * risk-on/risk-off dynamics — which can dilute gold's safe-haven role.
+ * risk-on/risk-off dynamics - which can dilute gold's safe-haven role.
  *
  * We use the Twelve Data API (TWELVE_DATA_API_KEY env var) to fetch 30-day
  * price series for both XAU/USD and BTC/USD, then compute the Pearson
- * correlation. Falls back to a realistic placeholder if the API is unavailable.
+ * correlation. Source failures return an explicit ingestion error.
  */
 
 const TWELVE_DATA_BASE = "https://api.twelvedata.com/time_series";
@@ -59,7 +60,7 @@ async function fetchTwelveDataSeries(
   apiKey: string,
 ): Promise<number[]> {
   const url = `${TWELVE_DATA_BASE}?symbol=${encodeURIComponent(symbol)}&interval=1day&outputsize=30&apikey=${apiKey}`;
-  const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  const response = await rateLimitedTwelveDataFetch(url);
 
   if (!response.ok) {
     throw new Error(`Twelve Data returned ${response.status} for ${symbol}`);
@@ -90,12 +91,12 @@ function determineStatus(correlation: number): IndicatorSnapshot["status"] {
 
 function buildSummary(correlation: number): string {
   if (correlation < 0.3) {
-    return `Gold-BTC 30d correlation at ${correlation.toFixed(2)} is low — gold is trading on its own macro drivers (real yields, USD, physical demand), reinforcing its diversification role.`;
+    return `Gold-BTC 30d correlation at ${correlation.toFixed(2)} is low - gold is trading on its own macro drivers (real yields, USD, physical demand), reinforcing its diversification role.`;
   }
   if (correlation > 0.5) {
-    return `Gold-BTC 30d correlation at ${correlation.toFixed(2)} is elevated — both assets are moving together, likely driven by shared macro/liquidity factors, which dilutes gold's safe-haven signal.`;
+    return `Gold-BTC 30d correlation at ${correlation.toFixed(2)} is elevated - both assets are moving together, likely driven by shared macro/liquidity factors, which dilutes gold's safe-haven signal.`;
   }
-  return `Gold-BTC 30d correlation at ${correlation.toFixed(2)} is moderate — gold retains partial independence but traders should monitor for regime shifts.`;
+  return `Gold-BTC 30d correlation at ${correlation.toFixed(2)} is moderate - gold retains partial independence but traders should monitor for regime shifts.`;
 }
 
 export async function fetchGoldBtcCorrelation(): Promise<IngestionResult> {
@@ -104,37 +105,44 @@ export async function fetchGoldBtcCorrelation(): Promise<IngestionResult> {
   const observedLabel = formatObservedLabel(now);
 
   const apiKey = process.env.TWELVE_DATA_API_KEY;
-  let correlation: number | null = null;
-
-  if (apiKey) {
-    try {
-      const [xauPrices, btcPrices] = await Promise.all([
-        fetchTwelveDataSeries("XAU/USD", apiKey),
-        fetchTwelveDataSeries("BTC/USD", apiKey),
-      ]);
-      correlation = pearsonCorrelation(xauPrices, btcPrices);
-      // Clamp to reasonable range
-      correlation = Math.max(-1, Math.min(1, correlation));
-    } catch {
-      // API unavailable or error — fall back to placeholder
-    }
+  if (!apiKey) {
+    return {
+      key: "gold-btc-correlation",
+      status: "error",
+      error: "TWELVE_DATA_API_KEY not set",
+    };
   }
 
-  // Use computed correlation or realistic June 2026 placeholder
-  const corr = correlation ?? 0.24;
+  try {
+    const xauPrices = await fetchTwelveDataSeries("XAU/USD", apiKey);
+    const btcPrices = await fetchTwelveDataSeries("BTC/USD", apiKey);
+    const corr = Math.max(
+      -1,
+      Math.min(1, pearsonCorrelation(xauPrices, btcPrices)),
+    );
 
-  const snapshot: IndicatorSnapshot = {
-    key: "gold-btc-correlation",
-    name: "Gold-BTC Correlation",
-    source: "Twelve Data + Binance",
-    cadence: "5m target",
-    value: corr.toFixed(2),
-    change: "30d rolling",
-    status: determineStatus(corr),
-    summary: buildSummary(corr),
-    observedAt,
-    observedLabel,
-  };
+    const snapshot: IndicatorSnapshot = {
+      key: "gold-btc-correlation",
+      name: "Gold-BTC Correlation",
+      source: "Twelve Data",
+      cadence: "Daily",
+      value: corr.toFixed(2),
+      change: "30d rolling",
+      status: determineStatus(corr),
+      summary: buildSummary(corr),
+      observedAt,
+      observedLabel,
+      dataQuality: "delayed",
+      qualityNote: "Computed from Twelve Data daily XAU/USD and BTC/USD closes.",
+      sparkline: xauPrices.length >= 2 ? xauPrices : undefined,
+    };
 
-  return { key: snapshot.key, status: "success", data: snapshot };
+    return { key: snapshot.key, status: "success", data: snapshot };
+  } catch (error) {
+    return {
+      key: "gold-btc-correlation",
+      status: "error",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }

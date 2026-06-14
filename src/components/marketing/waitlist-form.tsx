@@ -17,11 +17,11 @@ export function WaitlistForm() {
     const email = String(formData.get("email") || "").trim();
 
     if (!email) {
-      setState({ status: "error", message: "Enter an email address to join the beta." });
+      setState({ status: "error", message: "Enter an email address to create an account." });
       return;
     }
 
-    setState({ status: "loading", message: "Securing your beta spot..." });
+    setState({ status: "loading", message: "Saving your interest..." });
 
     try {
       const response = await fetch("/api/waitlist", {
@@ -42,7 +42,7 @@ export function WaitlistForm() {
       form.reset();
       setState({
         status: "success",
-        message: payload.message || "You're on the Dralvo beta list.",
+        message: payload.message || "You're on the Dralvo list.",
       });
     } catch {
       setState({
@@ -73,9 +73,9 @@ export function WaitlistForm() {
         <button
           type="submit"
           disabled={state.status === "loading"}
-          className="px-6 py-3 bg-gold text-deep rounded-lg text-sm font-semibold tracking-[0.03em] hover:bg-gold-bright transition-all duration-300 hover:shadow-[0_8px_32px_rgba(212,168,67,0.25)] disabled:cursor-not-allowed disabled:opacity-70 max-sm:w-full"
+          className="px-6 py-3 bg-gold-action text-[#060609] rounded-lg text-sm font-semibold tracking-[0.03em] hover:bg-gold-actionHover transition-all duration-300 hover:shadow-[0_8px_32px_rgba(212,168,67,0.25)] disabled:cursor-not-allowed disabled:opacity-70 max-sm:w-full"
         >
-          {state.status === "loading" ? "Joining..." : "Join Beta"}
+          {state.status === "loading" ? "Joining..." : "Submit"}
         </button>
       </div>
       <p
@@ -88,7 +88,7 @@ export function WaitlistForm() {
               : "mt-4 text-[11px] text-text-muted"
         }
       >
-        {state.message || "No spam. No credit card required."}
+        {state.message || "Free starts without a card. Pro includes a 3-day trial."}
       </p>
     </form>
   );

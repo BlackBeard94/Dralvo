@@ -28,6 +28,8 @@
     --text-muted: #5C5852;
     --gold-primary: #D4A843;
     --gold-bright: #F0C85A;
+    --gold-action: #D4A843;
+    --gold-action-hover: #F0C85A;
     --gold-pale: #C49A3C;
     --gold-dim: #8B6914;
     --gold-ghost: rgba(212, 168, 67, 0.08);
@@ -46,16 +48,18 @@
     --bg-border: #E5E0D5;
     --text-primary: #1A1815;
     --text-secondary: #5C5852;
-    --text-muted: #9A958A;
-    --gold-primary: #B8922E;
-    --gold-bright: #D4A843;
-    --gold-pale: #A07D28;
+    --text-muted: #6F695F;
+    --gold-primary: #7A5A12;
+    --gold-bright: #8F6A17;
+    --gold-action: #B8922E;
+    --gold-action-hover: #D4A843;
+    --gold-pale: #6F510F;
     --gold-dim: #6B5A1E;
     --gold-ghost: rgba(184, 146, 46, 0.08);
     --gold-glow: rgba(184, 146, 46, 0.15);
     --border-gold: rgba(184, 146, 46, 0.25);
     --red: #D9352E;
-    --green: #2D8F5E;
+    --green: #247348;
     --ring: var(--gold-primary);
   }
 
@@ -180,10 +184,6 @@
     outline-offset: 2px;
   }
 
-  /* Smooth transitions on theme-aware elements */
-  body * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
-  }
 }
 
 @layer utilities {
