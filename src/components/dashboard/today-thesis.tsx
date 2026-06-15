@@ -14,6 +14,9 @@ import {
 import { useCallback, useEffect, useState } from "react";
 
 import type {
+  AiSignal,
+} from "@/lib/intelligence/ai-signal";
+import type {
   GoldThesis,
   TradeSimulation,
   ThesisDriverState,
@@ -55,6 +58,10 @@ const simulationCopy = {
     noTrade: "Không mở vị thế",
     details: "Xem bằng chứng chi tiết",
     disclaimer: "Mô phỏng giáo dục, không phải khuyến nghị mua/bán.",
+    button: "Tạo AI signal",
+    loading: "AI đang tổng hợp...",
+    error: "Không tạo được AI signal.",
+    manual: "Khung giá hệ thống",
     confidenceValues: {
       high: "Cao",
       medium: "Trung bình",
@@ -72,6 +79,10 @@ const simulationCopy = {
     noTrade: "No position",
     details: "View detailed evidence",
     disclaimer: "Educational simulation, not a buy/sell recommendation.",
+    button: "Generate AI signal",
+    loading: "AI is summarizing...",
+    error: "Could not generate AI signal.",
+    manual: "System price frame",
     confidenceValues: {
       high: "High",
       medium: "Medium",
@@ -89,6 +100,10 @@ const simulationCopy = {
     noTrade: "Sem posição",
     details: "Ver evidências detalhadas",
     disclaimer: "Simulação educacional, não recomendação de compra/venda.",
+    button: "Gerar sinal IA",
+    loading: "IA resumindo...",
+    error: "Não foi possível gerar o sinal IA.",
+    manual: "Quadro de preço do sistema",
     confidenceValues: {
       high: "Alta",
       medium: "Media",
@@ -162,18 +177,27 @@ function DriverRow({
 
 function SimulationCard({
   simulation,
+  signal,
+  signalError,
+  signalLoading,
   locale,
+  onGenerate,
 }: {
   simulation: TradeSimulation;
+  signal: AiSignal | null;
+  signalError: string | null;
+  signalLoading: boolean;
   locale: keyof typeof simulationCopy;
+  onGenerate: () => void;
 }) {
   const copy = simulationCopy[locale];
   const localeCode = locale === "pt-BR" ? "pt-BR" : locale;
   const isDirectional = simulation.action !== "stand_aside";
+  const displayedAction = signal?.action ?? simulation.action;
   const actionLabel =
-    simulation.action === "simulated_buy"
+    displayedAction === "simulated_buy"
       ? "BUY"
-      : simulation.action === "simulated_sell"
+      : displayedAction === "simulated_sell"
         ? "SELL"
         : copy.noTrade;
 
@@ -189,26 +213,36 @@ function SimulationCard({
             <span
               className={cn(
                 "rounded-full border px-4 py-1.5 text-sm font-semibold tracking-[0.12em]",
-                simulationStyle[simulation.action],
+                simulationStyle[displayedAction],
               )}
             >
               {actionLabel}
             </span>
             <h3 className="font-display text-2xl text-text-primary">
-              {simulation.title}
+              {signal?.headline ?? simulation.title}
             </h3>
           </div>
           <p className="mt-3 text-sm leading-6 text-text-secondary">
-            {simulation.summary}
+            {signal?.summary ?? simulation.summary}
           </p>
         </div>
-        <div className="rounded-xl border border-border bg-deep/60 px-4 py-3 text-right">
+        <div className="flex flex-col items-end gap-3">
+          <button
+            type="button"
+            onClick={onGenerate}
+            disabled={signalLoading}
+            className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-deep transition-colors hover:bg-gold-bright disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {signalLoading ? copy.loading : copy.button}
+          </button>
+          <div className="rounded-xl border border-border bg-deep/60 px-4 py-3 text-right">
           <p className="text-[12px] uppercase tracking-wider text-text-muted">
             {copy.confidence}
           </p>
           <p className="mt-1 font-display text-xl text-text-primary">
-            {copy.confidenceValues[simulation.confidence]}
+            {copy.confidenceValues[signal?.confidence ?? simulation.confidence]}
           </p>
+          </div>
         </div>
       </div>
 
@@ -241,7 +275,7 @@ function SimulationCard({
 
       <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
         <ul className="grid gap-2 text-xs leading-5 text-text-muted md:grid-cols-3">
-          {simulation.rationale.slice(0, 3).map((reason) => (
+          {(signal?.bullets ?? simulation.rationale).slice(0, 3).map((reason) => (
             <li key={reason} className="flex gap-2">
               <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
               <span>{reason}</span>
@@ -253,12 +287,31 @@ function SimulationCard({
           {copy.disclaimer}
         </p>
       </div>
+      {signal && (
+        <div className="mt-4 rounded-xl border border-border bg-deep/50 p-3">
+          <p className="text-[12px] uppercase tracking-wider text-text-muted">
+            {copy.manual}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-text-secondary">
+            {signal.setup}
+          </p>
+          <p className="mt-2 text-xs leading-5 text-gold">{signal.riskNote}</p>
+        </div>
+      )}
+      {signalError && (
+        <p className="mt-3 rounded-lg border border-red/30 bg-red/5 px-3 py-2 text-xs text-red">
+          {copy.error} {signalError}
+        </p>
+      )}
     </div>
   );
 }
 
 export function TodayThesis() {
   const [thesis, setThesis] = useState<GoldThesis | null>(null);
+  const [aiSignal, setAiSignal] = useState<AiSignal | null>(null);
+  const [aiSignalError, setAiSignalError] = useState<string | null>(null);
+  const [aiSignalLoading, setAiSignalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { locale } = useLocale();
@@ -274,6 +327,8 @@ export function TodayThesis() {
         throw new Error(data.error ?? `HTTP ${response.status}`);
       }
       setThesis(data.thesis);
+      setAiSignal(null);
+      setAiSignalError(null);
       setError(null);
     } catch (loadError) {
       setError(
@@ -287,6 +342,34 @@ export function TodayThesis() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const generateSignal = useCallback(async () => {
+    setAiSignalLoading(true);
+    setAiSignalError(null);
+    try {
+      const response = await fetch("/api/thesis/ai-signal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
+      const data = (await response.json()) as {
+        signal?: AiSignal;
+        error?: string;
+      };
+      if (!response.ok || !data.signal) {
+        throw new Error(data.error ?? `HTTP ${response.status}`);
+      }
+      setAiSignal(data.signal);
+    } catch (signalError) {
+      setAiSignalError(
+        signalError instanceof Error
+          ? signalError.message
+          : "AI signal unavailable",
+      );
+    } finally {
+      setAiSignalLoading(false);
+    }
+  }, [locale]);
 
   if (!displayThesis) {
     return (
@@ -335,7 +418,11 @@ export function TodayThesis() {
 
       <SimulationCard
         simulation={displayThesis.tradeSimulation}
+        signal={aiSignal}
+        signalError={aiSignalError}
+        signalLoading={aiSignalLoading}
         locale={locale}
+        onGenerate={() => void generateSignal()}
       />
 
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">

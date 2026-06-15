@@ -14,6 +14,7 @@ import {
 
 import { AlertList } from "@/components/dashboard/alert-list";
 import { AlertNotifications } from "@/components/dashboard/alert-notifications";
+import { AiProviderSettings } from "@/components/dashboard/ai-provider-settings";
 import { BillingPanel } from "@/components/dashboard/billing-panel";
 import { CorrelationMatrix } from "@/components/dashboard/correlation-matrix";
 import { IndicatorDetailCard } from "@/components/dashboard/indicator-detail-card";
@@ -367,6 +368,8 @@ export function SettingsPage({
           planStatus={planStatus}
           currentPeriodEnd={currentPeriodEnd}
         />
+
+        <AiProviderSettings />
 
         {isPro ? (
           <NotificationPreferences />
