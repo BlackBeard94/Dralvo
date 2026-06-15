@@ -18,7 +18,6 @@ import {
   RefreshCw,
   ShieldCheck,
   Sparkles,
-  Target,
   Zap,
 } from "lucide-react";
 
@@ -84,6 +83,82 @@ const timeline = [
     tag: "Baseline",
   },
 ];
+
+const timeframes = [
+  {
+    label: "1H",
+    role: "Execution",
+    readiness: "Not ready",
+    score: "42%",
+    detail: "Needs ATR, structure, session behavior, and live 1H candles.",
+  },
+  {
+    label: "4H",
+    role: "Primary setup",
+    readiness: "Partial",
+    score: "61%",
+    detail: "Has price context and momentum, but lacks robust support/resistance.",
+  },
+  {
+    label: "Daily",
+    role: "Directional bias",
+    readiness: "Usable",
+    score: "74%",
+    detail: "Macro and positioning drivers can support a cautious bias.",
+  },
+  {
+    label: "Weekly",
+    role: "Macro regime",
+    readiness: "Usable",
+    score: "70%",
+    detail: "CFTC, real yields, ETF holdings, and inventory fit this horizon best.",
+  },
+] as const;
+
+const signalHistory = [
+  {
+    id: "DRX-240615-4H-003",
+    timeframe: "4H",
+    direction: "Stand aside",
+    entry: "-",
+    tp: "-",
+    sl: "-",
+    status: "No trade",
+    result: "Filtered",
+    reason: "Insufficient agreement between macro and positioning.",
+  },
+  {
+    id: "DRX-240614-D-002",
+    timeframe: "Daily",
+    direction: "Buy watch",
+    entry: "4328-4336",
+    tp: "4372 / 4398",
+    sl: "4304",
+    status: "Closed",
+    result: "+1.6R",
+    reason: "Real yield drop confirmed by price strength.",
+  },
+  {
+    id: "DRX-240612-1H-001",
+    timeframe: "1H",
+    direction: "Sell scalp",
+    entry: "4294-4297",
+    tp: "4282 / 4275",
+    sl: "4305",
+    status: "Closed",
+    result: "-1.0R",
+    reason: "Momentum failed after New York open.",
+  },
+] as const;
+
+const missingDrivers = [
+  ["ATR / volatility", "Required", "Derive SL/TP from current volatility instead of fixed percent."],
+  ["Market structure", "Required", "Swing high/low, break of structure, higher-low/lower-high logic."],
+  ["Support / resistance", "Required", "Previous day/week high-low, session open, liquidity zones."],
+  ["Session context", "High value", "Asia, London, New York, and overlap behavior for XAUUSD."],
+  ["DXY + US yields", "High value", "Confirm USD pressure using DXY, US2Y, US10Y, real yields."],
+  ["Economic calendar", "High value", "CPI, FOMC, NFP, Core PCE, Fed speakers: trade/no-trade filter."],
+] as const;
 
 function RailItem({
   icon: Icon,
@@ -160,6 +235,214 @@ function DriverPill({
         </span>
       </div>
     </article>
+  );
+}
+
+function TimeframeSelector() {
+  return (
+    <section className="rounded-3xl border border-border bg-surface/70 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
+            Analysis timeframe
+          </p>
+          <h2 className="mt-1 font-display text-2xl text-text-primary">
+            Choose how Dralvo should think
+          </h2>
+        </div>
+        <div className="grid grid-cols-4 gap-2 rounded-2xl border border-border bg-deep/60 p-1">
+          {timeframes.map((timeframe) => (
+            <button
+              key={timeframe.label}
+              className={cn(
+                "rounded-xl px-4 py-2 text-sm font-semibold transition",
+                timeframe.label === "4H"
+                  ? "bg-gold text-[#060609]"
+                  : "text-text-muted hover:bg-card hover:text-text-primary",
+              )}
+            >
+              {timeframe.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-4">
+        {timeframes.map((timeframe) => (
+          <article
+            key={timeframe.label}
+            className={cn(
+              "rounded-2xl border p-4",
+              timeframe.label === "4H"
+                ? "border-gold/35 bg-gold/10"
+                : "border-border bg-card/70",
+            )}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="font-display text-2xl text-text-primary">
+                  {timeframe.label}
+                </p>
+                <p className="text-xs text-text-muted">{timeframe.role}</p>
+              </div>
+              <span
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-[12px]",
+                  timeframe.readiness === "Usable" &&
+                    "border-green/30 bg-green/10 text-green",
+                  timeframe.readiness === "Partial" &&
+                    "border-gold/30 bg-gold/10 text-gold",
+                  timeframe.readiness === "Not ready" &&
+                    "border-red/30 bg-red/10 text-red",
+                )}
+              >
+                {timeframe.score}
+              </span>
+            </div>
+            <p className="mt-3 text-xs leading-5 text-text-muted">
+              {timeframe.detail}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SignalLifecycle() {
+  return (
+    <article className="rounded-3xl border border-border bg-surface/70 p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
+            Signal lifecycle
+          </p>
+          <h2 className="mt-2 font-display text-2xl text-text-primary">
+            Track every signal until TP, SL, expiry, or invalidation
+          </h2>
+        </div>
+        <span className="rounded-full border border-green/30 bg-green/10 px-3 py-1 text-sm text-green">
+          Transparent history
+        </span>
+      </div>
+
+      <div className="mt-6 grid gap-3 md:grid-cols-5">
+        {[
+          ["Generated", "Rule engine + AI brief"],
+          ["Watching", "Price has not entered zone"],
+          ["Active", "Entry touched"],
+          ["Resolved", "TP/SL/expired"],
+          ["Audited", "Result saved"],
+        ].map(([title, detail], index) => (
+          <div key={title} className="relative rounded-2xl border border-border bg-card/70 p-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/30 bg-gold/10 text-sm text-gold">
+              {index + 1}
+            </div>
+            <p className="mt-3 text-sm font-semibold text-text-primary">
+              {title}
+            </p>
+            <p className="mt-2 text-xs leading-5 text-text-muted">{detail}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function SignalHistoryTable() {
+  return (
+    <article className="overflow-hidden rounded-3xl border border-border bg-surface/70">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-5 py-4">
+        <div>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
+            Public signal ledger
+          </p>
+          <h2 className="mt-1 font-display text-2xl text-text-primary">
+            No cherry-picking: wins, losses, and filtered signals stay visible
+          </h2>
+        </div>
+        <span className="rounded-full border border-border px-3 py-1 text-sm text-text-muted">
+          Last 30 signals
+        </span>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[920px] text-left text-sm">
+          <thead className="border-b border-border text-[12px] uppercase tracking-[0.14em] text-text-muted">
+            <tr>
+              {["Signal", "TF", "Direction", "Entry", "TP", "SL", "Status", "Result", "Reason"].map((header) => (
+                <th key={header} className="px-4 py-3 font-medium">
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {signalHistory.map((signal) => (
+              <tr key={signal.id} className="border-b border-border/60">
+                <td className="px-4 py-4 font-mono text-xs text-text-muted">
+                  {signal.id}
+                </td>
+                <td className="px-4 py-4 text-gold">{signal.timeframe}</td>
+                <td className="px-4 py-4 text-text-primary">{signal.direction}</td>
+                <td className="px-4 py-4 text-text-secondary">{signal.entry}</td>
+                <td className="px-4 py-4 text-green">{signal.tp}</td>
+                <td className="px-4 py-4 text-red">{signal.sl}</td>
+                <td className="px-4 py-4 text-text-secondary">{signal.status}</td>
+                <td
+                  className={cn(
+                    "px-4 py-4 font-semibold",
+                    signal.result.startsWith("+") && "text-green",
+                    signal.result.startsWith("-") && "text-red",
+                    signal.result === "Filtered" && "text-gold",
+                  )}
+                >
+                  {signal.result}
+                </td>
+                <td className="px-4 py-4 text-xs leading-5 text-text-muted">
+                  {signal.reason}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </article>
+  );
+}
+
+function MissingDriversPanel() {
+  return (
+    <section className="rounded-3xl border border-border bg-surface/70 p-5">
+      <div className="grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
+            Product value gap
+          </p>
+          <h2 className="mt-2 font-display text-3xl text-text-primary">
+            Current data is useful for bias, not enough for high-quality execution
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-text-muted">
+            Dralvo can already explain macro context. To become valuable for
+            traders, the next layer must turn that context into timeframe-aware
+            setups, risk, and a transparent performance record.
+          </p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {missingDrivers.map(([title, priority, detail]) => (
+            <article key={title} className="rounded-2xl border border-border bg-card/70 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-sm font-semibold text-text-primary">{title}</p>
+                <span className="rounded-full border border-gold/25 px-2.5 py-1 text-[12px] text-gold">
+                  {priority}
+                </span>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-text-muted">{detail}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -319,6 +602,8 @@ export default function DashboardRedesignPreviewPage() {
           </header>
 
           <div className="mx-auto max-w-[1680px] space-y-6 p-5 lg:p-8">
+            <TimeframeSelector />
+
             <section className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)]">
               <article className="relative overflow-hidden rounded-[28px] border border-gold/25 bg-gradient-to-br from-surface via-card to-surface p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)] lg:p-7">
                 <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-gold/10 blur-3xl" />
@@ -352,9 +637,11 @@ export default function DashboardRedesignPreviewPage() {
 
                       <div className="rounded-2xl border border-border bg-deep/45 p-5">
                         <p className="text-xl leading-8 text-text-primary">
-                          Dữ liệu hiện chưa đủ đồng thuận để mô phỏng một kịch
-                          bản mua hoặc bán. Chờ xác nhận mới từ COMEX/GLD hoặc
-                          thay đổi rõ ở CFTC trước khi nâng trạng thái.
+                          Current evidence is useful for market bias, but not
+                          yet strong enough for a live directional trade. The
+                          4H setup needs volatility, structure, and session
+                          confirmation before Dralvo can publish an actionable
+                          signal.
                         </p>
                         <div className="mt-5 grid gap-3 sm:grid-cols-3">
                           <div className="rounded-xl border border-border bg-card/70 p-3">
@@ -473,6 +760,10 @@ export default function DashboardRedesignPreviewPage() {
               ))}
             </section>
 
+            <SignalLifecycle />
+
+            <SignalHistoryTable />
+
             <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
               <ChartPreview />
 
@@ -571,6 +862,8 @@ export default function DashboardRedesignPreviewPage() {
                 </div>
               </div>
             </section>
+
+            <MissingDriversPanel />
 
             <div className="rounded-2xl border border-gold/20 bg-gold/5 p-4 text-sm leading-6 text-gold">
               <Zap className="mr-2 inline h-4 w-4" />
