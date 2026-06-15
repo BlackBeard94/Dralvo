@@ -73,7 +73,7 @@ export function ThesisTimeline() {
           <History className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-gold">
+          <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
             {copy.timeline.eyebrow}
           </p>
           <h2 className="mt-1 font-display text-xl text-text-primary">
@@ -122,7 +122,7 @@ export function ThesisTimeline() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <time
                   dateTime={entry.generatedAt}
-                  className="font-mono text-[10px] text-text-muted"
+                  className="font-mono text-[12px] text-text-muted"
                 >
                   {new Date(entry.generatedAt).toLocaleDateString(
                     locale === "pt-BR" ? "pt-BR" : locale,
@@ -130,7 +130,7 @@ export function ThesisTimeline() {
                 </time>
                 <span
                   className={cn(
-                    "text-[10px] uppercase tracking-wider",
+                    "text-[12px] uppercase tracking-wider",
                     stateTone[entry.state],
                   )}
                 >

@@ -81,7 +81,7 @@ export function DriverHistoryPanel({
     <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-4 py-3">
         <div>
-          <p className="text-[9px] uppercase tracking-[0.16em] text-gold">
+          <p className="text-[13px] uppercase tracking-[0.16em] text-gold">
             {isGld
               ? copy.holdingsHistory
               : isTips
@@ -105,7 +105,7 @@ export function DriverHistoryPanel({
             <p className="font-mono text-lg text-text-primary">
               P{history.summary.percentile}
             </p>
-            <p className="text-[9px] uppercase tracking-wider text-text-muted">
+            <p className="text-[13px] uppercase tracking-wider text-text-muted">
               {copy.percentile}
             </p>
           </div>
@@ -182,7 +182,7 @@ export function DriverHistoryPanel({
 
       {history?.limited && (
         <div className="flex items-center justify-between gap-3 border-t border-border bg-gold/[0.03] px-4 py-3">
-          <p className="flex items-center gap-2 text-[10px] text-text-muted">
+          <p className="flex items-center gap-2 text-[12px] text-text-muted">
             <Lock className="h-3 w-3 text-gold" />
             {isGld
               ? copy.limitedGldHistory
@@ -194,7 +194,7 @@ export function DriverHistoryPanel({
           </p>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-1 text-[10px] font-semibold text-gold no-underline"
+            className="inline-flex items-center gap-1 text-[12px] font-semibold text-gold no-underline"
           >
             {copy.unlockHistory}
             <ArrowUpRight className="h-3 w-3" />
@@ -229,7 +229,7 @@ function Metric({
           })}`;
   return (
     <div>
-      <p className="text-[9px] uppercase tracking-wider text-text-muted">{label}</p>
+      <p className="text-[13px] uppercase tracking-wider text-text-muted">{label}</p>
       <p className="mt-1 font-mono text-xs text-text-primary">{formatted}</p>
     </div>
   );

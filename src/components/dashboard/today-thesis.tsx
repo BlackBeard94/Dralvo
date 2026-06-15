@@ -67,14 +67,14 @@ function DriverRow({
             <h3 className="text-sm font-medium text-text-primary">
               {driver.label}
             </h3>
-            <span className="rounded-full border border-border px-2 py-0.5 text-[9px] uppercase tracking-wider text-text-muted">
+            <span className="rounded-full border border-border px-2 py-0.5 text-[13px] uppercase tracking-wider text-text-muted">
               {states[driver.state]}
             </span>
           </div>
           <p className="mt-2 text-xs leading-5 text-text-secondary">
             {driver.evidence}
           </p>
-          <p className="mt-2 text-[10px] leading-4 text-text-muted">
+          <p className="mt-2 text-[12px] leading-4 text-text-muted">
             Rule: {driver.rule}
           </p>
         </div>
@@ -129,7 +129,7 @@ export function TodayThesis() {
     <section className="rounded-2xl border border-border bg-surface p-5 md:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-gold">
+          <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
             {copy.today.eyebrow}
           </p>
           <h2 className="mt-2 font-display text-2xl text-text-primary">
@@ -142,7 +142,7 @@ export function TodayThesis() {
         <div className="flex items-center gap-3">
           <span
             className={cn(
-              "rounded-full border px-3 py-1 text-[10px] uppercase tracking-wider",
+              "rounded-full border px-3 py-1 text-[12px] uppercase tracking-wider",
               stateStyle[displayThesis.state],
             )}
           >
@@ -167,7 +167,7 @@ export function TodayThesis() {
           [copy.today.coverage[3], displayThesis.coverage.missing],
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg border border-border bg-card px-3 py-2">
-            <p className="text-[9px] uppercase tracking-wider text-text-muted">
+            <p className="text-[13px] uppercase tracking-wider text-text-muted">
               {label}
             </p>
             <p className="mt-1 font-mono text-lg text-text-primary">{value}</p>
@@ -185,7 +185,7 @@ export function TodayThesis() {
           <div className="flex items-start gap-3">
             <GitCompareArrows className="mt-0.5 h-4 w-4 shrink-0" />
             <div>
-              <p className="text-[10px] uppercase tracking-[0.14em] opacity-75">
+              <p className="text-[12px] uppercase tracking-[0.14em] opacity-75">
                 {copy.today.relationshipHeading}
               </p>
               <h3 className="mt-1 font-display text-lg text-text-primary">
@@ -216,7 +216,7 @@ export function TodayThesis() {
         </ul>
       </div>
 
-      <p className="mt-4 text-[10px] text-text-muted">
+      <p className="mt-4 text-[12px] text-text-muted">
         {copy.today.methodology} {displayThesis.methodologyVersion} ·{" "}
         {copy.today.generated}{" "}
         {new Date(displayThesis.generatedAt).toLocaleString(

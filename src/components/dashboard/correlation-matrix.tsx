@@ -7,7 +7,7 @@ export function CorrelationMatrix() {
     <section className="rounded-2xl border border-border bg-surface p-6 md:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
-          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-gold">
+          <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-gold">
             <ShieldAlert className="h-4 w-4" />
             Verification gate
           </div>

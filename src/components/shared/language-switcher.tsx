@@ -27,7 +27,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      className={cn("theme-toggle gap-1.5 px-2 text-[11px] font-semibold", className)}
+      className={cn("theme-toggle gap-1.5 px-2 text-[13px] font-semibold", className)}
       onClick={switchLocale}
       aria-label={`Switch language. Current language: ${LOCALE_LABELS[locale]}`}
       title={LOCALE_LABELS[locale]}

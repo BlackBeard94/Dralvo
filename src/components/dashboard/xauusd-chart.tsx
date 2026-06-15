@@ -131,7 +131,7 @@ export function XauusdChart() {
     <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_28px_70px_rgba(0,0,0,0.22)]">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-card px-5 py-4">
         <div>
-          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-text-muted">
+          <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-text-muted">
             <span className="h-2 w-2 rounded-full bg-green" />
             XAUUSD · Twelve Data · 4H
           </div>
@@ -154,7 +154,7 @@ export function XauusdChart() {
 
         <div className="flex gap-6 text-xs">
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-text-muted">
+            <p className="text-[12px] uppercase tracking-wider text-text-muted">
               Loaded high
             </p>
             <p className="mt-1 font-mono text-text-primary">
@@ -162,7 +162,7 @@ export function XauusdChart() {
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-text-muted">
+            <p className="text-[12px] uppercase tracking-wider text-text-muted">
               Loaded low
             </p>
             <p className="mt-1 font-mono text-text-primary">
@@ -247,7 +247,7 @@ export function XauusdChart() {
           />
         </svg>
 
-        <p className="mt-2 text-center font-mono text-[10px] text-text-muted">
+        <p className="mt-2 text-center font-mono text-[12px] text-text-muted">
           {candles.length} verified 4H candles · no synthetic volume · no
           simulated fallback
         </p>

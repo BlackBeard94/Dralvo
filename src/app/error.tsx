@@ -10,7 +10,7 @@ export default function RootError({
   return (
     <main className="flex min-h-dvh items-center justify-center bg-deep px-6 text-text-primary">
       <div className="max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl shadow-black/30">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-gold">
+        <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
           Application error
         </p>
         <h1 className="mt-3 font-display text-3xl">
@@ -20,7 +20,7 @@ export default function RootError({
           Reload this view. If it repeats, check the latest deployment logs.
         </p>
         {error.digest && (
-          <p className="mt-3 font-mono text-[11px] text-text-muted">
+          <p className="mt-3 font-mono text-[13px] text-text-muted">
             Digest: {error.digest}
           </p>
         )}

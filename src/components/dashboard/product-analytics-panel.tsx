@@ -60,7 +60,7 @@ export function ProductAnalyticsPanel() {
             <h2 className="font-display text-lg text-text-primary">
               Product validation
             </h2>
-            <p className="text-[10px] text-text-muted">
+            <p className="text-[12px] text-text-muted">
               First-party cohort and workflow analytics
             </p>
           </div>
@@ -69,7 +69,7 @@ export function ProductAnalyticsPanel() {
           type="button"
           onClick={() => void load()}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[11px] font-semibold text-text-secondary hover:border-border-gold hover:text-gold disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[13px] font-semibold text-text-secondary hover:border-border-gold hover:text-gold disabled:opacity-50"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           Refresh
@@ -109,7 +109,7 @@ export function ProductAnalyticsPanel() {
               {Object.entries(summary.funnel).map(([event, users]) => (
                 <div key={event}>
                   <div className="font-mono text-lg text-text-primary">{users}</div>
-                  <div className="text-[9px] text-text-muted">
+                  <div className="text-[13px] text-text-muted">
                     {event.replaceAll("_", " ")}
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export function ProductAnalyticsPanel() {
             </div>
           </div>
 
-          <p className="mt-3 text-[10px] leading-4 text-text-muted">
+          <p className="mt-3 text-[12px] leading-4 text-text-muted">
             Retention uses the first observed product event as the cohort start
             and only includes users whose full week-4 or week-8 window has
             closed.
@@ -135,7 +135,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="font-mono text-2xl text-text-primary">{value}</div>
-      <div className="mt-1 text-[10px] uppercase tracking-[0.1em] text-text-muted">
+      <div className="mt-1 text-[12px] uppercase tracking-[0.1em] text-text-muted">
         {label}
       </div>
     </div>
@@ -153,7 +153,7 @@ function RetentionMetric({
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="font-mono text-2xl text-gold">{formatRate(data.rate)}</div>
       <div className="mt-1 text-xs text-text-secondary">{label}</div>
-      <div className="mt-2 text-[10px] text-text-muted">
+      <div className="mt-2 text-[12px] text-text-muted">
         {data.retainedUsers} retained / {data.eligibleUsers} eligible
       </div>
     </div>

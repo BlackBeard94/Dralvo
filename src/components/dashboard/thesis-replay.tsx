@@ -56,7 +56,7 @@ export function ThesisReplay({ isPro }: { isPro: boolean }) {
   return (
     <div className="mx-auto max-w-[1100px] space-y-5">
       <div>
-        <p className="text-[10px] uppercase tracking-[0.18em] text-gold">
+        <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
           {copy.eyebrow}
         </p>
         <h1 className="mt-2 font-display text-3xl text-text-primary">
@@ -111,7 +111,7 @@ export function ThesisReplay({ isPro }: { isPro: boolean }) {
             <section className="rounded-2xl border border-border bg-surface p-5 md:p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-mono text-[10px] text-text-muted">
+                  <p className="font-mono text-[12px] text-text-muted">
                     {evidenceCount} {copy.evidenceCount}
                   </p>
                   <h2 className="mt-2 font-display text-2xl text-text-primary">
@@ -123,7 +123,7 @@ export function ThesisReplay({ isPro }: { isPro: boolean }) {
                 </div>
                 <span
                   className={cn(
-                    "rounded-full border px-3 py-1 text-[10px] uppercase tracking-wider",
+                    "rounded-full border px-3 py-1 text-[12px] uppercase tracking-wider",
                     tone[displayThesis.state],
                   )}
                 >
@@ -141,7 +141,7 @@ export function ThesisReplay({ isPro }: { isPro: boolean }) {
                       <h3 className="text-sm text-text-primary">
                         {driver.label}
                       </h3>
-                      <span className="text-[9px] uppercase tracking-wider text-gold">
+                      <span className="text-[13px] uppercase tracking-wider text-gold">
                         {states[driver.state]}
                       </span>
                     </div>

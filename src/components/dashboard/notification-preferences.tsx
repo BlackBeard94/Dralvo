@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -165,7 +165,7 @@ export function NotificationPreferences({ className }: Props) {
             </div>
             <div>
               <p className="font-mono text-sm text-text-primary">Email</p>
-              <p className="font-mono text-[11px] text-text-muted">Alert emails to your account email</p>
+              <p className="font-mono text-[13px] text-text-muted">Alert emails to your account email</p>
             </div>
           </div>
           <button
@@ -192,7 +192,7 @@ export function NotificationPreferences({ className }: Props) {
             </div>
             <div>
               <p className="font-mono text-sm text-text-primary">Telegram</p>
-              <p className="font-mono text-[11px] text-text-muted">
+              <p className="font-mono text-[13px] text-text-muted">
                 {status?.isConnected
                   ? "Connected - instant alerts via Telegram"
                   : "Connect your Telegram to receive alerts"}
@@ -201,13 +201,13 @@ export function NotificationPreferences({ className }: Props) {
           </div>
           {status?.isConnected ? (
             <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1 font-mono text-[11px] text-green">
+              <span className="flex items-center gap-1 font-mono text-[13px] text-green">
                 <Check className="w-3 h-3" /> Connected
               </span>
               <button
                 onClick={disconnectTelegram}
                 disabled={disconnecting}
-                className="font-mono text-[11px] text-red hover:text-red/80 transition-colors"
+                className="font-mono text-[13px] text-red hover:text-red/80 transition-colors"
               >
                 {disconnecting ? "..." : "Disconnect"}
               </button>
@@ -238,7 +238,7 @@ export function NotificationPreferences({ className }: Props) {
             </div>
             <div>
               <p className="font-mono text-sm text-text-primary">In-App</p>
-              <p className="font-mono text-[11px] text-text-muted">Show notifications in dashboard</p>
+              <p className="font-mono text-[13px] text-text-muted">Show notifications in dashboard</p>
             </div>
           </div>
           <button
@@ -318,7 +318,7 @@ export function NotificationPreferences({ className }: Props) {
       </div>
 
       {testMessage && (
-        <p className="rounded-md border border-border bg-surface/60 px-3 py-2 font-mono text-[11px] text-text-secondary">
+        <p className="rounded-md border border-border bg-surface/60 px-3 py-2 font-mono text-[13px] text-text-secondary">
           {testMessage}
         </p>
       )}

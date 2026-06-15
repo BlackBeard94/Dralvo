@@ -68,14 +68,14 @@ export function SiteFooter() {
         </div>
 
         <div className="pt-8 border-t border-border flex items-center justify-between max-sm:flex-col max-sm:gap-4">
-          <p className="text-[11px] text-text-muted">
+          <p className="text-[13px] text-text-muted">
             (c) 2026 Dralvo. All rights reserved.
           </p>
           <a
             href="https://deerflow.tech"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-full text-[11px] text-text-muted no-underline transition-all duration-300 hover:border-border-gold hover:text-text-secondary"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-full text-[13px] text-text-muted no-underline transition-all duration-300 hover:border-border-gold hover:text-text-secondary"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-gold" /> Created By Deerflow
           </a>
@@ -94,7 +94,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted mb-4">
+      <div className="text-[13px] tracking-[0.15em] uppercase text-text-muted mb-4">
         {title}
       </div>
       <div className="flex flex-col gap-2">

@@ -392,7 +392,7 @@ export default function PricingPage() {
 
           <div className="max-w-[900px] mx-auto px-6 relative z-10 text-center">
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-border-gold rounded-full text-[11px] tracking-[0.15em] uppercase text-gold mb-8 bg-gold/5 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-border-gold rounded-full text-[13px] tracking-[0.15em] uppercase text-gold mb-8 bg-gold/5 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-gold animate-shimmer" />
               {pageCopy.eyebrow}
             </div>
@@ -849,7 +849,7 @@ function PricingCard({
 
       {/* Badge */}
       {badge && (
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-gold-action text-[#060609] text-[11px] font-semibold rounded-full tracking-[0.05em] shadow-[0_4px_16px_rgba(212,168,67,0.3)]">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-gold-action text-[#060609] text-[13px] font-semibold rounded-full tracking-[0.05em] shadow-[0_4px_16px_rgba(212,168,67,0.3)]">
           {badge}
         </div>
       )}

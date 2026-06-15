@@ -446,7 +446,7 @@ export default function Home() {
             <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(360px,1fr)] gap-12 items-center max-lg:grid-cols-1">
               <div>
                 {/* Eyebrow — only one on the entire page */}
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-border-gold rounded-full text-[11px] tracking-[0.15em] uppercase text-gold mb-8 bg-gold/5 backdrop-blur-sm">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-border-gold rounded-full text-[13px] tracking-[0.15em] uppercase text-gold mb-8 bg-gold/5 backdrop-blur-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-gold animate-shimmer" />
                   {localized.productCategory}
                 </div>
@@ -659,18 +659,18 @@ export default function Home() {
                       <div className="w-2 h-2 rounded-full bg-gold-bright/70" />
                       <div className="w-2 h-2 rounded-full bg-green/70" />
                     </div>
-                    <span className="text-[10px] text-text-muted font-mono ml-2">{pageCopy.workflowTitle}</span>
+                    <span className="text-[12px] text-text-muted font-mono ml-2">{pageCopy.workflowTitle}</span>
                   </div>
                   <div className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-xs text-text-muted">{pageCopy.todayThesis}</span>
-                      <span className="rounded-full border border-gold/30 bg-gold/10 px-2.5 py-1 text-[10px] uppercase tracking-wider text-gold">Mixed</span>
+                      <span className="rounded-full border border-gold/30 bg-gold/10 px-2.5 py-1 text-[12px] uppercase tracking-wider text-gold">Mixed</span>
                     </div>
                     <div className="h-px bg-border" />
                     <div className="space-y-3">
                       {pageCopy.workflowRows.map(([label, value, cls]) => (
                         <div key={label} className="flex items-center justify-between">
-                          <span className="font-mono text-[11px] text-text-muted">{label}</span>
+                          <span className="font-mono text-[13px] text-text-muted">{label}</span>
                           <span className={cn("font-mono text-xs font-medium", cls || "text-text-primary")}>
                             {value}
                           </span>
@@ -678,7 +678,7 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="h-px bg-border" />
-                    <p className="text-center text-[10px] leading-4 text-text-muted font-mono">
+                    <p className="text-center text-[12px] leading-4 text-text-muted font-mono">
                       {pageCopy.illustrative}
                     </p>
                   </div>
@@ -723,7 +723,7 @@ function Stat({ value, label, large = false }: { value: string; label: string; l
         )}
         <span className="relative">{value}</span>
       </div>
-      <div className="text-[11px] text-text-muted mt-2 uppercase tracking-[0.12em]">{label}</div>
+      <div className="text-[13px] text-text-muted mt-2 uppercase tracking-[0.12em]">{label}</div>
     </div>
   );
 }
@@ -889,7 +889,7 @@ function PricingCard({
       {highlighted && (
         <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
       )}
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-card border border-border text-gold text-[11px] font-semibold rounded-full tracking-[0.05em]">
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-card border border-border text-gold text-[13px] font-semibold rounded-full tracking-[0.05em]">
         {label}
       </div>
       <h3 className="font-display text-xl text-text-primary mb-2">{name}</h3>
@@ -955,7 +955,7 @@ function DocCard({
         )}
       >
         {content}
-        <p className="text-[11px] text-gold mt-5">{readLabel}</p>
+        <p className="text-[13px] text-gold mt-5">{readLabel}</p>
       </div>
     );
   }
@@ -970,7 +970,7 @@ function DocCard({
       )}
     >
       {content}
-      <p className="text-[11px] text-gold mt-5">{openLabel}</p>
+      <p className="text-[13px] text-gold mt-5">{openLabel}</p>
     </Link>
   );
 }

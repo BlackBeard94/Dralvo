@@ -227,7 +227,7 @@ export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientPr
               <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
                 XAUUSD Price Chart
               </h2>
-              <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
+              <span className="text-[12px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
                 Verified 4H candles · provider-backed
               </span>
             </div>
@@ -241,14 +241,14 @@ export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientPr
               <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
                 Optional Technical Context
               </h2>
-              <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
+              <span className="text-[12px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
                 Not part of the thesis score
               </span>
               {isPro && (
                 <a
                   href="/api/export/csv"
                   download
-                  className="ml-auto flex items-center gap-1.5 rounded-md border border-border-gold/30 px-3 py-1.5 font-mono text-[11px] text-gold no-underline transition-all duration-200 hover:border-border-gold hover:bg-gold/10"
+                  className="ml-auto flex items-center gap-1.5 rounded-md border border-border-gold/30 px-3 py-1.5 font-mono text-[13px] text-gold no-underline transition-all duration-200 hover:border-border-gold hover:bg-gold/10"
                 >
                   <Download className="h-3 w-3" />
                   Export evidence CSV
@@ -293,11 +293,11 @@ export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientPr
               <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
                 Thesis Monitors
               </h2>
-              <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
+              <span className="text-[12px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
                 Thesis, driver, and evidence conditions
               </span>
               {!isPro && (
-                <span className="text-[10px] text-text-muted flex items-center gap-1 ml-auto">
+                <span className="text-[12px] text-text-muted flex items-center gap-1 ml-auto">
                   <Lock className="w-3 h-3" />
                   Pro feature
                 </span>
@@ -344,7 +344,7 @@ export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientPr
                 <h2 className="font-display text-lg text-text-primary tracking-[-0.01em]">
                   Notifications
                 </h2>
-                <span className="text-[10px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
+                <span className="text-[12px] tracking-[0.14em] uppercase text-text-muted mt-0.5">
                   Alert history & channels
                 </span>
               </div>

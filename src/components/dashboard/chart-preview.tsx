@@ -45,14 +45,14 @@ export function ChartPreview() {
       <div className="relative">
         <div className="flex items-center justify-between border-b border-border bg-card/80 px-5 py-4">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.2em] text-text-muted">
+            <p className="text-[13px] uppercase tracking-[0.2em] text-text-muted">
               Product preview / illustrative
             </p>
             <p className="mt-1 font-mono text-xs text-text-secondary">
               Today&apos;s gold thesis
             </p>
           </div>
-          <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[9px] uppercase tracking-[0.14em] text-gold">
+          <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[13px] uppercase tracking-[0.14em] text-gold">
             Mixed
           </span>
         </div>
@@ -85,10 +85,10 @@ export function ChartPreview() {
                     </span>
                     <Icon className={`h-4 w-4 ${driver.tone}`} />
                   </div>
-                  <p className={`mt-2 text-[10px] uppercase tracking-wider ${driver.tone}`}>
+                  <p className={`mt-2 text-[12px] uppercase tracking-wider ${driver.tone}`}>
                     {driver.state}
                   </p>
-                  <p className="mt-1 text-[10px] leading-4 text-text-muted">
+                  <p className="mt-1 text-[12px] leading-4 text-text-muted">
                     {driver.detail}
                   </p>
                 </div>
@@ -97,7 +97,7 @@ export function ChartPreview() {
           </div>
 
           <div className="mt-5 rounded-xl border border-border-gold/30 bg-gold/5 p-4">
-            <p className="text-[9px] uppercase tracking-[0.16em] text-gold">
+            <p className="text-[13px] uppercase tracking-[0.16em] text-gold">
               Thesis changes when
             </p>
             <p className="mt-2 text-xs leading-5 text-text-secondary">
@@ -106,7 +106,7 @@ export function ChartPreview() {
             </p>
           </div>
 
-          <p className="mt-4 text-[9px] text-text-muted">
+          <p className="mt-4 text-[13px] text-text-muted">
             Example layout only. Production values appear only from verified
             source ingestion. Not a buy/sell signal.
           </p>

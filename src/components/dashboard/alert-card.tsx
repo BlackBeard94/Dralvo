@@ -94,7 +94,7 @@ export function AlertCard({ alert, onToggle, onEdit, onDelete }: Props) {
         </div>
       </div>
 
-      <p className="font-mono text-[10px] text-text-muted mt-3">
+      <p className="font-mono text-[12px] text-text-muted mt-3">
         Created {new Date(alert.created_at).toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",

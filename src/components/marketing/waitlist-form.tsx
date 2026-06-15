@@ -85,7 +85,7 @@ export function WaitlistForm() {
             ? "mt-4 text-sm text-red"
             : state.status === "success"
               ? "mt-4 text-sm text-green"
-              : "mt-4 text-[11px] text-text-muted"
+              : "mt-4 text-[13px] text-text-muted"
         }
       >
         {state.message || "Free starts without a card. Pro includes a 3-day trial."}

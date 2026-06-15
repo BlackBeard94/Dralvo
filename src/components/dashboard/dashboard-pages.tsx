@@ -40,7 +40,7 @@ function PageHeader({
 }) {
   return (
     <div className="mb-5 flex flex-col gap-2">
-      <span className="text-[10px] uppercase tracking-[0.18em] text-gold">
+      <span className="text-[12px] uppercase tracking-[0.18em] text-gold">
         {eyebrow}
       </span>
       <h1 className="font-display text-3xl text-text-primary tracking-[-0.02em]">
@@ -172,7 +172,7 @@ export function DriversPage() {
                   <DatabaseZap className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-text-muted">
+                  <p className="font-mono text-[13px] uppercase tracking-[0.16em] text-text-muted">
                     {driver.methodologyVersion}
                   </p>
                   <h2 className="mt-1 font-display text-xl text-text-primary">
@@ -180,13 +180,13 @@ export function DriversPage() {
                   </h2>
                 </div>
               </div>
-              <span className="rounded-full border border-green/30 bg-green/5 px-2.5 py-1 text-[9px] uppercase tracking-wider text-green">
+              <span className="rounded-full border border-green/30 bg-green/5 px-2.5 py-1 text-[13px] uppercase tracking-wider text-green">
                 {copy.implemented}
               </span>
             </div>
 
             <div className="mt-5 rounded-xl border border-border bg-card p-4">
-              <p className="text-[9px] uppercase tracking-[0.16em] text-gold">
+              <p className="text-[13px] uppercase tracking-[0.16em] text-gold">
                 {copy.decisionQuestion}
               </p>
               <p className="mt-2 text-sm leading-6 text-text-primary">
@@ -196,7 +196,7 @@ export function DriversPage() {
 
             <dl className="mt-5 grid gap-4 text-sm">
               <div>
-                <dt className="text-[10px] uppercase tracking-wider text-text-muted">
+                <dt className="text-[12px] uppercase tracking-wider text-text-muted">
                   {copy.interpretation}
                 </dt>
                 <dd className="mt-1 leading-6 text-text-secondary">
@@ -204,7 +204,7 @@ export function DriversPage() {
                 </dd>
               </div>
               <div>
-                <dt className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-text-muted">
+                <dt className="flex items-center gap-2 text-[12px] uppercase tracking-wider text-text-muted">
                   <ShieldAlert className="h-3.5 w-3.5 text-gold" />
                   {copy.limitations}
                 </dt>
@@ -213,7 +213,7 @@ export function DriversPage() {
                 </dd>
               </div>
               <div>
-                <dt className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-text-muted">
+                <dt className="flex items-center gap-2 text-[12px] uppercase tracking-wider text-text-muted">
                   <Clock3 className="h-3.5 w-3.5 text-gold" />
                   {copy.cadence}
                 </dt>
@@ -222,14 +222,14 @@ export function DriversPage() {
             </dl>
 
             <div className="mt-5 border-t border-border pt-4">
-              <p className="text-[10px] uppercase tracking-wider text-text-muted">
+              <p className="text-[12px] uppercase tracking-wider text-text-muted">
                 {copy.requiredSeries}
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {driver.requiredSeries.map((series) => (
                   <code
                     key={series}
-                    className="rounded-md border border-border bg-card px-2 py-1 text-[10px] text-text-secondary"
+                    className="rounded-md border border-border bg-card px-2 py-1 text-[12px] text-text-secondary"
                   >
                     {series}
                   </code>
@@ -271,7 +271,7 @@ export function DriversPage() {
             )}
             {driver.driverKey === "comex-gold-inventory" && (
               <div className="mt-5 rounded-xl border border-border bg-card px-4 py-3">
-                <p className="text-[9px] uppercase tracking-[0.16em] text-gold">
+                <p className="text-[13px] uppercase tracking-[0.16em] text-gold">
                   {copy.comexHistoryTitle}
                 </p>
                 <p className="mt-2 text-xs leading-5 text-text-muted">

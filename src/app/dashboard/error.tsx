@@ -9,7 +9,7 @@ export default function DashboardError({
 }) {
   return (
     <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-surface p-6">
-      <p className="text-[10px] uppercase tracking-[0.18em] text-gold">
+      <p className="text-[12px] uppercase tracking-[0.18em] text-gold">
         Dashboard error
       </p>
       <h1 className="mt-3 font-display text-3xl text-text-primary">
@@ -20,7 +20,7 @@ export default function DashboardError({
         provider logs for the route you opened.
       </p>
       {error.digest && (
-        <p className="mt-3 font-mono text-[11px] text-text-muted">
+        <p className="mt-3 font-mono text-[13px] text-text-muted">
           Digest: {error.digest}
         </p>
       )}

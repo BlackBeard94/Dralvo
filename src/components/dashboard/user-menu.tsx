@@ -208,14 +208,14 @@ export function UserMenu({
             </p>
             <span
               className={cn(
-                "inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase border",
+                "inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[12px] font-semibold tracking-wider uppercase border",
                 plan.className,
               )}
             >
               <PlanIcon size={10} />
               {plan.label}
             </span>
-            <p className="mt-2 text-[11px] text-text-muted">
+            <p className="mt-2 text-[13px] text-text-muted">
               {hasProAccess(planStatus)
                 ? copy.activeSubscription
                 : copy.upgradeDescription}

@@ -159,7 +159,7 @@ export function DashboardShell({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
               </span>
-              <span className="text-[11px] text-text-muted font-medium tracking-wider uppercase">
+              <span className="text-[13px] text-text-muted font-medium tracking-wider uppercase">
                 {navCopy.live}
               </span>
             </div>

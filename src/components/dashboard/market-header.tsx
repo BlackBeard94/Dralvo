@@ -93,7 +93,7 @@ export function MarketHeader() {
     return (
       <div className="flex min-h-20 items-center justify-between gap-4 rounded-xl border border-border bg-surface px-5 py-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">
+          <p className="text-[12px] uppercase tracking-[0.16em] text-text-muted">
             XAUUSD market context
           </p>
           <p className="mt-1 text-sm text-text-secondary">
@@ -111,7 +111,7 @@ export function MarketHeader() {
   return (
     <div className="flex flex-wrap items-center gap-x-8 gap-y-4 rounded-xl border border-border bg-surface px-5 py-4">
       <div>
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-text-muted">
+        <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-text-muted">
           <span className="h-2 w-2 rounded-full bg-green" />
           Twelve Data · 4H bars
         </div>
@@ -134,7 +134,7 @@ export function MarketHeader() {
 
       <div className="flex items-center gap-6 text-xs">
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-text-muted">
+          <p className="text-[12px] uppercase tracking-wider text-text-muted">
             Loaded range high
           </p>
           <p className="mt-1 font-mono text-text-primary">
@@ -142,7 +142,7 @@ export function MarketHeader() {
           </p>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-text-muted">
+          <p className="text-[12px] uppercase tracking-wider text-text-muted">
             Loaded range low
           </p>
           <p className="mt-1 font-mono text-text-primary">

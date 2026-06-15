@@ -29,11 +29,11 @@ export function IndicatorCard({
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
           <h3 className="font-display text-xl text-text-primary mb-1">{indicator.name}</h3>
-          <p className="text-[11px] text-text-muted font-mono">{indicator.source}</p>
+          <p className="text-[13px] text-text-muted font-mono">{indicator.source}</p>
         </div>
         <span
           className={cn(
-            "rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.14em]",
+            "rounded-full border px-3 py-1 text-[12px] uppercase tracking-[0.14em]",
             statusClasses[indicator.status]
           )}
         >
@@ -45,7 +45,7 @@ export function IndicatorCard({
         <div className="text-xs text-text-muted">{indicator.change}</div>
       </div>
       <p className="text-sm leading-relaxed text-text-secondary mb-5">{indicator.summary}</p>
-      <div className="flex items-center justify-between border-t border-border pt-4 text-[11px] text-text-muted">
+      <div className="flex items-center justify-between border-t border-border pt-4 text-[13px] text-text-muted">
         <span>{indicator.cadence}</span>
         <span>{indicator.observedLabel}</span>
       </div>

@@ -77,7 +77,7 @@ export function RunLogsPanel() {
           type="button"
           onClick={loadLogs}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[11px] font-semibold text-text-secondary hover:border-border-gold hover:text-gold disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[13px] font-semibold text-text-secondary hover:border-border-gold hover:text-gold disabled:opacity-50"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           Refresh
@@ -121,7 +121,7 @@ export function RunLogsPanel() {
                   </p>
                 )}
               </div>
-              <div className="shrink-0 text-right font-mono text-[11px] text-text-muted">
+              <div className="shrink-0 text-right font-mono text-[13px] text-text-muted">
                 <div>{formatTime(log.finished_at)}</div>
                 <div>{log.duration_ms ?? 0}ms</div>
               </div>

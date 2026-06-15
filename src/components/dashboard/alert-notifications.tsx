@@ -99,7 +99,7 @@ export function AlertNotifications({ className, maxItems = 5 }: Props) {
           <Bell className="w-4 h-4 text-gold" />
           <h3 className="font-display text-base text-text-primary">Recent Alerts</h3>
           {unreadCount > 0 && (
-            <span className="rounded-full bg-red px-2 py-0.5 font-mono text-[10px] font-medium text-white">
+            <span className="rounded-full bg-red px-2 py-0.5 font-mono text-[12px] font-medium text-white">
               {unreadCount} new
             </span>
           )}
@@ -107,7 +107,7 @@ export function AlertNotifications({ className, maxItems = 5 }: Props) {
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
-            className="font-mono text-[11px] text-text-muted hover:text-text-primary transition-colors flex items-center gap-1"
+            className="font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors flex items-center gap-1"
           >
             <Check className="w-3 h-3" />
             Mark all read
@@ -119,7 +119,7 @@ export function AlertNotifications({ className, maxItems = 5 }: Props) {
         <div className="py-6 text-center">
           <Bell className="w-8 h-8 text-text-muted mx-auto mb-2 opacity-40" />
           <p className="font-mono text-xs text-text-muted">No alerts triggered yet</p>
-          <p className="font-mono text-[10px] text-text-muted mt-1">
+          <p className="font-mono text-[12px] text-text-muted mt-1">
             Alerts will appear here when your conditions are met
           </p>
         </div>
@@ -158,7 +158,7 @@ export function AlertNotifications({ className, maxItems = 5 }: Props) {
                       <span className="font-mono text-xs font-medium text-text-primary">
                         {notif.triggered_value}
                       </span>
-                      <span className="font-mono text-[10px] text-text-muted flex items-center gap-1">
+                      <span className="font-mono text-[12px] text-text-muted flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {new Date(notif.triggered_at).toLocaleString("en-US", {
                           month: "short",
@@ -174,7 +174,7 @@ export function AlertNotifications({ className, maxItems = 5 }: Props) {
                 {!notif.read && (
                   <button
                     onClick={() => markAsRead(notif.id)}
-                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[10px] text-text-muted hover:text-text-primary"
+                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[12px] text-text-muted hover:text-text-primary"
                     title="Mark as read"
                   >
                     <Check className="w-3.5 h-3.5" />
@@ -187,7 +187,7 @@ export function AlertNotifications({ className, maxItems = 5 }: Props) {
       )}
 
       {notifications.length > maxItems && (
-        <p className="text-center font-mono text-[11px] text-text-muted">
+        <p className="text-center font-mono text-[13px] text-text-muted">
           +{notifications.length - maxItems} more alerts
         </p>
       )}

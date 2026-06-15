@@ -147,7 +147,7 @@ export default function MethodologyPage() {
           <GridPattern />
           <GlowOrb className="h-[600px] w-[600px] -right-48 -top-48" />
           <div className="relative z-10 mx-auto max-w-[980px] px-6">
-            <div className="mb-7 inline-flex rounded-full border border-border-gold bg-gold/5 px-4 py-1.5 text-[11px] uppercase tracking-[0.15em] text-gold">
+            <div className="mb-7 inline-flex rounded-full border border-border-gold bg-gold/5 px-4 py-1.5 text-[13px] uppercase tracking-[0.15em] text-gold">
               {pageCopy.badge}
             </div>
             <h1 className="max-w-[800px] font-display text-[clamp(44px,7vw,76px)] font-normal leading-[1.04] tracking-[-0.03em]">
@@ -170,24 +170,24 @@ export default function MethodologyPage() {
                 <article key={driver.driverKey} className="rounded-2xl border border-border bg-surface p-7">
                   <div className="mb-5 flex items-start justify-between gap-4">
                     <div>
-                      <div className="font-mono text-[11px] text-gold">0{index + 1}</div>
+                      <div className="font-mono text-[13px] text-gold">0{index + 1}</div>
                       <h3 className="mt-2 font-display text-2xl">{driver.label}</h3>
                     </div>
-                    <span className="rounded-full border border-green/30 bg-green/10 px-3 py-1 text-[10px] uppercase tracking-wider text-green">
+                    <span className="rounded-full border border-green/30 bg-green/10 px-3 py-1 text-[12px] uppercase tracking-wider text-green">
                       Production
                     </span>
                   </div>
                   <dl className="space-y-4 text-sm">
                     <div>
-                      <dt className="mb-1 text-[11px] uppercase tracking-wider text-text-muted">{pageCopy.cadence}</dt>
+                      <dt className="mb-1 text-[13px] uppercase tracking-wider text-text-muted">{pageCopy.cadence}</dt>
                       <dd className="text-text-secondary">{driver.cadence}</dd>
                     </div>
                     <div>
-                      <dt className="mb-1 text-[11px] uppercase tracking-wider text-text-muted">{pageCopy.question}</dt>
+                      <dt className="mb-1 text-[13px] uppercase tracking-wider text-text-muted">{pageCopy.question}</dt>
                       <dd className="text-text-secondary">{driver.decisionQuestion}</dd>
                     </div>
                     <div>
-                      <dt className="mb-1 text-[11px] uppercase tracking-wider text-text-muted">{pageCopy.limitation}</dt>
+                      <dt className="mb-1 text-[13px] uppercase tracking-wider text-text-muted">{pageCopy.limitation}</dt>
                       <dd className="text-text-secondary">{driver.limitations}</dd>
                     </div>
                   </dl>

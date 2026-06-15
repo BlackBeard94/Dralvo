@@ -379,7 +379,7 @@ export function IndicatorDetailCard({
         <div className="flex shrink-0 items-center gap-1.5">
           <span
             className={cn(
-              "rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
+              "rounded-full border px-2.5 py-0.5 text-[12px] font-medium uppercase tracking-[0.12em]",
               quality.className,
             )}
             title={indicator.qualityNote ?? `Data quality: ${quality.label}`}
@@ -388,7 +388,7 @@ export function IndicatorDetailCard({
           </span>
           <span
             className={cn(
-              "rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
+              "rounded-full border px-2.5 py-0.5 text-[12px] font-medium uppercase tracking-[0.12em]",
               category.className,
             )}
           >
@@ -403,7 +403,7 @@ export function IndicatorDetailCard({
           <span className="font-mono text-3xl font-semibold tracking-tight text-[var(--gold-bright)]">
             {indicator.value}
           </span>
-          <span className="mt-0.5 text-[11px] text-[var(--text-muted)] font-mono">
+          <span className="mt-0.5 text-[13px] text-[var(--text-muted)] font-mono">
             {indicator.cadence}
           </span>
         </div>
@@ -431,14 +431,14 @@ export function IndicatorDetailCard({
       {/* Sparkline chart */}
       <div className="relative -mx-1">
         <div className="mb-1 flex items-center justify-between px-1">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          <span className="text-[12px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
             {hasSnapshotHistory
               ? "Snapshot history"
               : hasSourceSeries
                 ? "Source series"
                 : "Collecting history"}
           </span>
-          <span className="rounded-full border border-[var(--bg-border)] px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          <span className="rounded-full border border-[var(--bg-border)] px-2 py-0.5 text-[13px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
             {sparkData.length} point{sparkData.length === 1 ? "" : "s"}
           </span>
         </div>
@@ -477,7 +477,7 @@ export function IndicatorDetailCard({
       {/* Mini stats row */}
       <div className="grid grid-cols-3 gap-2 border-t border-[var(--bg-border)] pt-3.5">
         <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+          <span className="text-[12px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
             History High
           </span>
           <span className="font-mono text-xs font-medium text-[var(--text-primary)]">
@@ -485,7 +485,7 @@ export function IndicatorDetailCard({
           </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+          <span className="text-[12px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
             History Low
           </span>
           <span className="font-mono text-xs font-medium text-[var(--text-primary)]">
@@ -493,7 +493,7 @@ export function IndicatorDetailCard({
           </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+          <span className="text-[12px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
             History Avg
           </span>
           <span className="font-mono text-xs font-medium text-[var(--text-primary)]">
@@ -503,7 +503,7 @@ export function IndicatorDetailCard({
       </div>
 
       {/* Footer: source + timestamp */}
-      <div className="flex items-center justify-between border-t border-[var(--bg-border)] pt-3 text-[10px] text-[var(--text-muted)]">
+      <div className="flex items-center justify-between border-t border-[var(--bg-border)] pt-3 text-[12px] text-[var(--text-muted)]">
         <span className="truncate max-w-[60%]" title={indicator.source}>
           {indicator.source}
         </span>
