@@ -9,7 +9,7 @@ const pagesWithHeaderToggle = new Set(["/", "/pricing"]);
 export function GlobalThemeToggle() {
   const pathname = usePathname();
 
-  if (pagesWithHeaderToggle.has(pathname)) {
+  if (pagesWithHeaderToggle.has(pathname) || pathname.startsWith("/dashboard")) {
     return null;
   }
 

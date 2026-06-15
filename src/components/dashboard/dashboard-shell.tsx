@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, Sun, Moon } from "lucide-react";
+import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { ProductAnalyticsTracker } from "@/components/dashboard/product-analytics-tracker";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
 
@@ -61,28 +63,6 @@ export function DashboardShell({
   /* ---- sidebar state ---- */
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  /* ---- theme ---- */
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      const stored = document.documentElement.getAttribute("data-theme") as
-        | "dark"
-        | "light"
-        | null;
-      if (stored === "light") setTheme("light");
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      return next;
-    });
-  }, []);
 
   /* ---- clock ---- */
   const [timeString, setTimeString] = useState(() => formatUTCTime(new Date()));
@@ -171,7 +151,7 @@ export function DashboardShell({
             </span>
           </div>
 
-          {/* Right: status, clock, theme, user */}
+          {/* Right: status, clock, language, theme, user */}
           <div className="flex items-center gap-3">
             {/* Connection status */}
             <div className="hidden sm:flex items-center gap-1.5">
@@ -193,24 +173,8 @@ export function DashboardShell({
               {timeString} UTC
             </time>
 
-            {/* Theme toggle */}
-            <button
-              type="button"
-              className={cn(
-                "flex items-center justify-center w-8 h-8 rounded-md",
-                "text-text-muted hover:text-gold hover:bg-gold/5",
-                "transition-colors duration-200",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
-              )}
-              onClick={toggleTheme}
-              aria-label={
-                theme === "dark"
-                  ? navCopy.switchToLight
-                  : navCopy.switchToDark
-              }
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            <LanguageSwitcher className="h-8 min-w-12" />
+            <ThemeToggle className="h-8 w-8" />
 
             {/* ── User menu ── */}
             {userEmail && (

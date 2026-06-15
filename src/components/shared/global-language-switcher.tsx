@@ -9,7 +9,7 @@ const pagesWithHeaderSwitcher = new Set(["/", "/pricing"]);
 export function GlobalLanguageSwitcher() {
   const pathname = usePathname();
 
-  if (pagesWithHeaderSwitcher.has(pathname)) {
+  if (pagesWithHeaderSwitcher.has(pathname) || pathname.startsWith("/dashboard")) {
     return null;
   }
 
