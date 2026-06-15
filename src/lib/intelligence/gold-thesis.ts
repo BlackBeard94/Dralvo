@@ -39,6 +39,25 @@ export type PriceRelationshipInsight = {
   summary: string;
 };
 
+export type TradeSimulationAction =
+  | "simulated_buy"
+  | "simulated_sell"
+  | "stand_aside";
+
+export type TradeSimulation = {
+  action: TradeSimulationAction;
+  bias: "bullish" | "bearish" | "neutral";
+  confidence: "high" | "medium" | "low";
+  priceBasis: number | null;
+  entryZone: { from: number; to: number } | null;
+  stopLoss: number | null;
+  takeProfit: [number, number] | null;
+  invalidation: number | null;
+  title: string;
+  summary: string;
+  rationale: string[];
+};
+
 export type GoldThesis = {
   state: ThesisState;
   title: string;
@@ -58,6 +77,7 @@ export type GoldThesis = {
   staleDrivers: ThesisDriverState[];
   missingDrivers: ThesisDriverState[];
   priceRelationship?: PriceRelationshipInsight;
+  tradeSimulation: TradeSimulation;
   changeConditions: string[];
 };
 
@@ -351,6 +371,118 @@ function buildPriceRelationship(
   };
 }
 
+function roundPrice(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+function confidenceFor(
+  available: number,
+  stale: number,
+  relationship: PriceRelationshipInsight,
+) {
+  if (available >= 5 && stale === 0 && relationship.state === "confirming") {
+    return "high" as const;
+  }
+  if (available >= 4 && relationship.state !== "insufficient_data") {
+    return "medium" as const;
+  }
+  return "low" as const;
+}
+
+function buildTradeSimulation({
+  state,
+  price,
+  priceRelationship,
+  supportingDrivers,
+  contradictingDrivers,
+  available,
+  stale,
+}: {
+  state: ThesisState;
+  price: number | null;
+  priceRelationship: PriceRelationshipInsight;
+  supportingDrivers: ThesisDriverState[];
+  contradictingDrivers: ThesisDriverState[];
+  available: number;
+  stale: number;
+}): TradeSimulation {
+  const confidence = confidenceFor(available, stale, priceRelationship);
+  const hasPrice = typeof price === "number" && Number.isFinite(price);
+  const shouldStandAside =
+    !hasPrice ||
+    state === "insufficient_data" ||
+    state === "mixed" ||
+    priceRelationship.state === "diverging" ||
+    priceRelationship.state === "insufficient_data";
+
+  if (shouldStandAside) {
+    return {
+      action: "stand_aside",
+      bias: "neutral",
+      confidence,
+      priceBasis: hasPrice ? price : null,
+      entryZone: null,
+      stopLoss: null,
+      takeProfit: null,
+      invalidation: null,
+      title: "Stand aside",
+      summary:
+        "Dralvo does not have enough aligned evidence to simulate a directional setup. Wait for cleaner data confirmation.",
+      rationale: [
+        `${available} of 5 required evidence groups are usable.`,
+        `${supportingDrivers.length} supportive drivers versus ${contradictingDrivers.length} adverse drivers.`,
+        `Price relationship: ${priceRelationship.state.replace("_", " ")}.`,
+      ],
+    };
+  }
+
+  if (state === "supportive") {
+    return {
+      action: "simulated_buy",
+      bias: "bullish",
+      confidence,
+      priceBasis: price,
+      entryZone: {
+        from: roundPrice(price * 0.9975),
+        to: roundPrice(price * 1.0005),
+      },
+      stopLoss: roundPrice(price * 0.994),
+      takeProfit: [roundPrice(price * 1.004), roundPrice(price * 1.008)],
+      invalidation: roundPrice(price * 0.994),
+      title: "Simulated BUY setup",
+      summary:
+        "The evidence balance leans supportive and price is not fighting the thesis. Treat this as a planning scenario, not an order instruction.",
+      rationale: [
+        `${supportingDrivers.length} drivers support gold versus ${contradictingDrivers.length} adverse drivers.`,
+        `Price relationship: ${priceRelationship.state.replace("_", " ")}.`,
+        "Risk plan is derived from the latest XAUUSD close, not live order-book liquidity.",
+      ],
+    };
+  }
+
+  return {
+    action: "simulated_sell",
+    bias: "bearish",
+    confidence,
+    priceBasis: price,
+    entryZone: {
+      from: roundPrice(price * 0.9995),
+      to: roundPrice(price * 1.0025),
+    },
+    stopLoss: roundPrice(price * 1.006),
+    takeProfit: [roundPrice(price * 0.996), roundPrice(price * 0.992)],
+    invalidation: roundPrice(price * 1.006),
+    title: "Simulated SELL setup",
+    summary:
+      "The evidence balance leans adverse and price is not fighting the thesis. Treat this as a planning scenario, not an order instruction.",
+    rationale: [
+      `${contradictingDrivers.length} drivers are adverse versus ${supportingDrivers.length} supportive drivers.`,
+      `Price relationship: ${priceRelationship.state.replace("_", " ")}.`,
+      "Risk plan is derived from the latest XAUUSD close, not live order-book liquidity.",
+    ],
+  };
+}
+
 export function buildGoldThesis(
   rows: EvidenceRow[],
   now = new Date(),
@@ -386,6 +518,11 @@ export function buildGoldThesis(
     fundamentals,
     fundamentalScore,
   );
+  const latestClose = point(
+    series,
+    "xauusd-price-context",
+    "xauusd_close_usd",
+  );
 
   let state: ThesisState;
   if (!priceAvailable || fundamentals.length < 3) {
@@ -412,6 +549,15 @@ export function buildGoldThesis(
     state === "insufficient_data"
       ? `Only ${fundamentals.length} of 4 fundamental driver groups are currently usable alongside price context.`
       : `${supportingDrivers.length} drivers are supportive, ${contradictingDrivers.length} are adverse, and ${neutralDrivers.length} are neutral.`;
+  const tradeSimulation = buildTradeSimulation({
+    state,
+    price: latestClose?.value ?? null,
+    priceRelationship,
+    supportingDrivers,
+    contradictingDrivers,
+    available: available.length,
+    stale: staleDrivers.length,
+  });
 
   return {
     state,
@@ -432,6 +578,7 @@ export function buildGoldThesis(
     staleDrivers,
     missingDrivers,
     priceRelationship,
+    tradeSimulation,
     changeConditions: [
       "A material reversal in 10Y real-yield direction.",
       "A material weekly change in Managed Money net positioning.",

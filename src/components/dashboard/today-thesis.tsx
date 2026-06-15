@@ -7,11 +7,15 @@ import {
   CircleMinus,
   GitCompareArrows,
   RefreshCw,
+  ShieldAlert,
+  Sparkles,
+  Target,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import type {
   GoldThesis,
+  TradeSimulation,
   ThesisDriverState,
 } from "@/lib/intelligence/gold-thesis";
 import { localizeThesis } from "@/lib/intelligence/localize-thesis";
@@ -32,6 +36,79 @@ const relationshipStyle = {
   neutral: "border-border bg-card text-text-secondary",
   insufficient_data: "border-border bg-card text-text-muted",
 } as const;
+
+const simulationStyle = {
+  simulated_buy: "border-green/40 bg-green/10 text-green",
+  simulated_sell: "border-red/40 bg-red/10 text-red",
+  stand_aside: "border-gold/40 bg-gold/10 text-gold",
+} as const;
+
+const simulationCopy = {
+  vi: {
+    eyebrow: "AI tóm tắt",
+    confidence: "Độ tin cậy",
+    priceBasis: "Giá tham chiếu",
+    entry: "Vùng vào",
+    stopLoss: "SL",
+    takeProfit: "TP mô phỏng",
+    invalidation: "Vô hiệu nếu",
+    noTrade: "Không mở vị thế",
+    details: "Xem bằng chứng chi tiết",
+    disclaimer: "Mô phỏng giáo dục, không phải khuyến nghị mua/bán.",
+    confidenceValues: {
+      high: "Cao",
+      medium: "Trung bình",
+      low: "Thấp",
+    },
+  },
+  en: {
+    eyebrow: "AI brief",
+    confidence: "Confidence",
+    priceBasis: "Reference price",
+    entry: "Entry zone",
+    stopLoss: "SL",
+    takeProfit: "Simulated TP",
+    invalidation: "Invalid if",
+    noTrade: "No position",
+    details: "View detailed evidence",
+    disclaimer: "Educational simulation, not a buy/sell recommendation.",
+    confidenceValues: {
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+    },
+  },
+  "pt-BR": {
+    eyebrow: "Resumo IA",
+    confidence: "Confiança",
+    priceBasis: "Preço de referência",
+    entry: "Zona de entrada",
+    stopLoss: "SL",
+    takeProfit: "TP simulado",
+    invalidation: "Invalida se",
+    noTrade: "Sem posição",
+    details: "Ver evidências detalhadas",
+    disclaimer: "Simulação educacional, não recomendação de compra/venda.",
+    confidenceValues: {
+      high: "Alta",
+      medium: "Media",
+      low: "Baixa",
+    },
+  },
+} as const;
+
+function formatPrice(value: number | null, locale: string) {
+  if (value === null) return "-";
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  }).format(value);
+}
+
+function formatRange(range: TradeSimulation["entryZone"], locale: string) {
+  if (!range) return "-";
+  return `${formatPrice(range.from, locale)} - ${formatPrice(range.to, locale)}`;
+}
 
 function DriverRow({
   driver,
@@ -78,6 +155,103 @@ function DriverRow({
             Rule: {driver.rule}
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SimulationCard({
+  simulation,
+  locale,
+}: {
+  simulation: TradeSimulation;
+  locale: keyof typeof simulationCopy;
+}) {
+  const copy = simulationCopy[locale];
+  const localeCode = locale === "pt-BR" ? "pt-BR" : locale;
+  const isDirectional = simulation.action !== "stand_aside";
+  const actionLabel =
+    simulation.action === "simulated_buy"
+      ? "BUY"
+      : simulation.action === "simulated_sell"
+        ? "SELL"
+        : copy.noTrade;
+
+  return (
+    <div className="mt-5 rounded-2xl border border-border-gold bg-gradient-to-br from-gold/10 via-card to-surface p-4 md:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-3xl">
+          <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-gold">
+            <Sparkles className="h-4 w-4" />
+            {copy.eyebrow}
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span
+              className={cn(
+                "rounded-full border px-4 py-1.5 text-sm font-semibold tracking-[0.12em]",
+                simulationStyle[simulation.action],
+              )}
+            >
+              {actionLabel}
+            </span>
+            <h3 className="font-display text-2xl text-text-primary">
+              {simulation.title}
+            </h3>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-text-secondary">
+            {simulation.summary}
+          </p>
+        </div>
+        <div className="rounded-xl border border-border bg-deep/60 px-4 py-3 text-right">
+          <p className="text-[12px] uppercase tracking-wider text-text-muted">
+            {copy.confidence}
+          </p>
+          <p className="mt-1 font-display text-xl text-text-primary">
+            {copy.confidenceValues[simulation.confidence]}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 md:grid-cols-5">
+        {[
+          [copy.priceBasis, formatPrice(simulation.priceBasis, localeCode)],
+          [
+            copy.entry,
+            isDirectional ? formatRange(simulation.entryZone, localeCode) : "-",
+          ],
+          [copy.stopLoss, formatPrice(simulation.stopLoss, localeCode)],
+          [
+            copy.takeProfit,
+            simulation.takeProfit
+              ? simulation.takeProfit
+                  .map((price) => formatPrice(price, localeCode))
+                  .join(" / ")
+              : "-",
+          ],
+          [copy.invalidation, formatPrice(simulation.invalidation, localeCode)],
+        ].map(([label, value]) => (
+          <div key={label} className="rounded-xl border border-border bg-card/80 p-3">
+            <p className="text-[12px] uppercase tracking-wider text-text-muted">
+              {label}
+            </p>
+            <p className="mt-2 font-mono text-sm text-text-primary">{value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+        <ul className="grid gap-2 text-xs leading-5 text-text-muted md:grid-cols-3">
+          {simulation.rationale.slice(0, 3).map((reason) => (
+            <li key={reason} className="flex gap-2">
+              <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
+              <span>{reason}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="flex items-center gap-2 rounded-lg border border-gold/20 bg-gold/5 px-3 py-2 text-[12px] text-gold">
+          <ShieldAlert className="h-4 w-4 shrink-0" />
+          {copy.disclaimer}
+        </p>
       </div>
     </div>
   );
@@ -159,6 +333,11 @@ export function TodayThesis() {
         </div>
       </div>
 
+      <SimulationCard
+        simulation={displayThesis.tradeSimulation}
+        locale={locale}
+      />
+
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
           [copy.today.coverage[0], displayThesis.coverage.available],
@@ -175,10 +354,15 @@ export function TodayThesis() {
         ))}
       </div>
 
+      <details className="mt-5 rounded-xl border border-border bg-card/60 p-4">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-gold">
+          {simulationCopy[locale].details}
+        </summary>
+
       {displayThesis.priceRelationship && (
         <div
           className={cn(
-            "mt-5 rounded-xl border p-4",
+            "mt-4 rounded-xl border p-4",
             relationshipStyle[displayThesis.priceRelationship.state],
           )}
         >
@@ -215,6 +399,7 @@ export function TodayThesis() {
           ))}
         </ul>
       </div>
+      </details>
 
       <p className="mt-4 text-[12px] text-text-muted">
         {copy.today.methodology} {displayThesis.methodologyVersion} ·{" "}

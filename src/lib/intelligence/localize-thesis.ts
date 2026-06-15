@@ -1,6 +1,7 @@
 import type {
   GoldThesis,
   PriceRelationshipInsight,
+  TradeSimulation,
   ThesisDriverState,
   ThesisState,
 } from "@/lib/intelligence/gold-thesis";
@@ -212,6 +213,104 @@ const RELATIONSHIP_COPY: Record<
   },
 };
 
+const SIMULATION_COPY: Record<
+  SupportedLocale,
+  Record<
+    TradeSimulation["action"],
+    { title: string; summary: string }
+  >
+> = {
+  vi: {
+    simulated_buy: {
+      title: "Mô phỏng BUY",
+      summary:
+        "Cán cân bằng chứng nghiêng về hỗ trợ và giá chưa đi ngược luận điểm. Đây là kịch bản mô phỏng để lập kế hoạch, không phải lệnh giao dịch.",
+    },
+    simulated_sell: {
+      title: "Mô phỏng SELL",
+      summary:
+        "Cán cân bằng chứng nghiêng về bất lợi và giá chưa đi ngược luận điểm. Đây là kịch bản mô phỏng để lập kế hoạch, không phải lệnh giao dịch.",
+    },
+    stand_aside: {
+      title: "Đứng ngoài",
+      summary:
+        "Dralvo chưa có đủ bằng chứng cùng chiều để mô phỏng một kịch bản có hướng. Chờ dữ liệu xác nhận rõ hơn.",
+    },
+  },
+  en: {
+    simulated_buy: {
+      title: "Simulated BUY setup",
+      summary:
+        "The evidence balance leans supportive and price is not fighting the thesis. Treat this as a planning scenario, not an order instruction.",
+    },
+    simulated_sell: {
+      title: "Simulated SELL setup",
+      summary:
+        "The evidence balance leans adverse and price is not fighting the thesis. Treat this as a planning scenario, not an order instruction.",
+    },
+    stand_aside: {
+      title: "Stand aside",
+      summary:
+        "Dralvo does not have enough aligned evidence to simulate a directional setup. Wait for cleaner data confirmation.",
+    },
+  },
+  "pt-BR": {
+    simulated_buy: {
+      title: "Setup BUY simulado",
+      summary:
+        "O balanço das evidências está favorável e o preço não contradiz a tese. Use como cenário de planejamento, não como instrução de ordem.",
+    },
+    simulated_sell: {
+      title: "Setup SELL simulado",
+      summary:
+        "O balanço das evidências está adverso e o preço não contradiz a tese. Use como cenário de planejamento, não como instrução de ordem.",
+    },
+    stand_aside: {
+      title: "Ficar de fora",
+      summary:
+        "A Dralvo ainda não tem evidências alinhadas suficientes para simular um setup direcional. Aguarde confirmação mais limpa.",
+    },
+  },
+};
+
+function localizeSimulation(
+  simulation: TradeSimulation,
+  thesis: GoldThesis,
+  locale: SupportedLocale,
+): TradeSimulation {
+  const copy = SIMULATION_COPY[locale][simulation.action];
+  const relationship = thesis.priceRelationship?.state.replace("_", " ") ?? "n/a";
+
+  if (locale === "en") {
+    return {
+      ...simulation,
+      ...copy,
+    };
+  }
+
+  if (locale === "pt-BR") {
+    return {
+      ...simulation,
+      ...copy,
+      rationale: [
+        `${thesis.supportingDrivers.length} drivers favoráveis contra ${thesis.contradictingDrivers.length} adversos.`,
+        `Relação de preço: ${relationship}.`,
+        "Plano de risco derivado do último fechamento XAUUSD, não da liquidez ao vivo.",
+      ],
+    };
+  }
+
+  return {
+    ...simulation,
+    ...copy,
+    rationale: [
+      `${thesis.supportingDrivers.length} driver hỗ trợ so với ${thesis.contradictingDrivers.length} driver bất lợi.`,
+      `Quan hệ giá: ${relationship}.`,
+      "Vùng giá được mô phỏng từ giá đóng cửa XAUUSD mới nhất, không phải thanh khoản live.",
+    ],
+  };
+}
+
 function summary(thesis: GoldThesis, locale: SupportedLocale) {
   const fundamentals = thesis.drivers.filter(
     (driver) =>
@@ -378,6 +477,7 @@ export function localizeThesis(
     staleDrivers: pick(thesis.staleDrivers),
     missingDrivers: pick(thesis.missingDrivers),
     priceRelationship,
+    tradeSimulation: localizeSimulation(thesis.tradeSimulation, thesis, locale),
     changeConditions: CHANGE_CONDITIONS[locale],
   };
 }

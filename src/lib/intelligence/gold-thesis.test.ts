@@ -65,6 +65,15 @@ describe("gold thesis engine", () => {
       priceDirection: "supportive",
       fundamentalDirection: "supportive",
     });
+    expect(thesis.tradeSimulation).toMatchObject({
+      action: "simulated_buy",
+      bias: "bullish",
+      priceBasis: 4200,
+    });
+    expect(thesis.tradeSimulation.entryZone).toEqual({
+      from: 4189.5,
+      to: 4202.1,
+    });
   });
 
   it("flags price divergence without predicting how it resolves", () => {
@@ -85,6 +94,7 @@ describe("gold thesis engine", () => {
     expect(thesis.priceRelationship?.summary).toContain(
       "without assuming how it will resolve",
     );
+    expect(thesis.tradeSimulation.action).toBe("stand_aside");
   });
 
   it("returns insufficient data instead of inferring missing drivers", () => {
@@ -100,6 +110,7 @@ describe("gold thesis engine", () => {
     expect(thesis.state).toBe("insufficient_data");
     expect(thesis.missingDrivers).toHaveLength(3);
     expect(thesis.priceRelationship?.state).toBe("insufficient_data");
+    expect(thesis.tradeSimulation.action).toBe("stand_aside");
   });
 
   it("excludes stale source observations from the thesis score", () => {
