@@ -16,6 +16,19 @@ function safeInternalRedirect(value: string | null) {
   return value;
 }
 
+function getSignupCallbackUrl(redirect: string) {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    window.location.origin;
+  const callbackUrl = new URL("/auth/callback", siteUrl);
+
+  if (redirect !== "/dashboard") {
+    callbackUrl.searchParams.set("next", redirect);
+  }
+
+  return callbackUrl.toString();
+}
+
 function SignupForm() {
   const searchParams = useSearchParams();
   const redirect = safeInternalRedirect(searchParams.get("redirect"));
@@ -46,7 +59,7 @@ function SignupForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodedRedirect}`,
+        emailRedirectTo: getSignupCallbackUrl(redirect),
       },
     });
 
