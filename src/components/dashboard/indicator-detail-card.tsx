@@ -170,7 +170,7 @@ export function Sparkline({
           y={height / 2}
           textAnchor="middle"
           fill="var(--text-muted)"
-          fontSize="10"
+          fontSize="12.5"
           fontFamily="JetBrains Mono, monospace"
         >
           Insufficient data

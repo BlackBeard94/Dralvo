@@ -196,7 +196,7 @@ export function XauusdChart() {
                   y={y + 4}
                   textAnchor="end"
                   fill="var(--text-muted)"
-                  fontSize="11"
+                  fontSize="13.75"
                   fontFamily="monospace"
                 >
                   {price.toFixed(0)}
