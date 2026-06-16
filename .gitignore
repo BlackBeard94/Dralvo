@@ -16,3 +16,19 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 *.tsbuildinfo
+
+# Local agent/workflow metadata
+.agents/
+.hermes/
+skills-lock.json
+
+# Local research/backtest artifacts
+data/
+.venv-backtest/
+scripts/backtest/
+scripts/*.ex5
+scripts/*.compile.log
+
+# Static design mockups kept outside the app routes
+public/dashboard-pro*.html
+public/redesign-v*.html
