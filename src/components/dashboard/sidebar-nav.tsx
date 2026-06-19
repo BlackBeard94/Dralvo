@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { LogoMark } from "@/components/shared/brand";
+import { DralvoWordmark, LogoMark } from "@/components/shared/brand";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
 
@@ -72,9 +72,7 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
       >
         <LogoMark size={collapsed ? 28 : 32} />
         {!collapsed && (
-          <span className="font-display text-lg tracking-[-0.01em] text-text-primary whitespace-nowrap">
-            Dral<span className="text-gold italic">vo</span>
-          </span>
+          <DralvoWordmark className="whitespace-nowrap text-lg" />
         )}
       </div>
 
