@@ -32,8 +32,8 @@ export function DralvoWordmark({ className }: { className?: string }) {
 
 export function BrandLink({
   className,
-  logoSize = 36,
-  wordmarkClassName = "text-xl transition-colors group-hover:text-text-primary",
+  logoSize = 72,
+  wordmarkClassName = "text-2xl transition-colors group-hover:text-text-primary",
 }: {
   className?: string;
   logoSize?: number;
@@ -42,7 +42,7 @@ export function BrandLink({
   return (
     <Link
       href="/"
-      className={cn("group flex items-center gap-3 no-underline", className)}
+      className={cn("group flex items-center gap-4 no-underline", className)}
       aria-label="Dralvo home"
     >
       <LogoMark size={logoSize} />
