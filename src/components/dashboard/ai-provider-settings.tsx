@@ -105,7 +105,7 @@ const copy = {
 
 export function AiProviderSettings() {
   const { locale } = useLocale();
-  const t = copy[locale];
+  const t = copy[locale as keyof typeof copy] ?? copy.en;
   const [credential, setCredential] = useState<CredentialState | null>(null);
   const [provider, setProvider] = useState<AiProvider>("openai");
   const [apiKey, setApiKey] = useState("");

@@ -5,14 +5,14 @@ import type {
   ThesisDriverState,
   ThesisState,
 } from "@/lib/intelligence/gold-thesis";
-import type { SupportedLocale } from "@/lib/i18n";
+import { withLocaleFallback, type SupportedLocale } from "@/lib/i18n";
 
 type LocalDriverCopy = {
   label: string;
   rule: string;
 };
 
-const TITLE_COPY: Record<SupportedLocale, Record<ThesisState, string>> = {
+const TITLE_COPY = withLocaleFallback<Record<ThesisState, string>>({
   vi: {
     supportive: "Bằng chứng vàng đang nghiêng về hỗ trợ",
     adverse: "Bằng chứng vàng đang nghiêng về bất lợi",
@@ -31,9 +31,9 @@ const TITLE_COPY: Record<SupportedLocale, Record<ThesisState, string>> = {
     mixed: "As evidências do ouro estão mistas",
     insufficient_data: "Ainda não há evidência verificada suficiente",
   },
-};
+});
 
-const DRIVER_COPY: Record<SupportedLocale, Record<string, LocalDriverCopy>> = {
+const DRIVER_COPY = withLocaleFallback<Record<string, LocalDriverCopy>>({
   vi: {
     "xauusd-price-context": {
       label: "Ngữ cảnh giá XAUUSD",
@@ -112,9 +112,9 @@ const DRIVER_COPY: Record<SupportedLocale, Record<string, LocalDriverCopy>> = {
       rule: "Mudança de pelo menos 0,5 tonelada nas reservas é material.",
     },
   },
-};
+});
 
-const CHANGE_CONDITIONS: Record<SupportedLocale, string[]> = {
+const CHANGE_CONDITIONS = withLocaleFallback<string[]>({
   vi: [
     "Đảo chiều đáng kể trong hướng lợi suất thực 10Y.",
     "Thay đổi tuần đáng kể trong vị thế ròng Managed Money.",
@@ -136,15 +136,11 @@ const CHANGE_CONDITIONS: Record<SupportedLocale, string[]> = {
     "Mudança de pelo menos 0,5 tonelada nas reservas do GLD.",
     "Contexto de preço divergindo do balanço dos drivers fundamentais.",
   ],
-};
+});
 
-const RELATIONSHIP_COPY: Record<
-  SupportedLocale,
-  Record<
-    PriceRelationshipInsight["state"],
-    { title: string; summary: string }
-  >
-> = {
+const RELATIONSHIP_COPY = withLocaleFallback<
+  Record<PriceRelationshipInsight["state"], { title: string; summary: string }>
+>({
   vi: {
     confirming: {
       title: "Giá xác nhận cán cân cơ bản",
@@ -211,15 +207,11 @@ const RELATIONSHIP_COPY: Record<
         "A Dralvo precisa de contexto de preço utilizável e pelo menos três grupos fundamentais antes de comparar as direções.",
     },
   },
-};
+});
 
-const SIMULATION_COPY: Record<
-  SupportedLocale,
-  Record<
-    TradeSimulation["action"],
-    { title: string; summary: string }
-  >
-> = {
+const SIMULATION_COPY = withLocaleFallback<
+  Record<TradeSimulation["action"], { title: string; summary: string }>
+>({
   vi: {
     simulated_buy: {
       title: "Mô phỏng BUY",
@@ -271,7 +263,7 @@ const SIMULATION_COPY: Record<
         "A Dralvo ainda não tem evidências alinhadas suficientes para simular um setup direcional. Aguarde confirmação mais limpa.",
     },
   },
-};
+});
 
 function localizeSimulation(
   simulation: TradeSimulation,

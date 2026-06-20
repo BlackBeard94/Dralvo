@@ -1,19 +1,41 @@
-export const SUPPORTED_LOCALES = ["vi", "en", "pt-BR"] as const;
+export const SUPPORTED_LOCALES = [
+  "vi",
+  "en",
+  "pt-BR",
+  "zh",
+  "es",
+  "hi",
+  "id",
+  "ru",
+] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export const DEFAULT_LOCALE: SupportedLocale = "vi";
 
+/** Locale used as the fallback for any copy not yet translated. */
+export const FALLBACK_LOCALE: SupportedLocale = "en";
+
 export const LOCALE_LABELS: Record<SupportedLocale, string> = {
   vi: "Tiếng Việt",
   en: "English",
   "pt-BR": "Português BR",
+  zh: "中文",
+  es: "Español",
+  hi: "हिन्दी",
+  id: "Bahasa Indonesia",
+  ru: "Русский",
 };
 
 export const LOCALE_SHORT_LABELS: Record<SupportedLocale, string> = {
   vi: "VI",
   en: "EN",
   "pt-BR": "PT-BR",
+  zh: "ZH",
+  es: "ES",
+  hi: "HI",
+  id: "ID",
+  ru: "RU",
 };
 
 export const LOCALE_COOKIE = "dralvo-locale";
@@ -36,11 +58,65 @@ export function normalizeLocale(
   if (lower.startsWith("pt")) return "pt-BR";
   if (lower.startsWith("en")) return "en";
   if (lower.startsWith("vi")) return "vi";
+  if (lower.startsWith("zh")) return "zh";
+  if (lower.startsWith("es")) return "es";
+  if (lower.startsWith("hi")) return "hi";
+  if (lower.startsWith("id")) return "id";
+  if (lower.startsWith("ru")) return "ru";
 
   return DEFAULT_LOCALE;
 }
 
-export const PRODUCT_COPY = {
+/**
+ * Build a complete locale->copy record from a partial set of translations.
+ * Any locale not provided falls back to the FALLBACK_LOCALE ("en") entry, so
+ * new languages can be added incrementally without breaking the build or
+ * leaving `undefined` holes. The fallback entry is required.
+ */
+type DeepPartial<T> = T extends readonly unknown[]
+  ? T
+  : T extends object
+    ? { [K in keyof T]?: DeepPartial<T[K]> }
+    : T;
+
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+/** Deep-merge a (possibly partial) locale override on top of the base copy. */
+function deepMergeCopy<T>(base: T, over: unknown): T {
+  if (over === undefined || over === null) return base;
+  if (!isPlainObject(base) || !isPlainObject(over)) return over as T;
+  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const k of Object.keys(over)) {
+    out[k] = deepMergeCopy((base as Record<string, unknown>)[k], over[k]);
+  }
+  return out as T;
+}
+
+export function withLocaleFallback<T>(
+  copy: { en: T } & Partial<Record<SupportedLocale, DeepPartial<NoInfer<T>>>>,
+): Record<SupportedLocale, T> {
+  const full = {} as Record<SupportedLocale, T>;
+  for (const loc of SUPPORTED_LOCALES) {
+    full[loc] = deepMergeCopy(copy.en, copy[loc]);
+  }
+  return full;
+}
+
+/**
+ * Read a copy entry for a locale from a partial map (e.g. component-local copy
+ * that is not yet translated for every locale), falling back to "en" then to
+ * the default locale. Lets V1 surfaces tolerate the expanded locale set.
+ */
+export function pickLocale<T>(
+  copy: Partial<Record<SupportedLocale, T>>,
+  locale: SupportedLocale,
+): T {
+  return (copy[locale] ?? copy[FALLBACK_LOCALE] ?? copy[DEFAULT_LOCALE]) as T;
+}
+
+export const PRODUCT_COPY = withLocaleFallback({
   vi: {
     productCategory: "Trí tuệ quyết định cho thị trường vàng",
     primaryCta: "Bắt đầu miễn phí",
@@ -68,18 +144,180 @@ export const PRODUCT_COPY = {
     disclaimer:
       "A Dralvo fornece apenas informações de mercado. Não é aconselhamento financeiro nem sinal de compra ou venda.",
   },
-} satisfies Record<
-  SupportedLocale,
-  {
-    productCategory: string;
-    primaryCta: string;
-    proCta: string;
-    corePromise: string;
-    disclaimer: string;
-  }
->;
+});
 
-export const AUTH_COPY = {
+export const TRACK_RECORD_COPY = withLocaleFallback({
+  vi: {
+    nav: "Hiệu suất",
+    back: "Về trang chủ",
+    title: "Hiệu suất thật, công khai",
+    subtitle:
+      "Chúng tôi không vẽ đường cong. Đây là toàn bộ số liệu backtest 20 năm và kỳ vọng thật — cả mặt tốt lẫn mặt xấu.",
+    backtestHeading: "Backtest 20 năm (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · vốn ban đầu $100,000",
+    expectationsHeading: "Kỳ vọng thật — đọc trước khi dùng",
+    expectations: [
+      "Tỉ lệ thắng ~37% — bạn THUA nhiều lần hơn THẮNG. Edge nằm ở tỉ lệ Lời/Lỗ ~3.4:1.",
+      "Có thể thua tới 10 lệnh liên tiếp. Drawdown lịch sử tối đa ~25%.",
+      "Long-only: 0 lệnh khi vàng giảm (CFTC bearish) = bảo toàn vốn, không phải lỗi.",
+      "Hiệu suất backtest quá khứ không đảm bảo lợi nhuận tương lai.",
+    ],
+    liveHeading: "Track record trực tiếp (Myfxbook)",
+    liveSoon:
+      "Tài khoản demo/thực đang chạy EA sẽ được công khai tại đây. Cập nhật liên tục — kể cả khi đứng yên hoặc thua.",
+    disclaimer:
+      "Không phải lời khuyên đầu tư. Backtest là dữ liệu quá khứ. Past performance ≠ future results.",
+  },
+  en: {
+    nav: "Track Record",
+    back: "Back to home",
+    title: "Real performance, in the open",
+    subtitle:
+      "We don't curve-fit. Here is the full 20-year backtest and the honest expectations — the good and the bad.",
+    backtestHeading: "20-year backtest (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · $100,000 starting balance",
+    expectationsHeading: "Honest expectations — read before you trade",
+    expectations: [
+      "Win rate ~37% — you LOSE more often than you WIN. The edge is a ~3.4:1 reward-to-risk ratio.",
+      "You can lose up to 10 trades in a row. Maximum historical drawdown ~25%.",
+      "Long only: 0 trades when gold is bearish (CFTC bearish) = capital preserved, not a malfunction.",
+      "Past backtest performance does not guarantee future results.",
+    ],
+    liveHeading: "Live track record (Myfxbook)",
+    liveSoon:
+      "A demo/live account running the EA will be published here — updated continuously, including dormant or losing periods.",
+    disclaimer:
+      "Not financial advice. Backtest is historical data. Past performance does not guarantee future results.",
+  },
+  "pt-BR": {
+    nav: "Histórico",
+    back: "Voltar ao início",
+    title: "Desempenho real, à mostra",
+    subtitle:
+      "Não fazemos curve-fitting. Aqui está o backtest completo de 20 anos e as expectativas honestas — o bom e o ruim.",
+    backtestHeading: "Backtest de 20 anos (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · saldo inicial de $100.000",
+    expectationsHeading: "Expectativas honestas — leia antes de operar",
+    expectations: [
+      "Taxa de acerto ~37% — você PERDE mais vezes do que GANHA. O edge é uma relação risco-retorno de ~3,4:1.",
+      "Você pode perder até 10 operações seguidas. Drawdown histórico máximo ~25%.",
+      "Somente compra: 0 operações quando o ouro está em baixa (CFTC bearish) = capital preservado, não é falha.",
+      "Desempenho passado em backtest não garante resultados futuros.",
+    ],
+    liveHeading: "Histórico ao vivo (Myfxbook)",
+    liveSoon:
+      "Uma conta demo/real rodando o EA será publicada aqui — atualizada continuamente, incluindo períodos parados ou de perda.",
+    disclaimer:
+      "Não é aconselhamento financeiro. Backtest é dado histórico. Resultados passados não garantem resultados futuros.",
+  },
+  zh: {
+    nav: "业绩记录",
+    back: "返回首页",
+    title: "真实业绩，公开透明",
+    subtitle:
+      "我们不做曲线拟合。这里是完整的20年回测数据和真实预期——好的与坏的都在。",
+    backtestHeading: "20年回测（MT5 策略测试器）",
+    backtestNote: "XAUUSD · 日线 · 2006–2026 · 初始资金 $100,000",
+    expectationsHeading: "真实预期——交易前请阅读",
+    expectations: [
+      "胜率约37%——亏损次数多于盈利次数。优势在于约3.4:1的盈亏比。",
+      "可能连续亏损多达10笔。历史最大回撤约25%。",
+      "仅做多：黄金看跌时（CFTC 看跌）0 笔交易＝保住资金，并非故障。",
+      "过往回测业绩不代表未来收益。",
+    ],
+    liveHeading: "实时业绩记录（Myfxbook）",
+    liveSoon:
+      "运行该 EA 的模拟/实盘账户将在此公开——持续更新，包括无交易或亏损时段。",
+    disclaimer:
+      "非投资建议。回测为历史数据。过往业绩不保证未来结果。",
+  },
+  es: {
+    nav: "Historial",
+    back: "Volver al inicio",
+    title: "Rendimiento real, a la vista",
+    subtitle:
+      "No ajustamos la curva. Aquí está el backtest completo de 20 años y las expectativas honestas: lo bueno y lo malo.",
+    backtestHeading: "Backtest de 20 años (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · saldo inicial de $100,000",
+    expectationsHeading: "Expectativas honestas: léelas antes de operar",
+    expectations: [
+      "Tasa de acierto ~37%: pierdes más veces de las que ganas. La ventaja es una relación riesgo-beneficio de ~3,4:1.",
+      "Puedes perder hasta 10 operaciones seguidas. Drawdown histórico máximo ~25%.",
+      "Solo largos: 0 operaciones cuando el oro es bajista (CFTC bajista) = capital preservado, no es un fallo.",
+      "El rendimiento pasado en backtest no garantiza resultados futuros.",
+    ],
+    liveHeading: "Historial en vivo (Myfxbook)",
+    liveSoon:
+      "Una cuenta demo/real ejecutando el EA se publicará aquí, actualizada continuamente, incluso en periodos inactivos o de pérdidas.",
+    disclaimer:
+      "No es asesoramiento financiero. El backtest es dato histórico. El rendimiento pasado no garantiza resultados futuros.",
+  },
+  hi: {
+    nav: "ट्रैक रिकॉर्ड",
+    back: "होम पर लौटें",
+    title: "वास्तविक प्रदर्शन, खुले तौर पर",
+    subtitle:
+      "हम कर्व-फिटिंग नहीं करते। यहाँ पूरा 20-वर्षीय बैकटेस्ट और ईमानदार अपेक्षाएँ हैं — अच्छा और बुरा दोनों।",
+    backtestHeading: "20-वर्षीय बैकटेस्ट (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · शुरुआती बैलेंस $100,000",
+    expectationsHeading: "ईमानदार अपेक्षाएँ — ट्रेड करने से पहले पढ़ें",
+    expectations: [
+      "जीत दर ~37% — आप जीतने से ज़्यादा बार हारते हैं। बढ़त ~3.4:1 के रिस्क-रिवॉर्ड अनुपात में है।",
+      "आप लगातार 10 ट्रेड तक हार सकते हैं। अधिकतम ऐतिहासिक ड्रॉडाउन ~25%।",
+      "केवल लॉन्ग: जब सोना बेयरिश हो (CFTC बेयरिश) तब 0 ट्रेड = पूँजी सुरक्षित, कोई खराबी नहीं।",
+      "पिछला बैकटेस्ट प्रदर्शन भविष्य के परिणामों की गारंटी नहीं देता।",
+    ],
+    liveHeading: "लाइव ट्रैक रिकॉर्ड (Myfxbook)",
+    liveSoon:
+      "EA चलाने वाला एक डेमो/लाइव अकाउंट यहाँ प्रकाशित किया जाएगा — लगातार अपडेट होता रहेगा, निष्क्रिय या नुकसान वाली अवधि सहित।",
+    disclaimer:
+      "यह वित्तीय सलाह नहीं है। बैकटेस्ट ऐतिहासिक डेटा है। पिछला प्रदर्शन भविष्य के परिणामों की गारंटी नहीं देता।",
+  },
+  id: {
+    nav: "Rekam Jejak",
+    back: "Kembali ke beranda",
+    title: "Kinerja nyata, terbuka",
+    subtitle:
+      "Kami tidak melakukan curve-fitting. Inilah backtest 20 tahun lengkap dan ekspektasi jujur — yang baik dan yang buruk.",
+    backtestHeading: "Backtest 20 tahun (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · saldo awal $100,000",
+    expectationsHeading: "Ekspektasi jujur — baca sebelum trading",
+    expectations: [
+      "Win rate ~37% — Anda lebih sering kalah daripada menang. Keunggulannya pada rasio risk-reward ~3,4:1.",
+      "Anda bisa kalah hingga 10 transaksi berturut-turut. Drawdown historis maksimum ~25%.",
+      "Hanya long: 0 transaksi saat emas bearish (CFTC bearish) = modal terjaga, bukan kerusakan.",
+      "Kinerja backtest masa lalu tidak menjamin hasil di masa depan.",
+    ],
+    liveHeading: "Rekam jejak langsung (Myfxbook)",
+    liveSoon:
+      "Akun demo/live yang menjalankan EA akan dipublikasikan di sini — diperbarui terus-menerus, termasuk periode tidak aktif atau rugi.",
+    disclaimer:
+      "Bukan nasihat keuangan. Backtest adalah data historis. Kinerja masa lalu tidak menjamin hasil masa depan.",
+  },
+  ru: {
+    nav: "История сделок",
+    back: "На главную",
+    title: "Реальные результаты, открыто",
+    subtitle:
+      "Мы не подгоняем кривую. Здесь полный 20-летний бэктест и честные ожидания — и хорошее, и плохое.",
+    backtestHeading: "20-летний бэктест (MT5 Strategy Tester)",
+    backtestNote: "XAUUSD · D1 · 2006–2026 · начальный баланс $100,000",
+    expectationsHeading: "Честные ожидания — прочтите перед торговлей",
+    expectations: [
+      "Винрейт ~37% — вы проигрываете чаще, чем выигрываете. Преимущество в соотношении риск/прибыль ~3,4:1.",
+      "Можно получить до 10 убыточных сделок подряд. Максимальная историческая просадка ~25%.",
+      "Только покупка: 0 сделок, когда золото медвежье (CFTC медвежий) = капитал сохранён, это не сбой.",
+      "Прошлые результаты бэктеста не гарантируют будущую доходность.",
+    ],
+    liveHeading: "Живая история сделок (Myfxbook)",
+    liveSoon:
+      "Демо/реальный счёт с этим EA будет опубликован здесь — постоянно обновляется, включая периоды простоя или убытков.",
+    disclaimer:
+      "Не финансовая консультация. Бэктест — это исторические данные. Прошлые результаты не гарантируют будущих.",
+  },
+});
+
+export const AUTH_COPY = withLocaleFallback({
   vi: {
     tagline: "Trí tuệ vàng cho tổ chức",
     email: "Email",
@@ -257,25 +495,9 @@ export const AUTH_COPY = {
       requestAnotherLink: "Enviar novo link",
     },
   },
-} satisfies Record<
-  SupportedLocale,
-  {
-    tagline: string;
-    email: string;
-    password: string;
-    emailPlaceholder: string;
-    passwordPlaceholder: string;
-    minPasswordPlaceholder: string;
-    hidePassword: string;
-    showPassword: string;
-    passwordTooShort: string;
-    signup: Record<string, string>;
-    login: Record<string, string>;
-    reset: Record<string, string>;
-  }
->;
+});
 
-export const PRICING_COPY = {
+export const PRICING_COPY = withLocaleFallback({
   vi: {
     eyebrow: "Bảng giá đơn giản",
     title: "Bảng giá",
@@ -513,43 +735,9 @@ export const PRICING_COPY = {
       ["A Dralvo é um serviço de sinais?", "Não. A Dralvo resume contexto de mercado. Ela não executa ordens, não emite sinais de compra/venda e não presta aconselhamento financeiro."],
     ],
   },
-} satisfies Record<
-  SupportedLocale,
-  {
-    eyebrow: string;
-    title: string;
-    promise: string;
-    detail: string;
-    dashboard: string;
-    methodology: string;
-    signIn: string;
-    freeName: string;
-    freePrice: string;
-    freePeriod: string;
-    freeDescription: string;
-    proName: string;
-    proPrice: string;
-    proPeriod: string;
-    proDescription: string;
-    currentPlan: string;
-    getStarted: string;
-    upgrade: string;
-    redirecting: string;
-    popular: string;
-    trust: string[];
-    faqTitle: string;
-    faqSubtitle: string;
-    ready: string;
-    goPro: string;
-    checkoutNotice: Record<string, string>;
-    vietQr: Record<string, string>;
-    freeFeatures: string[];
-    proFeatures: string[];
-    faq: [string, string][];
-  }
->;
+});
 
-export const LEGAL_COPY = {
+export const LEGAL_COPY = withLocaleFallback({
   vi: {
     badgeLegal: "Pháp lý",
     badgeImportant: "Quan trọng",
@@ -673,21 +861,9 @@ export const LEGAL_COPY = {
       ],
     },
   },
-} satisfies Record<
-  SupportedLocale,
-  {
-    badgeLegal: string;
-    badgeImportant: string;
-    backHome: string;
-    updatedLabel: string;
-    updated: string;
-    privacy: { title: string; accent: string; sections: [string, string][] };
-    terms: { title: string; accent: string; sections: [string, string][] };
-    disclaimer: { title: string; accent: string; sections: [string, string][] };
-  }
->;
+});
 
-export const NOTIFICATION_COPY = {
+export const NOTIFICATION_COPY = withLocaleFallback({
   vi: {
     subjectPrefix: "Cảnh báo Dralvo",
     triggeredTitle: "Cảnh báo đã kích hoạt",
@@ -715,20 +891,9 @@ export const NOTIFICATION_COPY = {
     viewDashboard: "Ver painel",
     alertId: "ID do alerta",
   },
-} satisfies Record<
-  SupportedLocale,
-  {
-    subjectPrefix: string;
-    triggeredTitle: string;
-    indicator: string;
-    condition: string;
-    currentValue: string;
-    viewDashboard: string;
-    alertId: string;
-  }
->;
+});
 
-export const DASHBOARD_COPY = {
+export const DASHBOARD_COPY = withLocaleFallback({
   vi: {
     nav: {
       dashboard: "Hôm nay",
@@ -1248,4 +1413,4 @@ export const DASHBOARD_COPY = {
       billingError: "Não foi possível abrir o portal de billing.",
     },
   },
-} as const;
+});

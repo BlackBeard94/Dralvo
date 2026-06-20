@@ -1,5 +1,10 @@
 # Dralvo Gold Filter — MT5 Indicator Specification
 
+> ⚠️ **SỐ LIỆU CANONICAL:** dùng bộ số trong [`PRODUCT_PLAN.md §0`](./PRODUCT_PLAN.md)
+> — **PF 1.97 · Win 36.7% · +896% · Max Equity DD 24.78% · 196 lệnh.** Con số ở
+> header dưới (246 trades / win 60% / PF 2.10 / +171%) là **CŨ/chưa khớp**, sẽ
+> reconcile khi backtest engine chạy lại. Không dùng cho marketing.
+
 > **Version:** 3.05 | **Target:** MetaTrader 5 (MQL5)  
 > **Strategy:** Tier 3A — CFTC+Trend+Pullback-1%+ATR  
 > **Backtest:** 20 years (2006-2025) | 246 trades | Win 60% | PF 2.10 | +171% return

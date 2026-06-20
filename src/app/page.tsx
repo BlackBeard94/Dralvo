@@ -1,476 +1,557 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
+import Script from "next/script";
+import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine } from "lucide-react";
 
-// ─── Copy (Vietnamese only — target market) ──────────────────────
-const COPY = {
-  hero: {
-    line1: "Gold EA được backtest 22 năm.",
-    line2: "Không fake. Không curve-fit. Chỉ 1 lệnh 1 lúc.",
-  },
-  stats: [
-    { value: "PF 1.96", label: "Profit Factor" },
-    { value: "22 năm", label: "Backtest" },
-    { value: "DD 15%", label: "Max Drawdown" },
-    { value: "+881%", label: "Tổng lợi nhuận" },
-  ],
-  backtest: {
-    title: "Backtest Results — MT5 Strategy Tester",
-    subtitle: "Trail 2.0 ATR · MaxHold 60 ngày · Risk 5% · 196 trades · 2006–2026",
-    table: [
-      ["Initial Deposit", "$10,000"],
-      ["Total Net Profit", "$88,055"],
-      ["Profit Factor", "1.96"],
-      ["Win Rate", "36.7%"],
-      ["Max Drawdown", "15.1%"],
-      ["Total Trades", "196"],
-      ["Avg Win / Avg Loss", "+$2,494 / -$738"],
-      ["Longest Win Streak", "4"],
-    ],
-  },
-  how: {
-    title: "Cách EA hoạt động",
-    steps: [
-      {
-        num: "01",
-        title: "CFTC xác nhận xu hướng",
-        desc: "Mỗi tuần EA kiểm tra báo cáo CFTC. Chỉ LONG khi Managed Money net > 100K contracts — dấu hiệu smart money đang bullish vàng.",
-      },
-      {
-        num: "02",
-        title: "Chờ pullback — không mua đuổi",
-        desc: "Khi giá giảm -1% từ đỉnh 10 ngày, EMA50 vẫn trên EMA200, EA vào lệnh. Mua khi người khác sợ.",
-      },
-      {
-        num: "03",
-        title: "Trailing stop bảo vệ lợi nhuận",
-        desc: "Không TP cố định. EA dùng trailing stop 2 ATR để lệnh thắng chạy đến khi xu hướng yếu. Lệnh thua cắt nhanh.",
-      },
-    ],
-  },
-  pricing: {
-    title: "EA Dralvo Gold",
-    price: "$39",
-    period: "/tháng",
-    features: [
-      "EA MQL5 — cài 1 lần, chạy tự động",
-      "Tự động cập nhật CFTC mỗi tuần",
-      "Risk management: chỉ 1 lệnh 1 lúc",
-      "Trailing stop 2 ATR — không TP cố định",
-      "Chạy trên MT5, khung D1",
-      "License key — không share được",
-    ],
-    cta: "Đăng ký ngay",
-  },
-  faq: [
-    {
-      q: "Win rate 37% — thua nhiều hơn thắng, tại sao vẫn lời?",
-      a: "Mỗi lệnh thắng trung bình +$2,494, mỗi lệnh thua -$738. Tỉ lệ lời/lỗ là 3.4:1. Bạn thua 6 lần, thắng 4 lần — vẫn có lời. Đây là toán học, không phải may mắn.",
-    },
-    {
-      q: "Có cần kinh nghiệm trade vàng không?",
-      a: "Không. EA tự động phân tích và vào lệnh. Bạn chỉ cần cài MT5, gắn EA vào chart XAUUSD D1, và để nó chạy. Tuy nhiên, bạn nên hiểu cách EA hoạt động để không hoảng loạn khi drawdown.",
-    },
-    {
-      q: "EA có chạy trên điện thoại không?",
-      a: "EA chạy trên MT5 Desktop (Windows). Cần máy tính bật 24/7 hoặc VPS. Chúng tôi sẽ hướng dẫn setup VPS trong gói VIP.",
-    },
-    {
-      q: "Có đảm bảo lợi nhuận không?",
-      a: "Không. Backtest là quá khứ. Tương lai không ai biết. Chúng tôi chỉ bán công cụ — không bán lời hứa. Bạn nên test demo ít nhất 1 tháng trước khi nạp tiền thật.",
-    },
-    {
-      q: "Nếu CFTC bearish thì sao?",
-      a: "EA đứng ngoài. Không trade. Đây là lý do EA sống sót 22 năm — nó không cố gắng kiếm tiền khi thị trường bất lợi. 52% thời gian EA im lặng là lúc nó bảo vệ vốn của bạn.",
-    },
-  ],
-  cta: {
-    title: "Sẵn sàng trade với edge thật?",
-    subtitle: "EA Dralvo Gold — $39/tháng qua VietQR. Hủy bất kỳ lúc nào.",
-    button: "Đăng ký EA PRO",
-  },
-};
+import { BrandLink } from "@/components/shared/brand";
+import { GlowOrb, GridPattern } from "@/components/shared/decor";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { useLocale } from "@/hooks/use-locale";
+import { LANDING_COPY } from "@/lib/landing-copy";
+import { EA_PRODUCTS, GOLDMASTER, GOLD_SCALP, type EaProduct } from "@/lib/backtest-stats";
+import { cn } from "@/lib/utils";
 
-// ─── Design Tokens ───────────────────────────────────────────────
-const tokens = {
-  vault: "#050508",
-  surface: "#0C0C14",
-  card: "#11111C",
-  divider: "#1A1A2A",
-  ash: "#EDE8E0",
-  dust: "#9A958A",
-  patina: "#5C5852",
-  gold: "#D4A843",
-  bullion: "#F0C85A",
-  gilt: "rgba(212,168,67,0.08)",
-  giltBorder: "rgba(212,168,67,0.2)",
-  verdigris: "#3BA87E",
-  cinnabar: "#E8483B",
-};
+/* -------------------------------------------------------------------------- */
+/*  Accent system — gold = patient swing, steel = fast scalp                   */
+/* -------------------------------------------------------------------------- */
+const STEEL = "90,169,230";
+const GOLD = "212,168,67";
+const rgb = (a: EaProduct["accent"]) => (a === "steel" ? STEEL : GOLD);
+const accent = (a: EaProduct["accent"], al: number) => `rgba(${rgb(a)},${al})`;
+const accentText = (a: EaProduct["accent"]) => (a === "steel" ? "#7dc0f0" : "var(--gold-bright)");
 
-// ─── Components ──────────────────────────────────────────────────
+const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
 
-function AssayMark({
-  children,
-  className,
-  style,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
+/* monthly base price per tier; index-aligned with copy.pricing.tiers */
+const TIER_PRICE = [0, 39, 99];
+const PERIODS = [
+  { id: "monthly", months: 1, discount: 0 },
+  { id: "sixmo", months: 6, discount: 0.15 },
+  { id: "yearly", months: 12, discount: 0.3 },
+] as const;
+type PeriodId = (typeof PERIODS)[number]["id"];
+
+/* Deterministic equity-curve shape (normalised) — compounding with pullbacks. */
+const EQUITY = [
+  0.02, 0.04, 0.03, 0.06, 0.09, 0.07, 0.12, 0.16, 0.13, 0.2, 0.26, 0.22, 0.3,
+  0.38, 0.33, 0.45, 0.55, 0.49, 0.62, 0.72, 0.65, 0.81, 0.93, 0.86, 1,
+];
+
+/* -------------------------------------------------------------------------- */
+/*  Small parts                                                                */
+/* -------------------------------------------------------------------------- */
+function useReveal<T extends HTMLElement = HTMLDivElement>(threshold = 0.12) {
+  const ref = useRef<T>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setVisible(true); return; }
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono tracking-widest border transition-all ${className}`}
-      style={style}
-    >
+    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted" style={{ background: "rgba(26,26,42,0.4)" }}>{children}</div>
+  );
+}
+
+/** Scroll-reveal wrapper: fades + rises into view once. Honors reduced motion. */
+function Reveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const { ref, visible } = useReveal(0.14);
+  return (
+    <div ref={ref} className={cn("transition-all duration-700 ease-out will-change-transform", className)}
+      style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(22px)", transitionDelay: `${visible ? delay : 0}ms` }}>
       {children}
-    </span>
-  );
-}
-
-function GlowOrb({ className }: { className?: string }) {
-  return (
-    <div
-      className={`absolute rounded-full blur-3xl opacity-20 pointer-events-none ${className}`}
-      style={{
-        background: `radial-gradient(circle, ${tokens.gold}33, transparent)`,
-      }}
-    />
-  );
-}
-
-function FAQ({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className="border rounded-lg cursor-pointer transition-colors"
-      style={{
-        borderColor: open ? tokens.giltBorder : tokens.divider,
-        background: open ? tokens.gilt : "transparent",
-      }}
-      onClick={() => setOpen(!open)}
-    >
-      <div className="flex justify-between items-center p-4">
-        <h3 className="text-sm font-medium" style={{ color: tokens.ash }}>
-          {q}
-        </h3>
-        <span
-          className="text-lg transition-transform"
-          style={{
-            color: tokens.gold,
-            transform: open ? "rotate(45deg)" : "rotate(0deg)",
-          }}
-        >
-          +
-        </span>
-      </div>
-      {open && (
-        <div
-          className="px-4 pb-4 text-sm leading-relaxed"
-          style={{ color: tokens.dust }}
-        >
-          {a}
-        </div>
-      )}
     </div>
   );
 }
 
-// ─── Page ────────────────────────────────────────────────────────
-
-export default function LandingPage() {
+function EquityCurve() {
+  const W = 460, H = 200, P = 8;
+  const max = EQUITY.length - 1;
+  const pts = EQUITY.map((y, i) => [P + (i / max) * (W - 2 * P), H - P - y * (H - 2 * P)]);
+  const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+  const area = `${line} L${W - P} ${H - P} L${P} ${H - P} Z`;
   return (
-    <div
-      className="min-h-screen font-sans antialiased"
-      style={{ background: tokens.vault, color: tokens.ash }}
-    >
-      {/* Navigation */}
-      <nav
-        className="sticky top-0 z-50 backdrop-blur-md border-b"
-        style={{ background: "rgba(5,5,8,0.85)", borderColor: tokens.divider }}
-      >
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
-          <Link
-            href="/"
-            className="font-bold text-lg tracking-tight"
-            style={{ color: tokens.bullion }}
-          >
-            DRALVO
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm font-medium px-4 py-2 rounded-md transition-colors"
-            style={{
-              background: tokens.gilt,
-              color: tokens.bullion,
-              border: `1px solid ${tokens.giltBorder}`,
-            }}
-          >
-            Mua EA PRO
-          </Link>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(240,200,90,0.35)" />
+          <stop offset="100%" stopColor="rgba(240,200,90,0)" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill="url(#eq)" />
+      <path className="eq-line" d={line} fill="none" stroke="var(--gold-bright)" strokeWidth={2} strokeLinejoin="round" />
+      {pts.slice(-1).map(([x, y], i) => (<circle key={i} cx={x} cy={y} r={3.5} fill="var(--gold-bright)" />))}
+    </svg>
+  );
+}
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={cn("border rounded-lg overflow-hidden transition-colors duration-300", open ? "border-gold/25" : "border-border")} style={{ background: open ? "rgba(212,168,67,0.05)" : "transparent" }}>
+      <button type="button" aria-expanded={open} onClick={() => setOpen((p) => !p)} className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left group">
+        <span className={cn("text-sm font-medium text-left", open ? "text-text-primary" : "text-text-secondary group-hover:text-text-primary")}>{q}</span>
+        <span className="shrink-0 text-base font-light text-gold transition-transform duration-300" style={{ transform: open ? "rotate(45deg)" : "none" }}>+</span>
+      </button>
+      <div className={cn("grid transition-all duration-300", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+        <div className="overflow-hidden">{open && <p className="px-5 pb-4 text-[13px] leading-relaxed text-text-secondary">{a}</p>}</div>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  EA assay plate                                                            */
+/* -------------------------------------------------------------------------- */
+function EaPlate({ ea, copy, onGet }: { ea: EaProduct; copy: (typeof LANDING_COPY)["en"]["products"]; onGet: () => void }) {
+  const a = ea.accent;
+  const styleKey = ea.id === "goldmaster" ? "swing" : "scalp";
+  return (
+    <div className="lift group relative rounded-2xl border bg-card p-7 flex flex-col"
+      style={{ borderColor: accent(a, 0.28), background: `linear-gradient(168deg, ${accent(a, 0.06)}, var(--bg-card) 55%)`, boxShadow: `0 1px 0 ${accent(a, 0.15)} inset, 0 24px 60px -40px ${accent(a, 0.5)}`, ["--lift" as string]: accent(a, 0.45), ["--lift-bd" as string]: accent(a, 0.5) } as React.CSSProperties}>
+      <div className="absolute top-0 left-7 right-7 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent(a, 0.6)}, transparent)` }} />
+      <div className="absolute top-4 right-4 flex items-center gap-2 select-none">
+        <span className="text-[9px] font-mono tracking-[0.12em] uppercase" style={{ color: accentText(a) }}>{ea.version}</span>
+        <span className="w-7 h-7 rotate-45 rounded-[3px] border flex items-center justify-center" style={{ borderColor: accent(a, 0.4) }}>
+          <span className="-rotate-45 text-[7px] font-mono" style={{ color: accentText(a) }}>999.9</span>
+        </span>
+      </div>
+
+      <span className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: accentText(a) }}>{copy.styleTag[styleKey]}</span>
+      <h3 className="text-3xl mt-2" style={{ fontFamily: SERIF }}>{ea.name}</h3>
+      <p className="text-[13px] text-text-muted mt-1">{copy.styleName[styleKey]}</p>
+
+      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-4 font-mono text-[10.5px] text-text-muted">
+        <span>{ea.symbol}</span><span style={{ color: accentText(a) }}>·</span>
+        <span>{ea.timeframe}</span><span style={{ color: accentText(a) }}>·</span>
+        <span>{copy.directionLabels[ea.direction]}</span>
+      </div>
+      <div className="mt-3 inline-flex items-center gap-1.5 self-start text-[11px]" style={{ color: accentText(a) }}>
+        <ShieldCheck size={13} />{copy.verified[ea.id]}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2.5 mt-6">
+        {ea.headline.map((kpi, i) => (
+          <div key={i} className="rounded-lg border border-border bg-deep/40 p-3">
+            <div className={cn("font-mono text-xl font-bold tracking-tight", kpi.tone === "good" ? "text-green" : kpi.tone === "bad" ? "text-red" : "")} style={kpi.tone ? undefined : { color: accentText(a) }}>{kpi.value}</div>
+            <div className="text-[9.5px] leading-tight uppercase tracking-[0.04em] text-text-muted mt-1">{copy.headlineLabels[i]}</div>
+          </div>
+        ))}
+      </div>
+      <div className="font-mono text-xs text-text-secondary mt-3">{ea.finalBalance}</div>
+
+      <p className="text-[13.5px] leading-relaxed text-text-secondary mt-5">{copy.pitch[ea.id]}</p>
+      <ul className="space-y-2 mt-5 flex-1">
+        {copy.bullets[ea.id].map((b) => (<li key={b} className="flex items-start gap-2 text-[13px] text-text-secondary"><Check size={15} className="shrink-0 mt-0.5" style={{ color: accentText(a) }} /><span>{b}</span></li>))}
+      </ul>
+
+      <button onClick={onGet} className="mt-6 inline-flex items-center justify-center gap-2 w-full py-3 rounded-md text-sm font-semibold text-[#060609] transition-transform duration-200 hover:scale-[1.02] border-none cursor-pointer" style={{ background: accentText(a) }}>
+        {copy.cta} {ea.name.replace("Dralvo ", "")} <ArrowRight size={16} />
+      </button>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                       */
+/* -------------------------------------------------------------------------- */
+export default function LandingPage() {
+  const { locale } = useLocale();
+  const t = LANDING_COPY[locale];
+  const [scrolled, setScrolled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState<EaProduct["id"]>("goldmaster");
+  const [period, setPeriod] = useState<PeriodId>("yearly");
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const checkout = useCallback(
+    async (plan: "pro" | "elite") => {
+      setLoading(true);
+      setCheckoutError(null);
+      try {
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan, period }),
+        });
+        if (res.status === 401) { window.location.href = "/signup?redirect=pricing"; return; }
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.url) { window.location.href = data.url; return; }
+        setCheckoutError(data.error || "Không thể tạo phiên thanh toán. Vui lòng thử lại.");
+        setLoading(false);
+      } catch {
+        setCheckoutError("Lỗi kết nối. Vui lòng thử lại.");
+        setLoading(false);
+      }
+    },
+    [period],
+  );
+
+  const activeEa = tab === "goldmaster" ? GOLDMASTER : GOLD_SCALP;
+  const p = t.products;
+  const activePeriod = PERIODS.find((x) => x.id === period)!;
+
+  return (
+    <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
+      <Script id="ld-json" type="application/ld+json" strategy="afterInteractive">{JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          { "@type": "Organization", name: "Dralvo Capital", url: "https://www.dralvo.com", sameAs: ["https://t.me/dralvo"] },
+          { "@type": "SoftwareApplication", name: "Dralvo Gold Robots — GoldMaster & Gold Scalp", applicationCategory: "FinanceApplication", operatingSystem: "Windows (MetaTrader 5)", description: "Two verified automated XAUUSD gold trading robots. No martingale, no grid.", offers: { "@type": "AggregateOffer", lowPrice: "39", highPrice: "99", priceCurrency: "USD", offerCount: "2" } },
+          { "@type": "FAQPage", mainEntity: t.faq.items.map(([q, an]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: an } })) },
+        ],
+      })}</Script>
+      <div className="gold-veins" aria-hidden="true"><div className="v1" /><div className="v2" /><div className="v3" /><div className="h1" /><div className="h2" /></div>
+
+      {/* Nav */}
+      <nav className={cn("fixed top-0 inset-x-0 z-50 transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}>
+        <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center justify-between">
+          <BrandLink />
+          <div className="flex items-center gap-1 sm:gap-3">
+            <Link href="#products" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.products}</Link>
+            <Link href="#evidence" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.evidence}</Link>
+            <Link href="#fx-tool" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.tools}</Link>
+            <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.pricing}</Link>
+            <Link href="/login" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.login}</Link>
+            <Link href="#pricing" className="ml-1 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-24 pb-16 px-6">
-        <GlowOrb className="w-96 h-96 -top-20 -right-20" />
-        <GlowOrb className="w-64 h-64 bottom-10 -left-20" />
-
-        <div className="max-w-3xl mx-auto text-center relative z-10">
-          <AssayMark
-            className="mb-6"
-            style={{
-              color: tokens.verdigris,
-              borderColor: "rgba(59,168,126,0.3)",
-              background: "rgba(59,168,126,0.08)",
-            }}
-          >
-            ✓ VERIFIED BACKTEST
-          </AssayMark>
-
-          <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-4"
-            style={{ color: tokens.ash }}
-          >
-            {COPY.hero.line1}
-          </h1>
-          <p
-            className="text-lg sm:text-xl mb-8"
-            style={{ color: tokens.dust }}
-          >
-            {COPY.hero.line2}
-          </p>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-            {COPY.stats.map((s) => (
-              <div
-                key={s.label}
-                className="p-4 rounded-lg"
-                style={{ background: tokens.card, border: `1px solid ${tokens.divider}` }}
-              >
-                <div
-                  className="text-2xl sm:text-3xl font-bold font-mono tracking-tight mb-1"
-                  style={{ color: tokens.bullion }}
-                >
-                  {s.value}
-                </div>
-                <div className="text-xs" style={{ color: tokens.patina }}>
-                  {s.label}
-                </div>
+      <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+        {/* Hero */}
+        <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+          <GridPattern />
+          <GlowOrb className="w-[900px] h-[700px] -top-80 -right-40" />
+          <GlowOrb className="w-[500px] h-[500px] bottom-0 -left-32" />
+          <div className="max-w-[1180px] mx-auto relative z-10 grid lg:grid-cols-[1fr_1fr] gap-14 items-center">
+            <div>
+              <div className="hero-rise"><Eyebrow>{t.hero.eyebrow}</Eyebrow></div>
+              <h1 className="hero-rise text-[2.6rem] sm:text-6xl font-normal leading-[1.04] tracking-[-0.02em] mt-6 mb-5 text-balance" style={{ fontFamily: SERIF, animationDelay: "80ms" }}>
+                {t.hero.titleA}<span className="text-gold-bright">{t.hero.titleEm}</span>
+              </h1>
+              <p className="hero-rise text-base sm:text-lg leading-relaxed max-w-[540px] mb-7 text-text-secondary" style={{ animationDelay: "160ms" }}>{t.hero.subtitle}</p>
+              <div className="hero-rise flex flex-col sm:flex-row gap-3" style={{ animationDelay: "240ms" }}>
+                <Link href="#products" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-md text-[15px] font-semibold bg-gold-bright text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]">{t.hero.ctaPrimary}<ArrowRight size={17} /></Link>
+                <Link href="#evidence" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-md text-[15px] font-semibold border border-border text-text-primary no-underline transition-colors duration-200 hover:border-gold/30 hover:text-gold">{t.hero.ctaSecondary}</Link>
               </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="#pricing"
-              className="px-8 py-3 rounded-lg font-semibold text-sm transition-all hover:scale-105"
-              style={{ background: tokens.bullion, color: tokens.vault }}
-            >
-              Xem gói EA PRO
-            </Link>
-            <Link
-              href="#how"
-              className="px-8 py-3 rounded-lg font-semibold text-sm transition-colors border"
-              style={{
-                color: tokens.ash,
-                borderColor: tokens.divider,
-              }}
-            >
-              Cách hoạt động
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Backtest */}
-      <section id="backtest" className="py-16 px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2
-            className="text-2xl font-bold mb-2"
-            style={{ color: tokens.ash }}
-          >
-            {COPY.backtest.title}
-          </h2>
-          <p className="text-sm mb-8" style={{ color: tokens.patina }}>
-            {COPY.backtest.subtitle}
-          </p>
-
-          <div
-            className="overflow-hidden rounded-lg border"
-            style={{ borderColor: tokens.divider }}
-          >
-            <table className="w-full text-sm">
-              <tbody>
-                {COPY.backtest.table.map(([label, value], i) => (
-                  <tr
-                    key={label}
-                    style={{
-                      background: i % 2 === 0 ? tokens.surface : tokens.card,
-                    }}
-                  >
-                    <td
-                      className="py-3 px-5 font-medium"
-                      style={{ color: tokens.dust }}
-                    >
-                      {label}
-                    </td>
-                    <td
-                      className="py-3 px-5 text-right font-mono font-semibold"
-                      style={{ color: tokens.ash }}
-                    >
-                      {value}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <p className="text-xs mt-3" style={{ color: tokens.patina }}>
-            * Backtest chạy trên MT5 Strategy Tester, dữ liệu 2006–2026. Kết
-            quả quá khứ không đảm bảo lợi nhuận tương lai.
-          </p>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how" className="py-16 px-6" style={{ background: tokens.surface }}>
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold mb-10" style={{ color: tokens.ash }}>
-            {COPY.how.title}
-          </h2>
-
-          <div className="space-y-8">
-            {COPY.how.steps.map((step) => (
-              <div
-                key={step.num}
-                className="flex gap-5 p-5 rounded-lg border"
-                style={{
-                  background: tokens.card,
-                  borderColor: tokens.divider,
-                }}
-              >
-                <div
-                  className="text-xl font-mono font-bold shrink-0"
-                  style={{ color: tokens.gold }}
-                >
-                  {step.num}
-                </div>
-                <div>
-                  <h3
-                    className="font-semibold mb-1"
-                    style={{ color: tokens.ash }}
-                  >
-                    {step.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: tokens.dust }}>
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="pricing" className="py-16 px-6">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-2" style={{ color: tokens.ash }}>
-            {COPY.pricing.title}
-          </h2>
-
-          <div
-            className="mt-8 p-8 rounded-xl border text-left"
-            style={{
-              background: tokens.card,
-              borderColor: tokens.giltBorder,
-            }}
-          >
-            <div className="flex items-baseline gap-1 mb-6">
-              <span
-                className="text-5xl font-bold font-mono"
-                style={{ color: tokens.bullion }}
-              >
-                {COPY.pricing.price}
-              </span>
-              <span style={{ color: tokens.dust }}>{COPY.pricing.period}</span>
+              <p className="hero-rise mt-6 font-mono text-[10.5px] tracking-[0.1em] uppercase text-text-muted" style={{ animationDelay: "320ms" }}>{t.hero.metalNote}</p>
             </div>
 
-            <ul className="space-y-3 mb-8">
-              {COPY.pricing.features.map((f) => (
-                <li
-                  key={f}
-                  className="flex items-start gap-2 text-sm"
-                  style={{ color: tokens.dust }}
-                >
-                  <span style={{ color: tokens.verdigris }}>✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            <Link
-              href="/pricing"
-              className="block text-center py-3 rounded-lg font-semibold text-sm transition-all hover:scale-105"
-              style={{ background: tokens.bullion, color: tokens.vault }}
-            >
-              {COPY.pricing.cta}
-            </Link>
+            {/* Equity curve + dual readout */}
+            <div className="hero-rise rounded-2xl border border-border bg-card overflow-hidden" style={{ boxShadow: "0 30px 70px -50px rgba(240,200,90,0.6)", animationDelay: "220ms" }}>
+              <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                <span className="font-mono text-[11px]" style={{ color: "var(--gold-bright)" }}>{t.hero.equityLabel}</span>
+                <span className="font-mono text-[10px] text-text-muted">{t.hero.equityRisk}</span>
+              </div>
+              <div className="px-3"><EquityCurve /></div>
+              <div className="flex items-center justify-between px-5 pb-3 font-mono text-[11px] text-text-muted">
+                <span>$100K</span><span className="text-green">→ $1.6M</span>
+              </div>
+              <div className="grid grid-cols-2 border-t border-border">
+                {EA_PRODUCTS.map((ea, i) => (
+                  <div key={ea.id} className={cn("px-5 py-3.5", i === 0 && "border-r border-border")}>
+                    <div className="font-mono text-[10px] tracking-[0.12em] uppercase" style={{ color: accentText(ea.accent) }}>{ea.timeframe} · {ea.name.replace("Dralvo ", "")}</div>
+                    <div className="font-mono text-2xl font-bold text-green mt-1">{ea.headline[0].value}</div>
+                    <div className="font-mono text-[10.5px] text-text-muted mt-0.5">PF {ea.headline[1].value} · {ea.headline[2].value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FAQ */}
-      <section className="py-16 px-6" style={{ background: tokens.surface }}>
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8" style={{ color: tokens.ash }}>
-            Câu hỏi thường gặp
-          </h2>
-          <div className="space-y-3">
-            {COPY.faq.map((item) => (
-              <FAQ key={item.q} q={item.q} a={item.a} />
-            ))}
+        {/* Products */}
+        <section id="products" className="relative py-20 px-6 bg-surface overflow-hidden">
+          <GlowOrb className="w-[600px] h-[500px] -bottom-40 right-0 opacity-50" />
+          <div className="max-w-[1100px] mx-auto relative z-10">
+            <Reveal className="text-center mb-12">
+              <Eyebrow>{p.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>{p.title}</h2>
+              <p className="text-text-secondary max-w-[600px] mx-auto">{p.intro}</p>
+            </Reveal>
+            <Reveal delay={80}>
+              <div className="grid md:grid-cols-2 gap-6 items-stretch">
+                {EA_PRODUCTS.map((ea) => (<EaPlate key={ea.id} ea={ea} copy={p} onGet={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })} />))}
+              </div>
+            </Reveal>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA */}
-      <section className="py-20 px-6 text-center">
-        <GlowOrb className="w-80 h-80 top-0 left-1/2 -translate-x-1/2" />
-        <div className="max-w-lg mx-auto relative z-10">
-          <h2
-            className="text-2xl sm:text-3xl font-bold mb-3"
-            style={{ color: tokens.ash }}
-          >
-            {COPY.cta.title}
-          </h2>
-          <p className="mb-8" style={{ color: tokens.dust }}>
-            {COPY.cta.subtitle}
-          </p>
-          <Link
-            href="/pricing"
-            className="inline-block px-10 py-4 rounded-lg font-bold text-lg transition-all hover:scale-105"
-            style={{ background: tokens.bullion, color: tokens.vault }}
-          >
-            {COPY.cta.button}
-          </Link>
-        </div>
-      </section>
+        {/* Evidence — tabbed */}
+        <section id="evidence" className="relative py-20 px-6 overflow-hidden">
+          <GlowOrb className="w-[500px] h-[500px] -top-20 -left-20 opacity-40" />
+          <div className="max-w-[1000px] mx-auto relative z-10">
+            <div className="text-center mb-10">
+              <Eyebrow>{p.evidenceEyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 text-balance" style={{ fontFamily: SERIF }}>{p.evidenceTitle}</h2>
+            </div>
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex rounded-lg border border-border bg-card p-1 gap-1">
+                {EA_PRODUCTS.map((ea) => {
+                  const on = tab === ea.id;
+                  return (<button key={ea.id} type="button" aria-pressed={on} onClick={() => setTab(ea.id)} className="px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer border-none" style={on ? { background: accentText(ea.accent), color: "#060609" } : { background: "transparent", color: "var(--text-muted)" }}>{ea.name.replace("Dralvo ", "")} · {ea.timeframe}</button>);
+                })}
+              </div>
+            </div>
+            <div className="grid lg:grid-cols-[1.4fr_1fr] gap-5">
+              <div className="rounded-xl border border-border overflow-hidden">
+                <div className="px-5 py-3 border-b border-border bg-card flex items-center justify-between">
+                  <span className="text-[10px] tracking-[0.12em] uppercase font-semibold text-text-muted">{p.matrix.title}</span>
+                  <span className="font-mono text-[10px] inline-flex items-center gap-1.5" style={{ color: accentText(activeEa.accent) }}><ShieldCheck size={12} />{p.verified[activeEa.id]}</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm min-w-[420px]">
+                    <thead>
+                      <tr className="text-[10px] uppercase tracking-[0.05em] text-text-muted">
+                        <th className="text-left font-medium py-2.5 px-4">{p.matrix.risk}</th>
+                        <th className="text-right font-medium py-2.5 px-4">{p.matrix.ret}</th>
+                        <th className="text-right font-medium py-2.5 px-4">{p.matrix.dd}</th>
+                        <th className="text-right font-medium py-2.5 px-4">{p.matrix.pf}</th>
+                        <th className="text-right font-medium py-2.5 px-4">{activeEa.matrixExtraKey === "cagr" ? p.matrix.cagr : p.matrix.trades}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-mono">
+                      {activeEa.riskMatrix.map((r) => (
+                        <tr key={r.risk} className="border-t border-border" style={r.star ? { background: accent(activeEa.accent, 0.07) } : undefined}>
+                          <td className="py-2.5 px-4 text-left">{r.risk}{r.star && <span className="ml-1" style={{ color: accentText(activeEa.accent) }}>★</span>}</td>
+                          <td className="py-2.5 px-4 text-right text-green font-semibold">{r.ret}</td>
+                          <td className="py-2.5 px-4 text-right text-red">{r.ddEquity}</td>
+                          <td className="py-2.5 px-4 text-right text-text-secondary">{r.pf}</td>
+                          <td className="py-2.5 px-4 text-right text-text-secondary">{r.extra}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="space-y-5">
+                <div className="rounded-xl border border-border bg-card p-5">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                    {activeEa.tradeStats.map((s) => (
+                      <div key={s.key} className="flex flex-col">
+                        <span className="font-mono text-base text-text-primary">{s.value}</span>
+                        <span className="text-[10px] uppercase tracking-[0.04em] text-text-muted">{p.statLabels[s.key as keyof typeof p.statLabels]}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {activeEa.monthly &&
+                  (() => {
+                    const months = activeEa.monthly!;
+                    const maxG = Math.max(...months.map((x) => x.gainPct));
+                    return (
+                      <div className="rounded-xl border border-border bg-card p-5">
+                        <div className="text-[10px] uppercase tracking-[0.08em] text-text-muted mb-4">{p.monthlyTitle}</div>
+                        <div className="flex items-end gap-2 h-28">
+                          {months.map((m) => (
+                            <div key={m.month} className="group/bar relative flex-1 h-full flex items-end">
+                              <span className="absolute inset-x-0 -top-0.5 text-center font-mono text-[8.5px] text-text-secondary">+{m.gainPct}%</span>
+                              <div className="w-full rounded-t transition-opacity duration-300 opacity-80 group-hover/bar:opacity-100"
+                                style={{ height: `${Math.max(8, (m.gainPct / maxG) * 100)}%`, background: accentText(activeEa.accent) }} />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2 mt-1.5">
+                          {months.map((m) => (<span key={m.month} className="flex-1 text-center font-mono text-[9px] text-text-muted">{m.month}</span>))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Trust + free FX tool (one section) */}
+        <section id="tools" className="relative py-20 px-6 bg-surface overflow-hidden">
+          <GlowOrb className="w-[600px] h-[400px] -bottom-24 left-1/2 -translate-x-1/2 opacity-25" />
+          <div className="max-w-[1100px] mx-auto relative z-10">
+            <Reveal className="text-center mb-12">
+              <Eyebrow>{t.trust.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 text-balance" style={{ fontFamily: SERIF }}>{t.trust.title}</h2>
+            </Reveal>
+            <Reveal delay={60}>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {t.trust.items.map((item, i) => {
+                  const Icon = [ShieldCheck, Activity, Layers, ScanLine][i] ?? ShieldCheck;
+                  return (
+                    <div key={item.title} className="lift group rounded-xl border border-border bg-card p-5">
+                      <div className="icon-pop w-9 h-9 rounded-lg bg-gold/10 border border-gold/20 flex items-center justify-center mb-4"><Icon size={18} className="text-gold" /></div>
+                      <h3 className="font-semibold text-text-primary text-sm mb-1.5">{item.title}</h3>
+                      <p className="text-[12.5px] leading-relaxed text-text-secondary">{item.body}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </Reveal>
+
+            {/* free FX tool — horizontal banner */}
+            <Reveal delay={120} className="mt-6">
+              <div id="fx-tool" className="lift group scroll-mt-24 rounded-2xl border p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center gap-5" style={{ background: "linear-gradient(110deg, rgba(90,169,230,0.09), var(--bg-card) 72%)", borderColor: "rgba(90,169,230,0.25)", ["--lift" as string]: "rgba(90,169,230,0.4)", ["--lift-bd" as string]: "rgba(90,169,230,0.45)" } as React.CSSProperties}>
+                <div className="icon-pop w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(90,169,230,0.12)", border: "1px solid rgba(90,169,230,0.3)" }}>
+                  <ScanLine size={22} style={{ color: "#7dc0f0" }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: "#7dc0f0" }}>{t.tools.eyebrow}</span>
+                    <span className="text-[10px] text-text-muted">· {t.tools.note}</span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-normal tracking-[-0.01em] text-balance" style={{ fontFamily: SERIF }}>{t.tools.title}</h3>
+                  <p className="text-[13.5px] leading-relaxed text-text-secondary mt-1.5 max-w-[640px]">{t.tools.body}</p>
+                </div>
+                <Link href="/tools/backtest" className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]" style={{ background: "#7dc0f0" }}>{t.tools.cta}<ScanLine size={16} /></Link>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* Pricing — subscription */}
+        <section id="pricing" className="relative py-20 px-6 overflow-hidden">
+          <GlowOrb className="w-[600px] h-[600px] top-10 left-1/2 -translate-x-1/2 opacity-40" />
+          <div className="max-w-[1100px] mx-auto relative z-10">
+            <div className="text-center mb-9">
+              <Eyebrow>{t.pricing.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>{t.pricing.title}</h2>
+              <p className="text-text-secondary max-w-[560px] mx-auto mb-7">{t.pricing.intro}</p>
+              <div className="inline-flex rounded-lg border border-border bg-card p-1 gap-1">
+                {PERIODS.map((pr) => {
+                  const on = period === pr.id;
+                  const save = pr.id === "sixmo" ? t.pricing.save.sixmo : pr.id === "yearly" ? t.pricing.save.yearly : null;
+                  return (
+                    <button key={pr.id} type="button" aria-pressed={on} onClick={() => setPeriod(pr.id)} className={cn("px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer border-none flex items-center gap-1.5", on ? "bg-gold text-[#060609]" : "bg-transparent text-text-muted hover:text-text-primary")}>
+                      {t.pricing.periods[pr.id]}{save && <span className={cn("text-[10px]", on ? "text-[#060609]/70" : "text-green")}>{save}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 items-stretch">
+              {t.pricing.tiers.map((tier, i) => {
+                const base = TIER_PRICE[i];
+                const perMo = base === 0 ? 0 : Math.round(base * (1 - activePeriod.discount));
+                const popular = tier.id === "pro";
+                return (
+                  <div key={tier.id} className={cn("lift rounded-xl border p-6 flex flex-col relative", popular ? "" : "border-border bg-card")} style={popular ? { borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" } : undefined}>
+                    {popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold-bright text-[#060609] text-[11px] font-semibold rounded-full">{t.pricing.popular}</span>}
+                    <h3 className={cn("text-lg font-semibold", popular ? "text-gold-bright" : "text-text-primary")}>{tier.name}</h3>
+                    <p className="text-[12px] text-text-muted mt-1 mb-4">{tier.tagline}</p>
+                    <div className="mb-1 flex items-baseline gap-1">
+                      <span className={cn("font-mono text-4xl font-bold", popular ? "text-gold-bright" : "text-text-primary")}>${perMo}</span>
+                      {base > 0 && <span className="text-text-muted text-sm">{t.pricing.perMonth}</span>}
+                    </div>
+                    <p className="text-[11px] text-text-muted mb-5 h-4">{base > 0 ? (activePeriod.months > 1 ? `$${perMo * activePeriod.months} / ${t.pricing.periods[period]} · ${t.pricing.save[period as "sixmo" | "yearly"]}` : t.pricing.periods.monthly) : " "}</p>
+                    <ul className="space-y-2.5 mb-7 flex-1">
+                      {tier.features.map((f) => (<li key={f} className="flex items-start gap-2 text-[13px] text-text-secondary"><Check size={14} className={cn("shrink-0 mt-0.5", popular ? "text-gold-bright" : "text-green")} /><span>{f}</span></li>))}
+                    </ul>
+                    <button type="button" onClick={tier.id === "free" ? () => { window.location.href = "/signup"; } : () => checkout(tier.id as "pro" | "elite")} disabled={loading} className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50", popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>{tier.cta}</button>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-[12px] text-center text-text-muted mt-7">{t.pricing.cancelNote}</p>
+            {checkoutError && <p role="alert" className="text-[12px] text-center text-red mt-2">{checkoutError}</p>}
+          </div>
+        </section>
+
+        {/* FAQ — SaaS two-column */}
+        <section className="relative py-20 px-6 bg-surface">
+          <div className="max-w-[1000px] mx-auto grid lg:grid-cols-[0.8fr_1.2fr] gap-10">
+            <div className="lg:sticky lg:top-24 self-start">
+              <Eyebrow>{t.faq.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-4" style={{ fontFamily: SERIF }}>{t.faq.title}</h2>
+              <p className="text-text-secondary text-sm mb-4">{t.faq.notFound}</p>
+              <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gold hover:text-gold-bright transition-colors font-medium text-sm no-underline">{t.faq.telegram}<ArrowUpRight size={15} /></a>
+            </div>
+            <div className="space-y-3">{t.faq.items.map(([q, a]) => (<FaqItem key={q} q={q} a={a} />))}</div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="relative py-24 px-6 overflow-hidden">
+          <GlowOrb className="w-[700px] h-[600px] top-0 left-1/2 -translate-x-1/2 opacity-40" />
+          <GridPattern />
+          <div className="max-w-[860px] mx-auto relative z-10">
+            <div className="rounded-3xl border border-gold/25 p-10 sm:p-14 text-center" style={{ background: "linear-gradient(168deg, rgba(212,168,67,0.1), var(--bg-card) 60%)", boxShadow: "0 40px 90px -60px rgba(240,200,90,0.6)" }}>
+              <Eyebrow>{t.finalCta.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>{t.finalCta.title}</h2>
+              <p className="text-text-secondary mb-7 text-lg leading-relaxed max-w-[560px] mx-auto">{t.finalCta.body}</p>
+              {/* accent stat chips */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+                {EA_PRODUCTS.map((ea) => (
+                  <span key={ea.id} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border font-mono text-[12px]" style={{ borderColor: accent(ea.accent, 0.3), color: accentText(ea.accent) }}>
+                    {ea.name.replace("Dralvo ", "")} <span className="text-green">{ea.headline[0].value}</span>
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="#pricing" className="inline-flex items-center justify-center gap-2 px-9 py-4 rounded-md text-[16px] font-bold bg-gold-bright text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.04]" style={{ boxShadow: "0 0 40px rgba(240,200,90,0.2)" }}>{t.finalCta.primaryCta}<ArrowRight size={19} /></Link>
+                <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-9 py-4 rounded-md text-[16px] font-semibold border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold">{t.finalCta.secondaryCta}<ArrowUpRight size={17} /></a>
+              </div>
+              <p className="mt-7 font-mono text-[11px] tracking-[0.04em] text-text-muted">{t.finalCta.guarantee}</p>
+            </div>
+          </div>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer
-        className="py-8 px-6 text-center text-xs border-t"
-        style={{ borderColor: tokens.divider, color: tokens.patina }}
-      >
-        <p>© 2026 Dralvo. Không phải lời khuyên đầu tư.</p>
-        <p className="mt-1">
-          Backtest results are historical. Past performance ≠ future results.
-        </p>
+      <footer className="border-t border-border bg-surface/50">
+        <div className="max-w-[1100px] mx-auto px-6 py-14">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+            <div>
+              <BrandLink logoSize={32} wordmarkClassName="text-lg" />
+              <p className="text-sm text-text-muted leading-relaxed max-w-[240px] mt-4">{t.footer.tagline}</p>
+            </div>
+            <div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.product}</div>
+              <div className="flex flex-col gap-2.5">
+                <Link href="#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.goldmaster}</Link>
+                <Link href="#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.scalp}</Link>
+                <Link href="/tools/backtest" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.tools}</Link>
+                <Link href="/track-record" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.trackRecord}</Link>
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.company}</div>
+              <div className="flex flex-col gap-2.5">
+                <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.telegram}</a>
+                <Link href="#pricing" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.nav.pricing}</Link>
+                <Link href="/login" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.login}</Link>
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.legal}</div>
+              <div className="flex flex-col gap-2.5">
+                <Link href="/privacy" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.privacy}</Link>
+                <Link href="/terms" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.terms}</Link>
+                <Link href="/disclaimer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.disclaimer}</Link>
+              </div>
+            </div>
+          </div>
+          <div className="pt-7 border-t border-border">
+            <p className="text-[11px] text-text-muted">{t.footer.copyright}</p>
+          </div>
+        </div>
       </footer>
     </div>
   );

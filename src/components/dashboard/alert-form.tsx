@@ -131,7 +131,7 @@ type Props = {
 
 export function AlertForm({ open, onClose, editAlert, onSave, onUpdate }: Props) {
   const { locale } = useLocale();
-  const copy = FORM_COPY[locale];
+  const copy = FORM_COPY[locale as keyof typeof FORM_COPY] ?? FORM_COPY.en;
   const states = DASHBOARD_COPY[locale].states;
   const [indicatorKey, setIndicatorKey] = useState("");
   const [operator, setOperator] = useState<AlertCondition["operator"]>("gt");

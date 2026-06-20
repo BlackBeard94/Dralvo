@@ -1,5 +1,11 @@
 # DRALVO STRATEGY SYSTEM — Complete Reference
 
+> ⚠️ **SỐ LIỆU CANONICAL:** dùng bộ số trong [`PRODUCT_PLAN.md §0`](./PRODUCT_PLAN.md)
+> — **PF 1.97 · Win 36.7% · +896% · Max Equity DD 24.78% · 196 lệnh.** Các bảng
+> backtest per-tier / year-by-year dưới đây (win 55-60%, PF 2.1...) là **CŨ/chưa
+> khớp**, sẽ reconcile khi backtest engine (`dralvo-trading/backtest/`) chạy lại.
+> Không dùng số trong doc này cho marketing.
+
 > **Version:** 2.0 | **Date:** 2026-06-15  
 > **Asset:** XAUUSD (Gold) | **Direction:** LONG ONLY  
 > **Backtest:** 20 years (2006-2025), 5,029 trading days, 835 CFTC weeks  

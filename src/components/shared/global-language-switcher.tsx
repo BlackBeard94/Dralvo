@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
-const pagesWithHeaderSwitcher = new Set(["/", "/pricing"]);
+const pagesWithHeaderSwitcher = new Set(["/", "/pricing", "/tools/backtest"]);
 
 export function GlobalLanguageSwitcher() {
   const pathname = usePathname();

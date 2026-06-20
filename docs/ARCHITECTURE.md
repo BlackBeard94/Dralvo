@@ -105,8 +105,11 @@ Canonical SQL lives in `supabase/schema.sql`. Incremental SQL lives in the
 6. Today, Drivers, Replay, and thesis monitors consume the same evidence and
    thesis contracts.
 
-The target design and delivery milestones are defined in
-[`SYSTEM_IMPLEMENTATION_PLAN.md`](./SYSTEM_IMPLEMENTATION_PLAN.md).
+The current product direction and delivery milestones are defined in
+[`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md). The thesis/dashboard surfaces described
+above belong to the V1 SaaS product and are slated for archival under the V2
+pivot — see the archived V1 plan in
+[`archive/v1-saas/SYSTEM_IMPLEMENTATION_PLAN.md`](./archive/v1-saas/SYSTEM_IMPLEMENTATION_PLAN.md).
 
 ## Billing Flow
 

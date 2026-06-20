@@ -18,6 +18,28 @@ function checkoutErrorMessage(error: unknown) {
   return fallback;
 }
 
+type CheckoutPlan = "pro" | "elite";
+type CheckoutPeriod = "monthly" | "sixmo" | "yearly";
+
+const PLANS: CheckoutPlan[] = ["pro", "elite"];
+const PERIODS: CheckoutPeriod[] = ["monthly", "sixmo", "yearly"];
+
+/**
+ * Resolve the Stripe price id for a (plan, period). Convention:
+ *   STRIPE_PRICE_PRO_MONTHLY, STRIPE_PRICE_ELITE_YEARLY, ...
+ * Falls back to the legacy STRIPE_PRO_PRICE_ID for pro/monthly.
+ */
+function resolvePriceId(plan: CheckoutPlan, period: CheckoutPeriod) {
+  const key = `STRIPE_PRICE_${plan.toUpperCase()}_${period.toUpperCase()}`;
+  const priceId =
+    process.env[key] ||
+    (plan === "pro" && period === "monthly" ? process.env.STRIPE_PRO_PRICE_ID : undefined);
+  if (!priceId) {
+    throw new Error(`Stripe price not configured for ${plan}/${period} (${key}).`);
+  }
+  return priceId;
+}
+
 function getCheckoutBaseUrl(request: NextRequest) {
   const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
@@ -37,12 +59,12 @@ function loginRedirect(request: NextRequest) {
   return NextResponse.redirect(`${request.nextUrl.origin}/login?redirect=${redirect}`);
 }
 
-async function createCheckoutSession(request: NextRequest) {
-  const priceId = process.env.STRIPE_PRO_PRICE_ID;
-
-  if (!priceId) {
-    throw new Error("STRIPE_PRO_PRICE_ID is not configured.");
-  }
+async function createCheckoutSession(
+  request: NextRequest,
+  plan: CheckoutPlan = "pro",
+  period: CheckoutPeriod = "monthly",
+) {
+  const priceId = resolvePriceId(plan, period);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -79,6 +101,8 @@ async function createCheckoutSession(request: NextRequest) {
       trial_period_days: 3,
       metadata: {
         user_id: user.id,
+        plan,
+        period,
       },
     },
     line_items: [
@@ -93,13 +117,15 @@ async function createCheckoutSession(request: NextRequest) {
     customer_email: user.email ?? undefined,
     metadata: {
       user_id: user.id,
+      plan,
+      period,
     },
   });
 
   await recordProductEvent({
     userId: user.id,
     eventName: "checkout_started",
-    properties: { payment_method: "stripe" },
+    properties: { payment_method: "stripe", plan, period },
   });
 
   return { user, sessionUrl: session.url };
@@ -147,8 +173,16 @@ export async function POST(request: NextRequest) {
     return rateLimitResponse(rateLimit.resetAt);
   }
 
+  const body = await request.json().catch(() => ({}) as Record<string, unknown>);
+  const plan = PLANS.includes(body?.plan as CheckoutPlan)
+    ? (body.plan as CheckoutPlan)
+    : "pro";
+  const period = PERIODS.includes(body?.period as CheckoutPeriod)
+    ? (body.period as CheckoutPeriod)
+    : "monthly";
+
   try {
-    const { sessionUrl } = await createCheckoutSession(request);
+    const { sessionUrl } = await createCheckoutSession(request, plan, period);
 
     if (!sessionUrl) {
       return NextResponse.json(

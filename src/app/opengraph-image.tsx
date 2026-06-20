@@ -26,11 +26,12 @@ export default function Image() {
         <div style={{ color: "#D4A843", fontSize: 28, letterSpacing: 8 }}>
           DRALVO
         </div>
-        <div style={{ fontSize: 92, lineHeight: 1.02, marginTop: 28 }}>
-          Drill Into Gold
+        <div style={{ fontSize: 84, lineHeight: 1.04, marginTop: 28 }}>
+          Two machines. One metal.
         </div>
-        <div style={{ color: "#9D9992", fontSize: 28, marginTop: 28, maxWidth: 760 }}>
-          XAUUSD indicator intelligence for focused gold traders.
+        <div style={{ color: "#9D9992", fontSize: 28, marginTop: 28, maxWidth: 820 }}>
+          Verified XAUUSD trading robots — GoldMaster (D1) & Gold Scalp (M5).
+          No martingale, no grid.
         </div>
       </div>
     ),

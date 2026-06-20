@@ -1,6 +1,18 @@
 # Dralvo
 
-Dralvo is a live SaaS product for XAUUSD analysis. It provides a focused gold dashboard, Supabase Auth, Stripe-backed Pro billing, alert rules, and email/Telegram/in-app notifications.
+Dralvo is a gold-trader ecosystem for XAUUSD: a backtested trading strategy
+delivered through MT5 indicators/EA, a Telegram hub, and a web app for
+content, signal distribution, licensing, and billing.
+
+> **Product direction (V2):** Indicator → Bot EA → Course → IB commission →
+> Copy trade. The single source of truth is
+> [`docs/PRODUCT_PLAN.md`](docs/PRODUCT_PLAN.md). Dralvo previously shipped a V1
+> SaaS analytics dashboard; that direction is archived under
+> [`docs/archive/v1-saas/`](docs/archive/v1-saas/) and most of its code still
+> lives in this repo pending the V2 migration (see the FILE MAP in the plan).
+
+This repository (`dralvo-landing`) is the Next.js web app. MT5 / TradingView /
+Telegram artifacts will live in sibling folders as the V2 pivot proceeds.
 
 ## Quick Start
 
@@ -13,96 +25,57 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-- `npm run dev` - start local development.
-- `npm run build` - create production build.
-- `npm run start` - serve production build.
-- `npm run lint` - run ESLint.
-- `npm run audit:encoding` - check for mojibake patterns.
-- `npm run telegram:webhook` - set the Telegram bot webhook to `https://www.dralvo.com/api/telegram/webhook`.
+- `npm run dev` — start local development.
+- `npm run build` — create production build.
+- `npm run start` — serve production build.
+- `npm run lint` — run ESLint (0 warnings allowed).
+- `npm run test` — run Vitest.
+- `npm run audit:encoding` — check for mojibake patterns.
+- `npm run audit:secrets` — check for committed secrets.
+- `npm run audit:vulnerabilities` — fail on high/critical npm advisories.
+- `npm run telegram:webhook` — set the Telegram bot webhook.
 
 ## Environment
 
-Create `.env.local`:
+Copy [`.env.example`](.env.example) to `.env.local` and fill in the values.
+`.env.example` is the canonical list of required variables — keep it in sync
+with the code rather than duplicating the list here. Server-only secrets must
+never be exposed to client components.
 
-```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-STRIPE_SECRET_KEY=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_PRO_PRICE_ID=
-STRIPE_WEBHOOK_SECRET=
-SMTP_HOST=
-SMTP_PORT=465
-SMTP_USER=
-SMTP_PASS=
-SMTP_FROM=
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_BOT_USERNAME=
-TELEGRAM_WEBHOOK_SECRET=
-CRON_SECRET=
-TWELVE_DATA_API_KEY=
-FRED_API_KEY=
+```powershell
+cp .env.example .env.local
 ```
 
-Production uses:
+## Architecture & Stack
 
-```env
-NEXT_PUBLIC_SITE_URL=https://www.dralvo.com
-```
+Next.js App Router + Supabase (Auth + Postgres) + Stripe / VietQR (billing) +
+SMTP/Telegram (notifications). The data pipeline ingests CFTC, COMEX, GLD, TIPS,
+and XAUUSD evidence — this pipeline is the moat carried over from V1 and powers
+the V2 strategy backtests.
 
-Server-only secrets must not be exposed to client components.
-
-## Product Model
-
-- Free: core dashboard access.
-- Pro: $19/month with a real 3-day Stripe trial.
-- Premium/Enterprise: future roadmap.
-
-## Billing
-
-- Checkout route: `/api/stripe/checkout`
-- Checkout success sync: `/api/stripe/checkout/success`
-- Billing portal route: `/api/stripe/portal`
-- Webhook route: `/api/stripe/webhook`
-- Production webhook URL: `https://www.dralvo.com/api/stripe/webhook`
-
-The dashboard displays Free, Pro, Trialing, Canceled, or payment issue states based on the `subscriptions` table.
-
-## Alerts And Notifications
-
-- Alert APIs are Pro-gated server-side.
-- In-app notifications are stored in `alert_notifications`.
-- Email notifications use SMTP env vars.
-- Telegram notifications use a bot webhook and short-lived one-time connect codes.
-- Alert evaluation route: `/api/alerts/evaluate`
-
-## Cron
-
-Vercel Hobby only allows daily cron jobs. Current `vercel.json` is daily and deploy-safe. For 5-minute alert evaluation, use Vercel Pro or an external scheduler with:
-
-```text
-Authorization: Bearer <CRON_SECRET>
-```
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the runtime shape.
 
 ## Project Structure
 
-- `src/app` - Next.js pages, route handlers, SEO files, and proxy.
-- `src/components` - shared UI, marketing, and dashboard components.
-- `src/data` - indicator seed data and ingestion fetchers.
-- `src/lib` - server integrations and utilities.
-- `docs` - product plan, architecture, and deployment notes.
-- `supabase` - canonical schema and migrations.
+- `src/app` — Next.js pages, route handlers, SEO files.
+- `src/components` — shared UI, marketing, and dashboard components.
+- `src/data` — indicator seed data and ingestion fetchers.
+- `src/lib` — server integrations and utilities.
+- `scripts` — backtest engine, MT5 EA source, ingestion/ops scripts.
+- `supabase` — canonical schema and migrations.
+- `docs` — see [`docs/README.md`](docs/README.md) for the documentation map.
 
-## Product Docs
+## Documentation
 
-- [Product Truth and Strategy](docs/PRODUCT_TRUTH_AND_STRATEGY.md)
-- [UI/UX Production Audit](docs/UI_UX_PRODUCTION_AUDIT.md)
-- [Project Plan](docs/PROJECT_PLAN.md)
+Start at [`docs/README.md`](docs/README.md). Key entry points:
+
+- [Product Plan (V2, canonical)](docs/PRODUCT_PLAN.md)
+- [Strategy System](docs/DRALVO_STRATEGY_SYSTEM.md)
+- [Indicator Spec](docs/DRALVO_INDICATOR_SPEC.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md)
 
 ## Legal
 
-Dralvo is for informational purposes only and is not financial advice.
+Dralvo is for informational purposes only and is not financial advice. Past
+backtest performance does not guarantee future results.

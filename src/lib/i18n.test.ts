@@ -8,8 +8,17 @@ import {
 } from "./i18n";
 
 describe("i18n configuration", () => {
-  it("requires Vietnamese, English, and Brazilian Portuguese", () => {
-    expect(SUPPORTED_LOCALES).toEqual(["vi", "en", "pt-BR"]);
+  it("supports the core three plus popular languages", () => {
+    expect(SUPPORTED_LOCALES).toEqual([
+      "vi",
+      "en",
+      "pt-BR",
+      "zh",
+      "es",
+      "hi",
+      "id",
+      "ru",
+    ]);
     expect(DEFAULT_LOCALE).toBe("vi");
   });
 
@@ -18,7 +27,17 @@ describe("i18n configuration", () => {
     expect(normalizeLocale("pt-BR")).toBe("pt-BR");
     expect(normalizeLocale("en-US")).toBe("en");
     expect(normalizeLocale("vi-VN")).toBe("vi");
+    expect(normalizeLocale("zh-CN")).toBe("zh");
+    expect(normalizeLocale("es-MX")).toBe("es");
+    expect(normalizeLocale("hi-IN")).toBe("hi");
+    expect(normalizeLocale("id-ID")).toBe("id");
+    expect(normalizeLocale("ru-RU")).toBe("ru");
     expect(normalizeLocale("fr-FR")).toBe("vi");
+  });
+
+  it("falls back untranslated locales to English copy", () => {
+    // zh has no PRODUCT_COPY translation yet -> should equal the English entry.
+    expect(PRODUCT_COPY.zh.primaryCta).toBe(PRODUCT_COPY.en.primaryCta);
   });
 
   it("has product copy for every supported locale", () => {

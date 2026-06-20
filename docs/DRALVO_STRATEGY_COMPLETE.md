@@ -1,5 +1,11 @@
 # Dralvo Tier 3A — Complete Strategy Reference
 
+> ⚠️ **SỐ LIỆU CANONICAL:** dùng bộ số trong [`PRODUCT_PLAN.md §0`](./PRODUCT_PLAN.md)
+> — **PF 1.97 · Win 36.7% · +896% · Max Equity DD 24.78% · 196 lệnh.** Các con số
+> trong tài liệu này (164 trades / win 51% / PF 1.69 / +119% và các bảng year-by-year)
+> là **CŨ/chưa khớp**, sẽ reconcile khi backtest engine (`dralvo-trading/backtest/`)
+> chạy lại. Không dùng số trong doc này cho marketing.
+
 > **Strategy:** CFTC + Trend + Pullback | **TF:** D1 | **Asset:** XAUUSD  
 > **Backtest:** MT5 data 2006-2026 | 164 trades | Win 51% | PF 1.69 | Return +119%  
 > **Indicator:** Dralvo v4.01 | File: `Dralvo_Gold_Filter.mq5` | CFTC from `cftc_status.csv`

@@ -187,10 +187,10 @@ function SimulationCard({
   signal: AiSignal | null;
   signalError: string | null;
   signalLoading: boolean;
-  locale: keyof typeof simulationCopy;
+  locale: string;
   onGenerate: () => void;
 }) {
-  const copy = simulationCopy[locale];
+  const copy = simulationCopy[locale as keyof typeof simulationCopy] ?? simulationCopy.en;
   const localeCode = locale === "pt-BR" ? "pt-BR" : locale;
   const isDirectional = simulation.action !== "stand_aside";
   const displayedAction = signal?.action ?? simulation.action;
@@ -443,7 +443,7 @@ export function TodayThesis() {
 
       <details className="mt-5 rounded-xl border border-border bg-card/60 p-4">
         <summary className="cursor-pointer select-none text-sm font-semibold text-gold">
-          {simulationCopy[locale].details}
+          {(simulationCopy[locale as keyof typeof simulationCopy] ?? simulationCopy.en).details}
         </summary>
 
       {displayThesis.priceRelationship && (

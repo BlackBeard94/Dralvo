@@ -152,7 +152,7 @@ function compactThesis(thesis: GoldThesis) {
   };
 }
 
-function signalInstruction(locale: "vi" | "en" | "pt-BR") {
+function signalInstruction(locale: string) {
   const language =
     locale === "vi"
       ? "Vietnamese"
@@ -173,7 +173,7 @@ function signalInstruction(locale: "vi" | "en" | "pt-BR") {
   ].join(" ");
 }
 
-function signalPayload(thesis: GoldThesis, locale: "vi" | "en" | "pt-BR") {
+function signalPayload(thesis: GoldThesis, locale: string) {
   return JSON.stringify({
     locale,
     thesis: compactThesis(thesis),
@@ -189,7 +189,7 @@ async function generateOpenAiSignal({
   thesis: GoldThesis;
   apiKey: string;
   model: string;
-  locale?: "vi" | "en" | "pt-BR";
+  locale?: string;
 }): Promise<AiSignal> {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -241,7 +241,7 @@ async function generateDeepSeekSignal({
   thesis: GoldThesis;
   apiKey: string;
   model: string;
-  locale: "vi" | "en" | "pt-BR";
+  locale: string;
 }) {
   const response = await fetch("https://api.deepseek.com/chat/completions", {
     method: "POST",
@@ -278,7 +278,7 @@ async function generateGeminiSignal({
   thesis: GoldThesis;
   apiKey: string;
   model: string;
-  locale: "vi" | "en" | "pt-BR";
+  locale: string;
 }) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
     model,
@@ -324,7 +324,7 @@ export async function generateAiSignal({
   apiKey: string;
   provider: AiProvider;
   model: string;
-  locale?: "vi" | "en" | "pt-BR";
+  locale?: string;
 }): Promise<AiSignal> {
   if (provider === "openai") {
     return generateOpenAiSignal({ thesis, apiKey, model, locale });

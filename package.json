@@ -11,6 +11,9 @@
     "audit:encoding": "node scripts/check-encoding.mjs",
     "audit:secrets": "node scripts/check-secrets.mjs",
     "audit:vulnerabilities": "node scripts/check-vulnerabilities.mjs",
+    "data:seed": "node scripts/seed-market-data.mjs",
+    "data:seed:twelve": "node scripts/seed-market-data.mjs --provider twelve-data",
+    "data:seed:dukascopy": "node scripts/seed-market-data.mjs --provider dukascopy",
     "telegram:webhook": "node scripts/set-telegram-webhook.mjs --site=https://www.dralvo.com"
   },
   "dependencies": {
@@ -23,6 +26,7 @@
     "csv-parse": "^6.2.1",
     "fast-xml-parser": "^5.7.0",
     "fflate": "^0.8.2",
+    "lightweight-charts": "^5.2.0",
     "lucide-react": "^0.400.0",
     "next": "^16.2.7",
     "nodemailer": "^8.0.10",
