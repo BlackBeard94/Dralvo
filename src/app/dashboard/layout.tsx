@@ -49,14 +49,18 @@ export default async function DashboardLayout({
   let planStatus = "free";
   try {
     // ponytail: license_keys takes priority over subscriptions
-    const { data: lic } = await supabase
+    const { data: licRows, error: licErr } = await supabase
       .from("license_keys")
       .select("plan, expires_at")
       .eq("user_id", user.id)
-      .maybeSingle();
-    if (lic && (!lic.expires_at || new Date(lic.expires_at) > new Date())) {
-      planTier = lic.plan === "unlimited" ? "Unlimited" : "Free";
-      planStatus = "active";
+      .limit(1);
+
+    if (!licErr && licRows && licRows.length > 0) {
+      const lic = licRows[0];
+      if (!lic.expires_at || new Date(lic.expires_at) > new Date()) {
+        planTier = lic.plan === "unlimited" ? "Unlimited" : "Free";
+        planStatus = "active";
+      }
     } else {
       const { data: sub } = await supabase
         .from("subscriptions")
