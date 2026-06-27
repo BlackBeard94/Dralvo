@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, Download, Check, ShieldCheck, ChevronDown,
-  ExternalLink, Copy, Sparkles,
+  ExternalLink, Copy, Sparkles, MessageCircle,
 } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
@@ -346,6 +346,50 @@ export default function TiGoldPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* Step 4: License Activation */}
+        <Section>
+          <div className="max-w-[720px] mx-auto">
+            <div className="flex items-center gap-4 mb-8">
+              <StepBadge n={4} done={false} />
+              <div>
+                <h2 className="text-2xl font-normal tracking-[-0.01em]" style={{ fontFamily: SERIF, color: emText }}>
+                  Bước 4 — Kích hoạt license
+                </h2>
+                <p className="text-sm text-text-secondary mt-1">EA cần license key để chạy. Nhắn Telegram để nhận key miễn phí.</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border p-6" style={{ borderColor: em(0.3), background: em(0.04) }}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: em(0.15) }}>
+                  <MessageCircle size={28} style={{ color: emText }} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-text-primary mb-2">Nhắn Telegram để nhận license key</h3>
+                  <ol className="space-y-2 text-[13px] text-text-secondary leading-relaxed">
+                    <li>1. Mở Telegram, tìm <code className="font-mono text-[#00c98d] bg-deep px-1.5 py-0.5 rounded text-[11px]">@dralvo</code></li>
+                    <li>2. Gửi tin nhắn: <strong>"TiGold license [số tài khoản MT5]"</strong></li>
+                    <li>3. Admin kiểm tra tài khoản của bạn thuộc IB Dralvo</li>
+                    <li>4. Nhận license key → nhập vào EA → bắt đầu giao dịch</li>
+                  </ol>
+                </div>
+                <a
+                  href="https://t.me/dralvo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-[#060609] no-underline transition-transform hover:scale-[1.03]"
+                  style={{ background: emText }}
+                >
+                  Mở Telegram <ExternalLink size={15} />
+                </a>
+              </div>
+              <p className="mt-4 text-[11px] text-text-muted">
+                License được cấp miễn phí vĩnh viễn cho tài khoản đã đăng ký qua IB Dralvo. Mỗi license gắn với 1 số tài khoản MT5.
+              </p>
             </div>
           </div>
         </Section>
