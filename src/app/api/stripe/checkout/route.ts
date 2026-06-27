@@ -18,22 +18,19 @@ function checkoutErrorMessage(error: unknown) {
   return fallback;
 }
 
-type CheckoutPlan = "pro" | "elite";
+type CheckoutPlan = "unlimited";
 type CheckoutPeriod = "monthly" | "sixmo" | "yearly";
 
-const PLANS: CheckoutPlan[] = ["pro", "elite"];
+const PLANS: CheckoutPlan[] = ["unlimited"];
 const PERIODS: CheckoutPeriod[] = ["monthly", "sixmo", "yearly"];
 
 /**
  * Resolve the Stripe price id for a (plan, period). Convention:
- *   STRIPE_PRICE_PRO_MONTHLY, STRIPE_PRICE_ELITE_YEARLY, ...
- * Falls back to the legacy STRIPE_PRO_PRICE_ID for pro/monthly.
+ *   STRIPE_PRICE_UNLIMITED_MONTHLY, STRIPE_PRICE_UNLIMITED_YEARLY, ...
  */
 function resolvePriceId(plan: CheckoutPlan, period: CheckoutPeriod) {
   const key = `STRIPE_PRICE_${plan.toUpperCase()}_${period.toUpperCase()}`;
-  const priceId =
-    process.env[key] ||
-    (plan === "pro" && period === "monthly" ? process.env.STRIPE_PRO_PRICE_ID : undefined);
+  const priceId = process.env[key];
   if (!priceId) {
     throw new Error(`Stripe price not configured for ${plan}/${period} (${key}).`);
   }
@@ -61,7 +58,7 @@ function loginRedirect(request: NextRequest) {
 
 async function createCheckoutSession(
   request: NextRequest,
-  plan: CheckoutPlan = "pro",
+  plan: CheckoutPlan = "unlimited",
   period: CheckoutPeriod = "monthly",
 ) {
   const priceId = resolvePriceId(plan, period);
@@ -98,7 +95,6 @@ async function createCheckoutSession(
   const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     subscription_data: {
-      trial_period_days: 3,
       metadata: {
         user_id: user.id,
         plan,
@@ -176,7 +172,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}) as Record<string, unknown>);
   const plan = PLANS.includes(body?.plan as CheckoutPlan)
     ? (body.plan as CheckoutPlan)
-    : "pro";
+    : "unlimited";
   const period = PERIODS.includes(body?.period as CheckoutPeriod)
     ? (body.period as CheckoutPeriod)
     : "monthly";

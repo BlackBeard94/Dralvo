@@ -50,6 +50,21 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         await upsertProSubscriptionFromCheckoutSession(session);
+
+        // ponytail: auto-generate license key for Unlimited buyers
+        const userId = session.client_reference_id;
+        if (userId) {
+          const { data: sub } = await supabase
+            .from("subscriptions")
+            .select("current_period_end")
+            .eq("user_id", userId)
+            .single();
+          await supabase.from("license_keys").upsert({
+            user_id: userId,
+            plan: "unlimited",
+            expires_at: sub?.current_period_end ?? null,
+          }, { onConflict: "user_id" });
+        }
         break;
       }
 
@@ -77,6 +92,18 @@ export async function POST(request: NextRequest) {
             error,
           );
         }
+
+        // ponytail: sync license expiry on renewal / status change
+        const { data: subRow } = await supabase
+          .from("subscriptions")
+          .select("user_id")
+          .eq("stripe_subscription_id", stripeSubscriptionId)
+          .single();
+        if (subRow) {
+          await supabase.from("license_keys")
+            .update({ expires_at: currentPeriodEnd })
+            .eq("user_id", subRow.user_id);
+        }
         break;
       }
 
@@ -98,6 +125,18 @@ export async function POST(request: NextRequest) {
             "[Stripe Webhook] Failed to mark subscription as canceled:",
             error,
           );
+        }
+
+        // ponytail: revoke license on cancel
+        const { data: subRow } = await supabase
+          .from("subscriptions")
+          .select("user_id")
+          .eq("stripe_subscription_id", stripeSubscriptionId)
+          .single();
+        if (subRow) {
+          await supabase.from("license_keys")
+            .delete()
+            .eq("user_id", subRow.user_id);
         }
         break;
       }

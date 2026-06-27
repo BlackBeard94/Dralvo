@@ -14,26 +14,31 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dralvo.com";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Dralvo - Trading Systems. Real Data. Real Results.",
+    default: "Dralvo — Automated XAUUSD Gold Trading Robots for MetaTrader 5",
     template: "%s | Dralvo",
   },
   description:
-    "Dralvo builds XAUUSD trading systems with real data, transparent testing, and disciplined signal tracking.",
+    "Dralvo builds verified automated gold (XAUUSD) trading robots for MetaTrader 5: GoldMaster (D1 swing), GoldScalp (M5 momentum) and the free TiGold engine. Strategies verified on real market data — no martingale, no grid. Start free via Dralvo IB, or unlock everything with Dralvo Unlimited from $59/month.",
   keywords: [
     "Dralvo",
+    "Dralvo GoldMaster",
+    "Dralvo GoldScalp",
+    "Dralvo TiGold",
+    "Dralvo Unlimited",
     "XAUUSD EA",
-    "gold trading bot",
-    "MT5 EA",
+    "gold trading robot",
+    "MT5 gold expert advisor",
     "automated gold trading",
-    "gold expert advisor",
+    "XAUUSD trading bot",
+    "no martingale gold EA",
     "robot giao dich vang",
-    "EA vang",
+    "EA vang XAUUSD",
   ],
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Dralvo - Trading Systems. Real Data. Real Results.",
+    title: "Dralvo — Automated XAUUSD Gold Trading Robots for MetaTrader 5",
     description:
-      "XAUUSD trading systems, real market data, transparent testing, and signal tracking.",
+      "Verified gold (XAUUSD) trading robots for MT5: GoldMaster (D1 swing), GoldScalp (M5 momentum) and the free TiGold engine. No martingale, no grid. Free via Dralvo IB or Dralvo Unlimited from $59/mo.",
     url: "/",
     siteName: "Dralvo",
     type: "website",
@@ -41,9 +46,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dralvo - Trading Systems. Real Data. Real Results.",
+    title: "Dralvo — Automated XAUUSD Gold Trading Robots for MetaTrader 5",
     description:
-      "XAUUSD trading systems, real market data, transparent testing, and signal tracking.",
+      "Verified gold (XAUUSD) trading robots for MT5: GoldMaster, GoldScalp and the free TiGold engine. No martingale, no grid. Free via Dralvo IB or Dralvo Unlimited from $59/mo.",
     images: ["/brand/dralvo-og.png"],
   },
   robots: { index: true, follow: true },

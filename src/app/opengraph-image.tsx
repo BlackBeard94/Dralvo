@@ -30,7 +30,7 @@ export default function Image() {
           Two machines. One metal.
         </div>
         <div style={{ color: "#9D9992", fontSize: 28, marginTop: 28, maxWidth: 820 }}>
-          Verified XAUUSD trading robots — GoldMaster (D1) & Gold Scalp (M5).
+          Verified XAUUSD trading robots — GoldMaster (D1) & GoldScalp (M5).
           No martingale, no grid.
         </div>
       </div>

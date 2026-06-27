@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 // GTC — Dralvo's exclusive IB partner
 const IB_LINKS: Record<string, string> = {
@@ -7,7 +8,6 @@ const IB_LINKS: Record<string, string> = {
 };
 
 // Mock: any 6-10 digit account number passes for now.
-// Replace with real broker API verification when IB is live.
 function isValidAccount(account: string): boolean {
   return /^\d{6,10}$/.test(account);
 }
@@ -40,11 +40,18 @@ export async function POST(request: Request) {
     );
   }
 
-  // TODO: real IB verification — check with broker API that this account
-  // was registered under Dralvo's IB link.
+  // ponytail: upsert license key, no auth — mt5_account is the anchor.
+  // user_id filled later when admin links via Telegram.
+  const supabase = getSupabaseAdminClient();
+  const { data: license } = await (supabase!
+    .from("license_keys")
+    .upsert({ mt5_account: account, plan: "tigold" }, { onConflict: "mt5_account" })
+    .select("key")
+    .single());
 
   return NextResponse.json({
     verified: true,
+    licenseKey: license?.key ?? null,
     downloads: {
       ex5: "/downloads/tigold/Dralvo TiGold.ex5",
       set: "/downloads/tigold/Dralvo tigold v1.set",

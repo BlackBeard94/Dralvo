@@ -48,21 +48,30 @@ export default async function DashboardLayout({
   let planTier = "Free";
   let planStatus = "free";
   try {
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("plan_tier, status")
+    // ponytail: license_keys takes priority over subscriptions
+    const { data: lic } = await supabase
+      .from("license_keys")
+      .select("plan, expires_at")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
+    if (lic && (!lic.expires_at || new Date(lic.expires_at) > new Date())) {
+      planTier = lic.plan === "unlimited" ? "Unlimited" : "Free";
+      planStatus = "active";
+    } else {
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("plan_tier, status")
+        .eq("user_id", user.id)
+        .single();
 
-    if (sub) {
-      planStatus = sub.status ?? "free";
-      planTier = hasProAccess(sub.status)
-        ? sub.plan_tier
-        : planTierForStatus(sub.status);
+      if (sub) {
+        planStatus = sub.status ?? "free";
+        planTier = hasProAccess(sub.status)
+          ? sub.plan_tier
+          : planTierForStatus(sub.status);
+      }
     }
-  } catch {
-    // Table may not exist yet. Default to "Free".
-  }
+  } catch {}
 
   return (
     <DashboardShell

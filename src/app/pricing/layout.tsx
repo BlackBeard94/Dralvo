@@ -3,14 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Compare Dralvo Free and Pro access for source-backed gold evidence, thesis monitoring, replay, and exports.",
-  alternates: {
-    canonical: "/pricing",
-  },
+    "Rent Dralvo gold trading robots for MetaTrader 5 — start free via Dralvo IB or unlock the full ecosystem with Dralvo Unlimited from $59/month.",
+  alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Dralvo Pricing",
+    title: "Dralvo Pricing — Rent Gold Trading Robots for MT5",
     description:
-      "One Free plan and one Pro plan for explainable gold decision intelligence.",
+      "Free via Dralvo IB or Dralvo Unlimited from $59/month. Cancel anytime.",
     url: "/pricing",
   },
 };

@@ -4,9 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  DatabaseZap,
-  Bell,
-  History,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -40,9 +37,6 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", labelKey: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
-  { id: "drivers", labelKey: "drivers", icon: DatabaseZap, href: "/dashboard/drivers" },
-  { id: "alerts", labelKey: "monitors", icon: Bell, href: "/dashboard/alerts" },
-  { id: "replay", labelKey: "replay", icon: History, href: "/dashboard/replay" },
   { id: "settings", labelKey: "settings", icon: Settings, href: "/dashboard/settings" },
 ];
 

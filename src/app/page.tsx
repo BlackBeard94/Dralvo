@@ -36,7 +36,7 @@ type PeriodId = (typeof PERIODS)[number]["id"];
  * total = charged now for the period · perMo = per-month equivalent · off = % saved. */
 const UNLIMITED_PRICING: Record<PeriodId, { total: number; perMo: number; off: number }> = {
   monthly: { total: 59, perMo: 59, off: 0 },
-  sixmo: { total: 318, perMo: 53, off: 10 },
+  sixmo: { total: 319, perMo: 53, off: 10 },
   yearly: { total: 599, perMo: 50, off: 15 },
 };
 

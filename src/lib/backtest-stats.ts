@@ -86,7 +86,7 @@ export const GOLDMASTER: EaProduct = {
 
 export const GOLD_SCALP: EaProduct = {
   id: "scalp",
-  name: "Dralvo Gold Scalp",
+  name: "Dralvo GoldScalp",
   version: "v1.0",
   accent: "steel",
   symbol: "XAUUSD",

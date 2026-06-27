@@ -4,6 +4,7 @@ export type StrategyDirection = "long" | "short" | "both";
 export type StrategyTemplate = "ema-cross" | "rsi-reversion" | "breakout";
 
 export type StrategySpec = {
+  name: string;
   template: StrategyTemplate;
   direction: StrategyDirection;
   fastEma: number;
@@ -16,6 +17,28 @@ export type StrategySpec = {
   stopAtr: number;
   targetAtr: number;
   riskPct: number;
+  stopPoints: number;
+  targetPoints: number;
+  // ponytail: entry filters — 0 = disabled
+  adxPeriod: number;
+  minAdx: number;
+  maxSpread: number;
+  sessions: string; // comma-separated: "london,newyork"
+  // ponytail: trade management & risk — 0 = disabled
+  breakevenR: number;
+  trailAtr: number;
+  maxBars: number;
+  initialCapital: number;
+  commission: number;
+  maxDailyLossPct: number;
+  maxDrawdownPct: number;
+  // ponytail: optimization ranges — 0 = fixed, >0 = grid search
+  optEmaFastMin: number;
+  optEmaFastMax: number;
+  optEmaSlowMin: number;
+  optEmaSlowMax: number;
+  optRsiBuyMin: number;
+  optRsiBuyMax: number;
 };
 
 export type BacktestTrade = {
@@ -27,7 +50,7 @@ export type BacktestTrade = {
   exit: number;
   pnlPct: number;
   rMultiple: number;
-  reason: "target" | "stop" | "signal" | "end";
+  reason: "target" | "stop" | "signal" | "end" | "breakeven" | "trail" | "time" | "dailyLoss";
 };
 
 export type BacktestResult = {
@@ -44,6 +67,7 @@ export type BacktestResult = {
 };
 
 const DEFAULT_SPEC: StrategySpec = {
+  name: "",
   template: "ema-cross",
   direction: "both",
   fastEma: 20,
@@ -56,6 +80,25 @@ const DEFAULT_SPEC: StrategySpec = {
   stopAtr: 1.5,
   targetAtr: 3,
   riskPct: 1,
+  stopPoints: 0,
+  targetPoints: 0,
+  adxPeriod: 0,
+  minAdx: 0,
+  maxSpread: 0,
+  sessions: "",
+  breakevenR: 0,
+  trailAtr: 0,
+  maxBars: 0,
+  initialCapital: 10000,
+  commission: 0,
+  maxDailyLossPct: 0,
+  maxDrawdownPct: 0,
+  optEmaFastMin: 0,
+  optEmaFastMax: 0,
+  optEmaSlowMin: 0,
+  optEmaSlowMax: 0,
+  optRsiBuyMin: 0,
+  optRsiBuyMax: 0,
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -107,8 +150,16 @@ export function parseStrategyPrompt(prompt: string): StrategySpec {
   const stop = extractFirstNumberAfter(text, "sl") ?? extractFirstNumberAfter(text, "stop");
   const target = extractFirstNumberAfter(text, "tp") ?? extractFirstNumberAfter(text, "target");
   const risk = extractFirstNumberAfter(text, "risk");
-  if (stop) spec.stopAtr = clamp(stop, 0.3, 8);
-  if (target) spec.targetAtr = clamp(target, 0.5, 16);
+  // ponytail: fixed-point SL/TP — use points if number is large (>20) or "point"/"pip" mentioned
+  const usePoints = text.includes("point") || text.includes("pip") || (stop && stop > 20) || (target && target > 20);
+  if (stop) {
+    if (usePoints) spec.stopPoints = clamp(stop, 50, 100000);
+    else spec.stopAtr = clamp(stop, 0.3, 8);
+  }
+  if (target) {
+    if (usePoints) spec.targetPoints = clamp(target, 50, 500000);
+    else spec.targetAtr = clamp(target, 0.5, 16);
+  }
   if (risk) spec.riskPct = clamp(risk, 0.1, 5);
 
   return spec;
@@ -158,6 +209,60 @@ function atr(candles: MarketCandle[], period: number) {
   return ema(ranges, period);
 }
 
+// ponytail: ADX trend strength filter
+function adx(candles: MarketCandle[], period: number): number[] {
+  const dx: number[] = Array(candles.length).fill(0);
+  const high = candles.map((c) => c.high);
+  const low = candles.map((c) => c.low);
+  const close = candles.map((c) => c.close);
+  const tr = candles.map((_, i) => {
+    if (i === 0) return high[i] - low[i];
+    return Math.max(high[i] - low[i], Math.abs(high[i] - close[i-1]), Math.abs(low[i] - close[i-1]));
+  });
+  const atrSmooth = ema(tr, period);
+  const plusDM = candles.map((_, i) => {
+    if (i === 0) return 0;
+    const up = high[i] - high[i-1];
+    const down = low[i-1] - low[i];
+    return up > down && up > 0 ? up : 0;
+  });
+  const minusDM = candles.map((_, i) => {
+    if (i === 0) return 0;
+    const down = low[i-1] - low[i];
+    const up = high[i] - high[i-1];
+    return down > up && down > 0 ? down : 0;
+  });
+  const smoothPlus = ema(plusDM, period);
+  const smoothMinus = ema(minusDM, period);
+  for (let i = period; i < candles.length; i++) {
+    const sum = smoothPlus[i] + smoothMinus[i];
+    dx[i] = sum > 0 ? (Math.abs(smoothPlus[i] - smoothMinus[i]) / sum) * 100 : 0;
+  }
+  return ema(dx, period);
+}
+
+function passesFilters(
+  spec: StrategySpec,
+  candle: MarketCandle,
+  adxValues: number[],
+  index: number,
+): boolean {
+  // Spread filter
+  if (spec.maxSpread > 0 && (candle.spread ?? 0) > spec.maxSpread) return false;
+  // ADX filter
+  if (spec.minAdx > 0 && spec.adxPeriod > 0 && (adxValues[index] ?? 0) < spec.minAdx) return false;
+  // Session filter — check hour of candle timestamp
+  if (spec.sessions) {
+    const hour = new Date(candle.time).getUTCHours();
+    const allowed = spec.sessions.toLowerCase();
+    const inLondon = allowed.includes("london") && hour >= 7 && hour < 16;
+    const inNewYork = allowed.includes("newyork") && hour >= 12 && hour < 21;
+    const inAsian = allowed.includes("asian") && hour >= 0 && hour < 8;
+    if (!inLondon && !inNewYork && !inAsian) return false;
+  }
+  return true;
+}
+
 function signalAt(
   spec: StrategySpec,
   candles: MarketCandle[],
@@ -199,25 +304,50 @@ export function runStrategyBacktest(
   const slow = ema(close, spec.slowEma);
   const rsiValues = rsi(close, spec.rsiPeriod);
   const atrValues = atr(candles, spec.atrPeriod);
+  const adxValues = spec.adxPeriod > 0 ? adx(candles, spec.adxPeriod) : [];
   const trades: BacktestTrade[] = [];
-  const equityCurve = [10000];
-  let equity = 10000;
+  const equityCurve = [spec.initialCapital || 10000];
+  let equity = spec.initialCapital || 10000;
   let open:
     | {
         direction: "long" | "short";
         entry: number;
         entryTime: string;
+        entryIndex: number;
         stopDistance: number;
+        peakFavorable: number; // for trailing stop
       }
     | null = null;
 
-  for (let index = Math.max(spec.slowEma, spec.atrPeriod, spec.breakoutLookback); index < candles.length; index += 1) {
+  let dailyLoss = 0;
+  let currentDay = "";
+  let peakEquity = spec.initialCapital || 10000;
+
+  for (let index = Math.max(spec.slowEma, spec.atrPeriod, spec.breakoutLookback, spec.adxPeriod); index < candles.length; index += 1) {
     const candle = candles[index];
+    const candleDay = candle.time.slice(0, 10);
+    if (candleDay !== currentDay) { dailyLoss = 0; currentDay = candleDay; }
     const signal = signalAt(spec, candles, index, fast, slow, rsiValues);
 
     if (open) {
+      // ponytail: breakeven — move stop to entry after reaching breakevenR
+      if (spec.breakevenR > 0) {
+        const favorableMove = open.direction === "long" ? candle.high - open.entry : open.entry - candle.low;
+        if (favorableMove >= spec.breakevenR * open.stopDistance) {
+          open.stopDistance = 0.0001; // effectively at entry
+        }
+      }
+      // ponytail: trailing stop
+      if (spec.trailAtr > 0) {
+        const favorableMove = open.direction === "long" ? candle.high - open.entry : open.entry - candle.low;
+        if (favorableMove > open.peakFavorable) open.peakFavorable = favorableMove;
+        open.stopDistance = Math.max(open.stopDistance, atrValues[index] * spec.trailAtr);
+      }
+      // recompute stop/target with possibly-modified stopDistance
       const stopDistance = open.stopDistance;
-      const targetDistance = stopDistance * (spec.targetAtr / spec.stopAtr);
+      const targetDistance = spec.targetPoints > 0
+        ? spec.targetPoints * 0.01
+        : stopDistance * (spec.targetAtr / spec.stopAtr);
       const stop =
         open.direction === "long" ? open.entry - stopDistance : open.entry + stopDistance;
       const target =
@@ -225,7 +355,17 @@ export function runStrategyBacktest(
       let exit: number | null = null;
       let reason: BacktestTrade["reason"] = "end";
 
-      if (open.direction === "long") {
+      // ponytail: time-based exit
+      if (spec.maxBars > 0 && (index - open.entryIndex) >= spec.maxBars) {
+        exit = candle.close;
+        reason = "time";
+      }
+      // ponytail: daily loss check
+      else if (spec.maxDailyLossPct > 0 && (dailyLoss / (spec.initialCapital || 10000)) * 100 >= spec.maxDailyLossPct) {
+        exit = candle.close;
+        reason = "dailyLoss";
+      }
+      else if (open.direction === "long") {
         if (candle.low <= stop) {
           exit = stop;
           reason = "stop";
@@ -253,6 +393,9 @@ export function runStrategyBacktest(
         const rMultiple = priceMove / stopDistance;
         const pnlPct = rMultiple * spec.riskPct;
         equity *= 1 + pnlPct / 100;
+        if (pnlPct < 0) dailyLoss += Math.abs(pnlPct) * (spec.initialCapital || 10000) / 100;
+        // ponytail: commission
+        if (spec.commission > 0) equity -= spec.commission;
         trades.push({
           id: trades.length + 1,
           direction: open.direction,
@@ -270,12 +413,24 @@ export function runStrategyBacktest(
     }
 
     if (!open && signal) {
-      const stopDistance = Math.max(atrValues[index] * spec.stopAtr, candle.close * 0.0005);
+      // ponytail: entry filters
+      if (!passesFilters(spec, candle, adxValues, index)) continue;
+      // ponytail: risk management — max drawdown & daily loss
+      if (equity > peakEquity) peakEquity = equity;
+      const currentDrawdown = peakEquity > 0 ? ((peakEquity - equity) / peakEquity) * 100 : 0;
+      if (spec.maxDrawdownPct > 0 && currentDrawdown >= spec.maxDrawdownPct) continue;
+      if (spec.maxDailyLossPct > 0 && (dailyLoss / (spec.initialCapital || 10000)) * 100 >= spec.maxDailyLossPct) continue;
+      // ponytail: fixed-point stop overrides ATR
+      const stopDistance = spec.stopPoints > 0
+        ? spec.stopPoints * 0.01 // points → price (1 point = 0.01 for gold-standard)
+        : Math.max(atrValues[index] * spec.stopAtr, candle.close * 0.0005);
       open = {
         direction: signal,
         entry: candle.close,
         entryTime: candle.time,
+        entryIndex: index,
         stopDistance,
+        peakFavorable: 0,
       };
     }
   }
@@ -286,6 +441,8 @@ export function runStrategyBacktest(
     const rMultiple = priceMove / open.stopDistance;
     const pnlPct = rMultiple * spec.riskPct;
     equity *= 1 + pnlPct / 100;
+    if (pnlPct < 0) dailyLoss += Math.abs(pnlPct) * (spec.initialCapital || 10000) / 100;
+    if (spec.commission > 0) equity -= spec.commission;
     trades.push({
       id: trades.length + 1,
       direction: open.direction,
@@ -310,7 +467,7 @@ export function runStrategyBacktest(
     return peak === 0 ? 0 : ((peak - value) / peak) * 100;
   });
   const profitFactor = grossLoss === 0 ? grossWin : grossWin / grossLoss;
-  const netReturnPct = ((equity - 10000) / 10000) * 100;
+  const netReturnPct = ((equity - (spec.initialCapital || 10000)) / (spec.initialCapital || 10000)) * 100;
   const maxDrawdownPct = Math.max(0, ...peakDrawdowns);
   const expectancyR = trades.length
     ? trades.reduce((sum, trade) => sum + trade.rMultiple, 0) / trades.length
@@ -345,6 +502,51 @@ export function runStrategyBacktest(
     edgeScore,
     edgeVerdict,
   };
+}
+
+// ponytail: grid search optimization — brute-force best PF config
+export type OptimizationResult = {
+  spec: StrategySpec;
+  profitFactor: number;
+  netReturnPct: number;
+  totalTrades: number;
+};
+
+export function optimizeStrategy(
+  candles: MarketCandle[],
+  base: StrategySpec,
+): OptimizationResult | null {
+  // Generate candidate ranges
+  const fastRange = base.optEmaFastMin > 0 && base.optEmaFastMax > 0
+    ? [base.optEmaFastMin, Math.round((base.optEmaFastMin + base.optEmaFastMax) / 2), base.optEmaFastMax]
+    : [base.fastEma];
+  const slowRange = base.optEmaSlowMin > 0 && base.optEmaSlowMax > 0
+    ? [base.optEmaSlowMin, Math.round((base.optEmaSlowMin + base.optEmaSlowMax) / 2), base.optEmaSlowMax]
+    : [base.slowEma];
+  const rsiRange = base.template === "rsi-reversion" && base.optRsiBuyMin > 0
+    ? [base.optRsiBuyMin, Math.round((base.optRsiBuyMin + base.optRsiBuyMax) / 2), base.optRsiBuyMax]
+    : [base.rsiBuyBelow];
+
+  let best: OptimizationResult | null = null;
+
+  for (const fastEma of fastRange) {
+    for (const slowEma of slowRange) {
+      for (const rsiBuy of rsiRange) {
+        if (slowEma <= fastEma) continue;
+        const spec: StrategySpec = {
+          ...base,
+          fastEma: Math.round(fastEma),
+          slowEma: Math.round(slowEma),
+          rsiBuyBelow: rsiBuy,
+        };
+        const result = runStrategyBacktest(candles, spec);
+        if (!best || result.profitFactor > best.profitFactor) {
+          best = { spec, profitFactor: result.profitFactor, netReturnPct: result.netReturnPct, totalTrades: result.totalTrades };
+        }
+      }
+    }
+  }
+  return best;
 }
 
 export function buildSampleCandles(
