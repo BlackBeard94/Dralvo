@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo TiGold — Hướng dẫn sử dụng</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+
+  /* Hero */
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);
+    padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+
+  /* TOC */
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;
+    border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;
+    padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;
+    padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+
+  /* dashboard replica */
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;
+    padding:8px 12px;display:flex;justify-content:space-between;font-size:14px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;
+    padding-top:18px;border-top:1px solid var(--line)}
+
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{
+    body{background:#fff}
+    .toc{break-inside:avoid}
+    h2{break-after:avoid}
+    table{break-inside:auto}
+    .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    th,.dash,.badge,.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;TiGOLD</span>
+    <h1>Hướng dẫn sử dụng</h1>
+    <p>EA giao dịch tự động cho XAUUSD / BTCUSD trên MetaTrader 5 — một lệnh duy nhất, trailing stop thích ứng, 3 lớp bảo vệ vốn.</p>
+    <div class="ver">Phiên bản 2.00 · File: Dralvo TiGold.ex5</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Mục lục</b>
+    <ol>
+      <li><a href="#caidat">Cài đặt</a></li>
+      <li><a href="#points">Hiểu về “points”</a></li>
+      <li><a href="#thamso">Bảng tham số</a></li>
+      <li><a href="#dashboard">Bảng thông tin (Dashboard)</a></li>
+      <li><a href="#set">File .set khuyến nghị</a></li>
+      <li><a href="#suco">Khắc phục sự cố</a></li>
+      <li><a href="#ruiro">Khuyến cáo rủi ro</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Cài đặt</h2>
+    <ol class="steps">
+      <li>Đóng MetaTrader 5 (nếu đang mở).</li>
+      <li>Mở thư mục dữ liệu: <b>File → Open Data Folder</b>.</li>
+      <li>Chép <code>Dralvo TiGold.ex5</code> vào <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Hoặc chép file <code>.mq5</code> rồi mở MetaEditor bấm <b>Compile (F7)</b>.)</span></li>
+      <li>Mở lại MT5 → <b>Navigator → Expert Advisors</b>, chuột phải <b>Refresh</b> nếu chưa thấy.</li>
+      <li>Kéo <b>Dralvo TiGold</b> thả vào chart <b>XAUUSD</b> hoặc <b>BTCUSD</b> (khuyến nghị M1/M5).</li>
+      <li>Tab <b>Common</b>: tick <b>Allow Algo Trading</b>. Tab <b>Inputs</b>: bấm <b>Load</b> chọn file <code>.set</code> phù hợp.</li>
+      <li>Bấm <b>OK</b>, rồi bật nút <b>Algo Trading</b> trên thanh công cụ (sáng xanh).</li>
+    </ol>
+    <div class="callout">Chạy đúng thì góc trái chart hiện <b>bảng Dralvo TiGold</b> (xem mục 4).</div>
+  </section>
+
+  <section id="points">
+    <h2><span class="n">2.</span>Hiểu về “points” — đọc trước khi chỉnh</h2>
+    <p>Hầu hết tham số tính bằng <b>points</b>, và giá trị points <b>đổi theo broker</b>:</p>
+    <table>
+      <tr><th>Symbol</th><th>Số chữ số</th><th>1 point</th><th>Quy đổi</th></tr>
+      <tr><td>Vàng 3 số (vd XAUUSDm)</td><td>3</td><td>0.001</td><td>1.00 giá = 1000 points</td></tr>
+      <tr><td>Vàng 2 số (vd XAUUSD)</td><td>2</td><td>0.01</td><td>1.00 giá = 100 points</td></tr>
+      <tr><td>BTC 2 số (vd BTCUSDm)</td><td>2</td><td>0.01</td><td>1 USD = 100 points</td></tr>
+    </table>
+    <div class="callout warn"><b>Cùng một số points cho kết quả khác nhau giữa các broker.</b> Luôn dùng file <code>.set</code> đúng broker/symbol, hoặc tự quy đổi. EA tự in <code>digits</code> và <code>point</code> của symbol vào <b>Journal</b> khi khởi động.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">3.</span>Bảng tham số</h2>
+
+    <h3>General</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpSymbol</code></td><td>(trống)</td><td>Symbol giao dịch. Trống = dùng symbol của chart.</td></tr>
+      <tr><td><code>InpMagic</code></td><td>20260626</td><td>Mã định danh lệnh. Mỗi EA/symbol một số riêng để không xung đột.</td></tr>
+      <tr><td><code>InpSlippage</code></td><td>30</td><td>Trượt giá tối đa khi khớp (points).</td></tr>
+      <tr><td><code>InpMaxSpread</code></td><td>350</td><td>Spread tối đa cho phép vào lệnh (points). Rộng hơn → bỏ qua. 0 = tắt.</td></tr>
+    </table>
+
+    <h3>Entry Engine</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpEntrySensitivity</code></td><td>0</td><td>Độ nhạy phát hiện tín hiệu (points). 0 = tự động.</td></tr>
+      <tr><td><code>InpEntryFilter</code></td><td>3</td><td>Số bước xác nhận trước khi vào lệnh. Cao hơn = chọn lọc hơn, ít lệnh hơn.</td></tr>
+      <tr><td><code>InpReentryDelay</code></td><td>0</td><td>Thời gian chờ tối thiểu giữa 2 lệnh (giây).</td></tr>
+    </table>
+
+    <h3>Trend Filter</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpUseTrendFilter</code></td><td>true</td><td>Chỉ vào lệnh khi xu hướng đủ mạnh cùng chiều tín hiệu.</td></tr>
+      <tr><td><code>InpTrendPeriod</code></td><td>3</td><td>Số nến M1 dùng để đo xu hướng.</td></tr>
+      <tr><td><code>InpTrendStrength</code></td><td>300</td><td>Ngưỡng xu hướng (points). Càng lớn càng đòi xu hướng mạnh.</td></tr>
+    </table>
+
+    <h3>Time Filter</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpUseTimeFilter</code></td><td>true</td><td>Bật giới hạn giờ giao dịch.</td></tr>
+      <tr><td><code>InpStartHour</code></td><td>8</td><td>Giờ bắt đầu cho phép vào lệnh (giờ server, 0–23).</td></tr>
+      <tr><td><code>InpEndHour</code></td><td>22</td><td>Giờ kết thúc. Start = End → không giới hạn.</td></tr>
+    </table>
+
+    <h3>Protection — bảo vệ vốn</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpMaxLossStreak</code></td><td>0</td><td>Thua liên tiếp bao nhiêu lệnh thì tạm nghỉ. 0 = tắt.</td></tr>
+      <tr><td><code>InpPauseMinutes</code></td><td>60</td><td>Thời gian nghỉ sau khi kích hoạt (phút).</td></tr>
+      <tr><td><code>InpDailyStopPercent</code></td><td>0</td><td>Lỗ quá bao nhiêu % vốn đầu ngày thì nghỉ hết ngày (hôm sau tự bật lại). 0 = tắt.</td></tr>
+    </table>
+
+    <h3>News Filter — chỉ chạy LIVE</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpUseNewsFilter</code></td><td>true</td><td>Ngừng vào lệnh quanh giờ tin (theo Lịch Kinh tế MT5).</td></tr>
+      <tr><td><code>InpNewsMinsBefore</code></td><td>15</td><td>Nghỉ bao nhiêu phút trước tin.</td></tr>
+      <tr><td><code>InpNewsMinsAfter</code></td><td>15</td><td>Nghỉ bao nhiêu phút sau tin.</td></tr>
+      <tr><td><code>InpNewsImpact</code></td><td>High only</td><td>Mức tin cần né: chỉ High, hoặc High + Medium.</td></tr>
+      <tr><td><code>InpNewsCurrencies</code></td><td>USD</td><td>Tiền tệ theo dõi (phẩy ngăn, vd USD,EUR). Trống = tất cả.</td></tr>
+    </table>
+    <div class="callout warn">Lọc tin <b>không hoạt động trong Strategy Tester</b> (tester không có lịch). Chỉ tác dụng khi chạy demo/live.</div>
+
+    <h3>Exit / Trailing</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpStopLoss</code></td><td>2500</td><td>Stop loss ban đầu (points).</td></tr>
+      <tr><td><code>InpTrailStart</code></td><td>500</td><td>Lãi tối thiểu để bắt đầu dời SL (points).</td></tr>
+      <tr><td><code>InpTrailDistance</code></td><td>1000</td><td>Khoảng cách SL bám sau giá (points).</td></tr>
+      <tr><td><code>InpTrailStep</code></td><td>50</td><td>Bước tối thiểu mỗi lần dời SL (points).</td></tr>
+    </table>
+
+    <h3>Money Management — quản lý vốn</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpLotMode</code></td><td>Fixed lot</td><td>Chế độ tính lot: Fixed (cố định) hoặc Auto (theo vốn).</td></tr>
+      <tr><td><code>InpFixedLot</code></td><td>0.10</td><td>[Fixed] Khối lượng cố định.</td></tr>
+      <tr><td><code>InpEquityBasis</code></td><td>Balance</td><td>[Auto] Cơ sở vốn: Balance / Equity / Free margin.</td></tr>
+      <tr><td><code>InpCapitalPerLot</code></td><td>1000</td><td>[Auto] Cứ mỗi bao nhiêu vốn...</td></tr>
+      <tr><td><code>InpLotPerStep</code></td><td>0.10</td><td>[Auto] ...thì dùng bao nhiêu lot.</td></tr>
+      <tr><td><code>InpMaxLot</code></td><td>0</td><td>Trần lot an toàn. 0 = chỉ giới hạn theo broker.</td></tr>
+    </table>
+    <div class="callout"><b>Công thức Auto lot:</b> <code>lot = InpLotPerStep × (vốn / InpCapitalPerLot)</code>.<br>
+    Mặc định: mỗi 1000 vốn → 0.10 lot ⇒ vốn 5000 = 0.50 lot, vốn 10000 = 1.00 lot. Vốn tăng lot tăng, vốn giảm lot giảm.</div>
+
+    <h3>Display</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpShowPanel</code></td><td>true</td><td>Hiện bảng thông tin trên chart.</td></tr>
+      <tr><td><code>InpDebugLog</code></td><td>false</td><td>Ghi log chi tiết (chỉ bật khi cần soi lỗi).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">4.</span>Bảng thông tin trên chart</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO TiGOLD</span><span>XAUUSD</span></div>
+      <div class="rows">
+        <span class="l">Status</span><span class="g">RUNNING</span>
+        <span class="l">Equity</span><span class="w">10,248.50</span>
+        <span class="l">Today P/L</span><span class="g">+248.50</span>
+        <span class="l">Spread</span><span class="w">28 pts</span>
+        <span class="l">Trades</span><span class="w">W18&nbsp;&nbsp;L13&nbsp;&nbsp;T31&nbsp;&nbsp;(58%)</span>
+        <span class="l">Position</span><span class="g">BUY 0.10&nbsp;&nbsp;+12.40</span>
+        <span class="l">Protection</span><span class="l">Active</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Dòng</th><th>Ý nghĩa</th></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">RUNNING</span> / <span class="pill p-amber">PAUSED · NEWS</span> / <span class="pill p-red">DAILY STOP</span></td></tr>
+      <tr><td><b>Equity</b></td><td>Vốn ròng hiện tại.</td></tr>
+      <tr><td><b>Today P/L</b></td><td>Lãi/lỗ trong ngày (xanh/đỏ).</td></tr>
+      <tr><td><b>Spread</b></td><td>Spread hiện tại (points).</td></tr>
+      <tr><td><b>Trades</b></td><td>W thắng · L thua · T tổng · (winrate%) kể từ khi EA khởi động.</td></tr>
+      <tr><td><b>Position</b></td><td>Lệnh đang mở (hướng, lot, P/L) hoặc Flat.</td></tr>
+      <tr><td><b>Protection</b></td><td>Active / Loss streak / Pause / News window / Daily limit.</td></tr>
+    </table>
+    <div class="callout">Bảng chỉ hiện khi chạy <b>chart thật</b> hoặc <b>backtest Visual mode</b>; backtest thường/optimization sẽ ẩn cho nhanh.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">5.</span>File .set khuyến nghị</h2>
+    <table>
+      <tr><th>File</th><th>Dùng cho</th></tr>
+      <tr><td><code>Dralvo TiGold.set</code></td><td>XAUUSD (broker 3 chữ số)</td></tr>
+      <tr><td><code>Dralvo TiGold BTC.set</code></td><td>BTCUSD (2 chữ số)</td></tr>
+    </table>
+    <p>Nạp: tab <b>Inputs → Load</b> → chọn file. Lưu cấu hình riêng: <b>Save</b>.</p>
+    <div class="callout warn">Nếu broker vàng của bạn là <b>2 chữ số</b>, hãy <b>chia 10</b> các tham số points trong set vàng: <code>InpStopLoss</code> 2500→250, <code>InpTrendStrength</code> 300→30, <code>InpTrailDistance</code> 1000→100, <code>InpMaxSpread</code> 300→30, <code>InpTrailStart</code> 500→50, <code>InpTrailStep</code> 50→5.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">6.</span>Khắc phục sự cố</h2>
+    <table>
+      <tr><th>Hiện tượng</th><th>Nguyên nhân / xử lý</th></tr>
+      <tr><td>EA không vào lệnh</td><td>(1) Chưa bật Algo Trading. (2) <code>InpMaxSpread</code> nhỏ hơn spread broker → tăng lên. (3) Ngoài giờ Time Filter. (4) Đang nghỉ (xem dòng Protection). (5) <code>InpTrendStrength</code> quá lớn so với biên độ symbol.</td></tr>
+      <tr><td>Vào lệnh quá nhiều / nhiễu</td><td>Tăng <code>InpEntryFilter</code> và/hoặc <code>InpTrendStrength</code>.</td></tr>
+      <tr><td>Lot quá lớn/nhỏ</td><td>Kiểm tra <code>InpLotMode</code>, <code>InpFixedLot</code> hoặc công thức Auto lot.</td></tr>
+      <tr><td>SL/lời không như ý</td><td>Tham số là points — kiểm tra <code>digits</code> của symbol (mục 2).</td></tr>
+      <tr><td>Không thấy dashboard</td><td><code>InpShowPanel=true</code> và đang chạy chart thật / visual.</td></tr>
+      <tr><td>Lọc tin không chặn</td><td>Lọc tin chỉ chạy live, cần broker có Lịch Kinh tế; không tác dụng trong Strategy Tester.</td></tr>
+    </table>
+    <p style="color:var(--mut)">Xem chi tiết trong tab <b>Toolbox → Experts</b> và <b>Journal</b>.</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">7.</span>Khuyến cáo rủi ro</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Giao dịch ký quỹ có rủi ro cao. <b>Không có cấu hình nào đảm bảo lợi nhuận.</b></li>
+        <li>Luôn chạy <b>demo / forward test</b> đủ lâu trước khi dùng tiền thật.</li>
+        <li>Các bộ <code>.set</code> đi kèm là điểm khởi đầu, cần hiệu chỉnh theo broker, spread và độ biến động thực tế.</li>
+        <li>Kết quả backtest không đảm bảo kết quả tương lai; spread/slippage thật có thể khác.</li>
+        <li>Chỉ dùng số vốn bạn chấp nhận mất được.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo TiGold © Dralvo — Hướng dẫn sử dụng v2.00</footer>
+
+</div>
+</body>
+</html>
