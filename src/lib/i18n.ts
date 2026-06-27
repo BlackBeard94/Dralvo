@@ -446,6 +446,10 @@ export const AUTH_COPY = withLocaleFallback({
   },
   "pt-BR": {
     tagline: "Inteligência Institucional para Ouro",
+    dividerText: "ou",
+    googleSignIn: "Entrar com Google",
+    googleSignUp: "Cadastrar com Google",
+    googleLoading: "Autenticando...",
     email: "Email",
     password: "Senha",
     emailPlaceholder: "voce@exemplo.com",
