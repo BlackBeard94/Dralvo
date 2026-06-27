@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 
-// IB broker links — update when partnerships are live
+// GTC — Dralvo's exclusive IB partner
 const IB_LINKS: Record<string, string> = {
-  exness: "https://one.exness-track.com/a/dralvo",
-  xm: "https://clicks.pipaffiliates.com/c?c=placeholder",
-  icmarkets: "https://icmarkets.com/?camp=placeholder",
+  "gtc-usd": "https://web.mygtc.app/login/register?ref=hc8B8eNC",
+  "gtc-cent": "https://web.mygtc.app/login/register?ref=ADWMQMDP",
 };
 
 // Mock: any 6-10 digit account number passes for now.

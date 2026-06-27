@@ -23,10 +23,9 @@ const emText = "#00c98d";
 /*  Data                                                                       */
 /* -------------------------------------------------------------------------- */
 
-const BROKERS = [
-  { id: "exness", name: "Exness", logo: "EX", ibReady: true },
-  { id: "xm", name: "XM", logo: "XM", ibReady: false },
-  { id: "icmarkets", name: "IC Markets", logo: "IC", ibReady: false },
+const ACCOUNT_TYPES = [
+  { id: "gtc-usd", name: "Tài khoản USD", desc: "Giao dịch XAUUSD bằng USD — spread thấp, khối lượng chuẩn", ref: "hc8B8eNC" },
+  { id: "gtc-cent", name: "Tài khoản Cent", desc: "Giao dịch XAUUSD bằng Cent — vốn nhỏ, rủi ro thấp", ref: "ADWMQMDP" },
 ] as const;
 
 const INSTALL_STEPS = [
@@ -52,7 +51,7 @@ const FAQ_ITEMS = [
   ["EA có cần VPS không?", "Khuyến nghị dùng VPS để EA chạy 24/5 không gián đoạn. Có thể thuê VPS giá rẻ (~$5-10/tháng) và cài MT5 lên đó."],
   ["Tôi dùng được tài khoản demo không?", "Được. Mở tài khoản demo qua link IB Dralvo, xác nhận số tài khoản demo — bạn vẫn nhận được EA miễn phí."],
   ["Sao PF chỉ 1.20 mà vẫn lãi?", "Vì 21,005 lệnh trong 3.5 năm (~16 lệnh/ngày). Edge mỏng nhưng volume cực lớn -> lợi nhuận tích lũy. Đây là style高频 khác với GoldMaster (PF 2.65, 141 lệnh)."],
-  ["Tôi đổi broker được không?", "Được. Mỗi broker cần mở tài khoản mới qua link IB Dralvo. Sau đó xác nhận lại để tải EA."],
+  ["Tôi đổi accountType được không?", "Được. Mỗi accountType cần mở tài khoản mới qua link IB Dralvo. Sau đó xác nhận lại để tải EA."],
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -82,7 +81,7 @@ function StepBadge({ n, done }: { n: number; done: boolean }) {
 /* -------------------------------------------------------------------------- */
 
 export default function TiGoldPage() {
-  const [broker, setBroker] = useState("");
+  const [accountType, setAccountType] = useState("");
   const [account, setAccount] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
@@ -91,7 +90,7 @@ export default function TiGoldPage() {
   const [copyOk, setCopyOk] = useState(false);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
 
-  const selectedBroker = BROKERS.find((b) => b.id === broker);
+  const selectedType = ACCOUNT_TYPES.find((t) => t.id === accountType);
 
   const verify = async () => {
     setError("");
@@ -100,7 +99,7 @@ export default function TiGoldPage() {
       const res = await fetch("/api/ib/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ account, broker }),
+        body: JSON.stringify({ account, accountType: accountType }),
       });
       const data = await res.json();
       if (res.ok && data.verified) {
@@ -116,8 +115,9 @@ export default function TiGoldPage() {
   };
 
   const copyIB = () => {
-    if (selectedBroker?.ibReady) {
-      navigator.clipboard.writeText("https://one.exness-track.com/a/dralvo");
+    if (selectedType) {
+      const link = `https://web.mygtc.app/login/register?ref=${selectedType.ref}`;
+      navigator.clipboard.writeText(link);
       setCopyOk(true);
       setTimeout(() => setCopyOk(false), 2000);
     }
@@ -172,50 +172,49 @@ export default function TiGoldPage() {
         <Section className="bg-surface">
           <div className="max-w-[720px] mx-auto">
             <div className="flex items-center gap-4 mb-8">
-              <StepBadge n={1} done={!!selectedBroker} />
+              <StepBadge n={1} done={!!selectedType} />
               <div>
-                <h2 className="text-2xl font-normal tracking-[-0.01em]" style={{ fontFamily: SERIF, color: !selectedBroker ? emText : "var(--text-primary)" }}>
-                  {!selectedBroker ? "Bước 1 — Mở tài khoản qua IB Dralvo" : "✓ Đã chọn broker"}
+                <h2 className="text-2xl font-normal tracking-[-0.01em]" style={{ fontFamily: SERIF, color: !selectedType ? emText : "var(--text-primary)" }}>
+                  {!selectedType ? "Bước 1 — Mở tài khoản qua IB Dralvo" : "✓ Đã chọn loại tài khoản"}
                 </h2>
-                <p className="text-sm text-text-secondary mt-1">Chọn broker và mở tài khoản qua link đối tác của Dralvo.</p>
+                <p className="text-sm text-text-secondary mt-1">Chọn loại tài khoản GTC và mở qua link đối tác của Dralvo.</p>
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-3 mb-6">
-              {BROKERS.map((b) => (
+            <div className="grid sm:grid-cols-2 gap-3 mb-6">
+              {ACCOUNT_TYPES.map((t) => (
                 <button
-                  key={b.id}
+                  key={t.id}
                   type="button"
-                  onClick={() => { setBroker(b.id); setVerified(false); setError(""); }}
+                  onClick={() => { setAccountType(t.id); setVerified(false); setError(""); }}
                   className={cn(
                     "rounded-xl border p-4 text-left transition-all cursor-pointer",
-                    broker === b.id
+                    accountType === t.id
                       ? "border-[#00c98d]/50 bg-[#00c98d]/8"
                       : "border-border bg-card hover:border-[#00c98d]/20",
                   )}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-lg font-bold" style={{ color: broker === b.id ? emText : "var(--text-primary)" }}>{b.logo}</span>
-                    {b.ibReady && <span className="text-[9px] px-1.5 py-0.5 rounded font-mono" style={{ background: em(0.15), color: emText }}>IB ready</span>}
-                    {!b.ibReady && <span className="text-[9px] px-1.5 py-0.5 rounded font-mono text-text-muted bg-border/30">Sắp có</span>}
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-semibold text-sm" style={{ color: accountType === t.id ? emText : "var(--text-primary)" }}>{t.name}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded font-mono" style={{ background: em(0.15), color: emText }}>GTC</span>
                   </div>
-                  <div className="text-sm font-medium text-text-primary">{b.name}</div>
+                  <div className="text-[11px] text-text-muted leading-relaxed">{t.desc}</div>
                 </button>
               ))}
             </div>
 
-            {selectedBroker?.ibReady && (
+            {selectedType && (
               <div className="rounded-xl border p-5" style={{ borderColor: em(0.3), background: em(0.04) }}>
+                <div className="text-xs text-text-muted mb-2 uppercase tracking-[0.1em] font-semibold">Broker: GTC · {selectedType.name}</div>
                 <div className="flex items-center justify-between flex-wrap gap-3">
-                  <div>
-                    <div className="text-sm font-semibold text-text-primary mb-1">Link IB Dralvo: {selectedBroker.name}</div>
-                    <div className="font-mono text-xs text-text-muted break-all">https://one.exness-track.com/a/dralvo</div>
+                  <div className="font-mono text-xs text-text-secondary break-all">
+                    web.mygtc.app/register?ref={selectedType.ref}
                   </div>
                   <div className="flex gap-2">
                     <button type="button" onClick={copyIB} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-border text-text-secondary hover:text-text-primary transition-colors cursor-pointer">
                       {copyOk ? <><Check size={13} />Đã copy</> : <><Copy size={13} />Copy link</>}
                     </button>
-                    <a href="https://one.exness-track.com/a/dralvo" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold text-[#060609] no-underline transition-transform hover:scale-[1.03]" style={{ background: emText }}>
+                    <a href={`https://web.mygtc.app/login/register?ref=${selectedType.ref}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold text-[#060609] no-underline transition-transform hover:scale-[1.03]" style={{ background: emText }}>
                       Mở tài khoản <ExternalLink size={13} />
                     </a>
                   </div>
@@ -247,12 +246,12 @@ export default function TiGoldPage() {
                     onChange={(e) => { setAccount(e.target.value); setError(""); }}
                     placeholder="Số tài khoản MT5 (6-10 chữ số)"
                     className="flex-1 px-4 py-3 rounded-md border border-border bg-deep text-text-primary text-sm font-mono outline-none focus:border-[#00c98d]/50 transition-colors"
-                    disabled={!selectedBroker?.ibReady}
+                    disabled={!selectedType}
                   />
                   <button
                     type="button"
                     onClick={verify}
-                    disabled={!account || verifying || !selectedBroker?.ibReady}
+                    disabled={!account || verifying || !selectedType}
                     className="px-6 py-3 rounded-md text-sm font-semibold text-[#060609] transition-all disabled:opacity-40 cursor-pointer"
                     style={{ background: emText }}
                   >
@@ -260,8 +259,7 @@ export default function TiGoldPage() {
                   </button>
                 </div>
                 {error && <p className="text-red text-xs">{error}</p>}
-                {!selectedBroker && <p className="text-text-muted text-xs mt-2">Vui lòng chọn broker ở Bước 1 trước.</p>}
-                {selectedBroker && !selectedBroker.ibReady && <p className="text-text-muted text-xs mt-2">Broker này sắp có IB. Vui lòng chọn Exness.</p>}
+                {!selectedType && <p className="text-text-muted text-xs mt-2">Vui lòng chọn loại tài khoản ở Bước 1 trước.</p>}
               </div>
             ) : (
               <div className="rounded-xl border p-5 flex items-center gap-3" style={{ borderColor: em(0.3), background: em(0.04) }}>
@@ -269,7 +267,7 @@ export default function TiGoldPage() {
                   <Check size={20} style={{ color: emText }} />
                 </div>
                 <div>
-                  <div className="font-semibold text-text-primary">Tài khoản #{account} — {selectedBroker?.name}</div>
+                  <div className="font-semibold text-text-primary">Tài khoản #{account} — GTC · {selectedType?.name}</div>
                   <div className="text-xs text-text-muted">Đã xác nhận qua IB Dralvo. Tải EA ở bước 3.</div>
                 </div>
               </div>
