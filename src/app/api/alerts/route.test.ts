@@ -59,7 +59,7 @@ describe("/api/alerts plan gating", () => {
 
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual({
-      error: "Custom alerts require Dralvo Pro.",
+      error: "Custom alerts require Dralvo Unlimited.",
     });
     expect(mocks.getAlertsByUserId).not.toHaveBeenCalled();
   });
@@ -67,7 +67,7 @@ describe("/api/alerts plan gating", () => {
   it("allows Pro users to read alerts", async () => {
     const alerts = [{ id: "alert-1", indicator_key: "xauusd-spot" }];
     mocks.getAuthenticatedUser.mockResolvedValue({ id: "user-pro" });
-    mocks.getUserPlanTierByUserId.mockResolvedValue("Pro");
+    mocks.getUserPlanTierByUserId.mockResolvedValue("Unlimited");
     mocks.getAlertsByUserId.mockResolvedValue(alerts);
 
     const response = await GET(request("GET"));
@@ -97,7 +97,7 @@ describe("/api/alerts plan gating", () => {
     };
     const created = { id: "alert-1", user_id: "user-pro", ...input };
     mocks.getAuthenticatedUser.mockResolvedValue({ id: "user-pro" });
-    mocks.getUserPlanTierByUserId.mockResolvedValue("Pro");
+    mocks.getUserPlanTierByUserId.mockResolvedValue("Unlimited");
     mocks.createAlert.mockResolvedValue(created);
     mocks.recordProductEvent.mockResolvedValue(true);
 

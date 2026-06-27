@@ -87,7 +87,7 @@ describe("/api/alerts/test-notification", () => {
 
   it("sends enabled Pro notification channels", async () => {
     mocks.getAuthenticatedUser.mockResolvedValue({ id: "user-1" });
-    mocks.getUserPlanTierByUserId.mockResolvedValue("Pro");
+    mocks.getUserPlanTierByUserId.mockResolvedValue("Unlimited");
     mocks.getSupabaseAdminClient.mockReturnValue(
       supabaseMock({
         email: "user@example.com",

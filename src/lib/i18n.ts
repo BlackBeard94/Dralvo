@@ -38,6 +38,18 @@ export const LOCALE_SHORT_LABELS: Record<SupportedLocale, string> = {
   ru: "RU",
 };
 
+/** ISO country code for the flag image at /flags/<code>.png (self-hosted). */
+export const LOCALE_FLAGS: Record<SupportedLocale, string> = {
+  vi: "vn",
+  en: "gb",
+  "pt-BR": "br",
+  zh: "cn",
+  es: "es",
+  hi: "in",
+  id: "id",
+  ru: "ru",
+};
+
 export const LOCALE_COOKIE = "dralvo-locale";
 export const LOCALE_STORAGE_KEY = "dralvo-locale";
 export const LOCALE_CHANGE_EVENT = "dralvo:locale-change";
@@ -120,7 +132,7 @@ export const PRODUCT_COPY = withLocaleFallback({
   vi: {
     productCategory: "Trí tuệ quyết định cho thị trường vàng",
     primaryCta: "Bắt đầu miễn phí",
-    proCta: "Nâng cấp Pro",
+    proCta: "Nâng cấp Unlimited",
     corePromise:
       "Dralvo kết hợp vị thế, tồn kho, lượng vàng ETF, lợi suất thực và giá XAUUSD thành một luận điểm vàng có thể truy xuất nguồn.",
     disclaimer:
@@ -129,7 +141,7 @@ export const PRODUCT_COPY = withLocaleFallback({
   en: {
     productCategory: "Gold Decision Intelligence",
     primaryCta: "Start Free",
-    proCta: "Upgrade to Pro",
+    proCta: "Upgrade to Unlimited",
     corePromise:
       "Dralvo turns positioning, inventory, ETF holdings, real yields, and XAUUSD price into a source-backed gold thesis.",
     disclaimer:
@@ -138,7 +150,7 @@ export const PRODUCT_COPY = withLocaleFallback({
   "pt-BR": {
     productCategory: "Inteligência de Decisão para Ouro",
     primaryCta: "Começar grátis",
-    proCta: "Atualizar para Pro",
+    proCta: "Atualizar para Unlimited",
     corePromise:
       "A Dralvo transforma posicionamento, estoques, reservas de ETFs, juros reais e o preço do XAUUSD em uma tese de ouro com fontes rastreáveis.",
     disclaimer:
@@ -536,7 +548,7 @@ export const LEGAL_COPY = withLocaleFallback({
         ["2. Phạm vi sản phẩm", "Dralvo cung cấp dashboard thông tin XAUUSD, ngữ cảnh bằng chứng và công cụ phân tích. Dralvo không thực hiện giao dịch, quản lý tiền hoặc hoạt động như broker, cố vấn đầu tư hay nhà lập kế hoạch tài chính."],
         ["3. Trách nhiệm người dùng", "Bạn chịu trách nhiệm cho quyết định giao dịch, quản trị rủi ro, bảo mật tài khoản và tuân thủ luật áp dụng cho bạn."],
         ["4. Tài khoản và truy cập", "Bạn chịu trách nhiệm giữ an toàn thông tin đăng nhập. Dralvo có thể giới hạn, tạm ngưng hoặc thu hồi quyền truy cập khi cần bảo vệ hệ thống, ngăn lạm dụng, xử lý vi phạm điều khoản hoặc tuân thủ yêu cầu pháp lý."],
-        ["5. Thanh toán, dùng thử và hủy gói", "Gói Pro được thanh toán qua Stripe trừ khi phương thức khác được hiển thị rõ tại checkout. Một số đăng ký Pro mới có thể có 3 ngày dùng thử; nếu checkout yêu cầu phương thức thanh toán, phí định kỳ sẽ bắt đầu khi thời gian dùng thử kết thúc trừ khi bạn hủy trước đó. Bạn có thể hủy qua billing portal; quyền truy cập Pro tiếp tục đến cuối kỳ đã thanh toán. Thuế, hoàn tiền và điều kiện thanh toán bổ sung phụ thuộc thông tin hiển thị tại checkout hoặc hóa đơn."],
+        ["5. Thanh toán, dùng thử và hủy gói", "Gói Unlimited được thanh toán qua Stripe trừ khi phương thức khác được hiển thị rõ tại checkout. Một số đăng ký Unlimited mới có thể có 3 ngày dùng thử; nếu checkout yêu cầu phương thức thanh toán, phí định kỳ sẽ bắt đầu khi thời gian dùng thử kết thúc trừ khi bạn hủy trước đó. Bạn có thể hủy qua billing portal; quyền truy cập Unlimited tiếp tục đến cuối kỳ đã thanh toán. Thuế, hoàn tiền và điều kiện thanh toán bổ sung phụ thuộc thông tin hiển thị tại checkout hoặc hóa đơn."],
         ["6. Tính khả dụng", "Dữ liệu thị trường, bằng chứng, thông báo và dashboard có thể bị trễ, thiếu hoặc không khả dụng do nguồn dữ liệu, nhà cung cấp hạ tầng hoặc bảo trì hệ thống. Dralvo cố gắng hiển thị trạng thái nguồn và độ mới khi có thể, nhưng không bảo đảm dữ liệu luôn liên tục hoặc không lỗi."],
       ],
     },
@@ -577,7 +589,7 @@ export const LEGAL_COPY = withLocaleFallback({
         ["2. Product Scope", "Dralvo provides informational XAUUSD dashboards, evidence context, and analysis tooling. It does not execute trades, manage funds, or act as a broker, investment adviser, or financial planner."],
         ["3. User Responsibility", "You are responsible for your own trading decisions, risk management, account security, and compliance with laws that apply to you."],
         ["4. Accounts and Access", "You are responsible for keeping your sign-in credentials secure. Dralvo may limit, suspend, or revoke access when needed to protect the service, prevent abuse, address terms violations, or comply with legal requirements."],
-        ["5. Billing, Trials, and Cancellation", "Pro is billed through Stripe unless another payment method is clearly shown at checkout. Some new Pro subscriptions may include a 3-day trial; if checkout requires a payment method, recurring charges begin when the trial ends unless you cancel first. You may cancel through the billing portal, and Pro access continues until the end of the paid period. Taxes, refunds, and additional payment conditions depend on the information shown at checkout or on the invoice."],
+        ["5. Billing, Trials, and Cancellation", "Unlimited is billed through Stripe unless another payment method is clearly shown at checkout. Some new Unlimited subscriptions may include a 3-day trial; if checkout requires a payment method, recurring charges begin when the trial ends unless you cancel first. You may cancel through the billing portal, and Unlimited access continues until the end of the paid period. Taxes, refunds, and additional payment conditions depend on the information shown at checkout or on the invoice."],
         ["6. Availability", "Market data, evidence, notifications, and dashboards may be delayed, incomplete, or unavailable because of source-data cadence, infrastructure providers, or maintenance. Dralvo aims to show source and freshness status where possible, but does not guarantee uninterrupted or error-free data."],
       ],
     },
@@ -618,7 +630,7 @@ export const LEGAL_COPY = withLocaleFallback({
         ["2. Escopo do produto", "A Dralvo fornece painéis informativos de XAUUSD, contexto de evidências e ferramentas de análise. Ela não executa trades, gerencia fundos nem atua como corretora, consultora de investimento ou planejadora financeira."],
         ["3. Responsabilidade do usuário", "Você é responsável por suas decisões de trading, gestão de risco, segurança da conta e cumprimento das leis aplicáveis."],
         ["4. Contas e acesso", "Você é responsável por manter suas credenciais seguras. A Dralvo pode limitar, suspender ou revogar acesso quando necessário para proteger o serviço, impedir abuso, tratar violações dos termos ou cumprir exigências legais."],
-        ["5. Cobrança, teste e cancelamento", "O Pro é cobrado via Stripe, salvo quando outro método estiver claramente exibido no checkout. Algumas novas assinaturas Pro podem incluir 3 dias de teste; se o checkout exigir forma de pagamento, cobranças recorrentes começam ao fim do teste, salvo cancelamento antes disso. Você pode cancelar pelo portal de cobrança, e o acesso Pro continua até o fim do período pago. Impostos, reembolsos e condições adicionais dependem das informações exibidas no checkout ou na fatura."],
+        ["5. Cobrança, teste e cancelamento", "O Unlimited é cobrado via Stripe, salvo quando outro método estiver claramente exibido no checkout. Algumas novas assinaturas Unlimited podem incluir 3 dias de teste; se o checkout exigir forma de pagamento, cobranças recorrentes começam ao fim do teste, salvo cancelamento antes disso. Você pode cancelar pelo portal de cobrança, e o acesso Unlimited continua até o fim do período pago. Impostos, reembolsos e condições adicionais dependem das informações exibidas no checkout ou na fatura."],
         ["6. Disponibilidade", "Dados de mercado, evidências, notificações e painéis podem estar atrasados, incompletos ou indisponíveis por causa da cadência das fontes, provedores de infraestrutura ou manutenção. A Dralvo procura exibir fonte e frescor quando possível, mas não garante dados ininterruptos ou livres de erro."],
       ],
     },
@@ -683,10 +695,10 @@ export const DASHBOARD_COPY = withLocaleFallback({
       live: "Đang hoạt động",
     },
     checkout: {
-      successTitle: "Pro đã được kích hoạt",
-      successBody: "Thanh toán đã hoàn tất và Dralvo đã đồng bộ quyền truy cập Pro cho tài khoản của bạn.",
+      successTitle: "Unlimited đã được kích hoạt",
+      successBody: "Thanh toán đã hoàn tất và Dralvo đã đồng bộ quyền truy cập Unlimited cho tài khoản của bạn.",
       syncFailedTitle: "Thanh toán thành công, đồng bộ đang chờ xử lý",
-      syncFailedBody: "Stripe đã trả về checkout thành công nhưng Dralvo chưa đồng bộ được trạng thái gói. Vui lòng thử tải lại hoặc liên hệ hỗ trợ nếu quyền Pro chưa mở.",
+      syncFailedBody: "Stripe đã trả về checkout thành công nhưng Dralvo chưa đồng bộ được trạng thái gói. Vui lòng thử tải lại hoặc liên hệ hỗ trợ nếu quyền Unlimited chưa mở.",
       missingSessionTitle: "Thiếu phiên checkout",
       missingSessionBody: "Dralvo không nhận được mã phiên Stripe để xác minh thanh toán. Vui lòng mở lại checkout từ trang Pricing.",
     },
@@ -779,7 +791,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Dựng lại luận điểm theo những gì có thể biết lúc đó",
       description:
         "Replay dùng thời điểm công bố nguồn nếu có, nếu không dùng thời điểm Dralvo nhận dữ liệu. Bằng chứng sau cutoff bị loại.",
-      proTitle: "Replay lịch sử yêu cầu Pro",
+      proTitle: "Replay lịch sử yêu cầu Unlimited",
       proDescription:
         "Replay là workflow nghiên cứu và không bao giờ lấp lịch sử thiếu bằng dữ liệu mô phỏng.",
       date: "Ngày replay",
@@ -787,7 +799,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       evidenceCount: "quan sát có thể biết ở thời điểm đó",
     },
     pages: {
-      upgrade: "Nâng cấp Pro",
+      upgrade: "Nâng cấp Unlimited",
       chartEyebrow: "Biểu đồ XAUUSD",
       chartTitle: "Góc nhìn chỉ huy giá vàng",
       chartDescription:
@@ -795,32 +807,32 @@ export const DASHBOARD_COPY = withLocaleFallback({
       indicatorsEyebrow: "Bề mặt bằng chứng",
       indicatorsTitle: "Tín hiệu dành riêng cho vàng",
       indicatorsDescription:
-        "Kiểm tra snapshot nguồn đã xác minh phía sau luận điểm hiện tại. Free thấy ba thẻ đầu; Pro mở toàn bộ bề mặt bằng chứng.",
+        "Kiểm tra snapshot nguồn đã xác minh phía sau luận điểm hiện tại. Free thấy ba thẻ đầu; Unlimited mở toàn bộ bề mặt bằng chứng.",
       noSnapshots: "Chưa có snapshot đã xác minh",
       noSnapshotsDescription:
         "Dashboard giữ trống cho đến khi ingestion production ghi quan sát nguồn thật.",
-      proIndicatorDescription: "Chỉ báo này thuộc Dralvo Pro.",
+      proIndicatorDescription: "Chỉ báo này thuộc Dralvo Unlimited.",
       correlationEyebrow: "Tương quan",
       correlationTitle: "Nghiên cứu quan hệ giữa các driver",
       correlationDescription:
         "Bề mặt này tiếp tục bị khóa cho đến khi mọi hệ số có thể tái lập từ chuỗi đã xác minh và căn chỉnh.",
       correlationLockedTitle: "Ma trận tương quan đầy đủ",
       correlationLockedDescription:
-        "Nâng cấp Pro để mở toàn bộ heatmap cross-asset.",
+        "Nâng cấp Unlimited để mở toàn bộ heatmap cross-asset.",
       alertsEyebrow: "Theo dõi luận điểm",
       alertsTitle: "Biết khi bằng chứng thay đổi",
       alertsDescription:
         "Theo dõi luận điểm tổng thể, trạng thái từng driver hoặc ngưỡng bằng chứng số và nhận giải thích qua in-app, email hoặc Telegram.",
-      alertsLockedTitle: "Cảnh báo tùy chỉnh yêu cầu Pro",
+      alertsLockedTitle: "Cảnh báo tùy chỉnh yêu cầu Unlimited",
       alertsLockedDescription:
-        "Free có thể khám phá dashboard. Pro mở theo dõi luận điểm, ngưỡng bằng chứng và gửi thông báo.",
+        "Free có thể khám phá dashboard. Unlimited mở theo dõi luận điểm, ngưỡng bằng chứng và gửi thông báo.",
       settingsEyebrow: "Cài đặt",
       settingsTitle: "Tài khoản và thông báo",
       settingsDescription:
         "Quản lý kênh thông báo và billing từ một bảng vận hành.",
       notifications: "Thông báo",
       notificationsLocked:
-        "Kênh thông báo khả dụng sau khi nâng cấp Pro.",
+        "Kênh thông báo khả dụng sau khi nâng cấp Unlimited.",
       dataStatus: "Trạng thái dữ liệu",
       dataStatusDescription:
         "Ingestion dữ liệu hiện chạy theo cron production đã cấu hình.",
@@ -831,10 +843,10 @@ export const DASHBOARD_COPY = withLocaleFallback({
       activeSubscription:
         "Subscription đang hoạt động. Quản lý gia hạn, thẻ hoặc hủy trong Stripe.",
       upgradeDescription:
-        "Nâng cấp Pro để mở toàn bộ workflow luận điểm và điều khiển billing.",
+        "Nâng cấp Unlimited để mở toàn bộ workflow luận điểm và điều khiển billing.",
       openingBilling: "Đang mở billing...",
       manageBilling: "Quản lý billing",
-      upgrade: "Nâng cấp Pro",
+      upgrade: "Nâng cấp Unlimited",
       signOut: "Đăng xuất",
       billingError: "Không mở được billing portal.",
     },
@@ -856,10 +868,10 @@ export const DASHBOARD_COPY = withLocaleFallback({
       live: "Live",
     },
     checkout: {
-      successTitle: "Pro is active",
-      successBody: "Payment is complete and Dralvo has synced Pro access for your account.",
+      successTitle: "Unlimited is active",
+      successBody: "Payment is complete and Dralvo has synced Unlimited access for your account.",
       syncFailedTitle: "Payment succeeded, sync is pending",
-      syncFailedBody: "Stripe returned a successful checkout but Dralvo could not sync the plan status yet. Refresh or contact support if Pro access does not appear.",
+      syncFailedBody: "Stripe returned a successful checkout but Dralvo could not sync the plan status yet. Refresh or contact support if Unlimited access does not appear.",
       missingSessionTitle: "Checkout session missing",
       missingSessionBody: "Dralvo did not receive the Stripe session id needed to verify payment. Please restart checkout from Pricing.",
     },
@@ -952,7 +964,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Rebuild the thesis as it was knowable",
       description:
         "Replay uses source release time when available and retrieval time otherwise. Evidence learned after the cutoff is excluded.",
-      proTitle: "Historical replay requires Pro",
+      proTitle: "Historical replay requires Unlimited",
       proDescription:
         "Replay is a research workflow and never fills missing history with simulated evidence.",
       date: "Replay date",
@@ -960,7 +972,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       evidenceCount: "historically available observations",
     },
     pages: {
-      upgrade: "Upgrade to Pro",
+      upgrade: "Upgrade to Unlimited",
       chartEyebrow: "XAUUSD Chart",
       chartTitle: "Gold price command view",
       chartDescription:
@@ -968,32 +980,32 @@ export const DASHBOARD_COPY = withLocaleFallback({
       indicatorsEyebrow: "Indicator Surface",
       indicatorsTitle: "Gold-native signals",
       indicatorsDescription:
-        "Inspect the verified source snapshots behind the current thesis. Free accounts see the first three available cards; Pro unlocks the full evidence surface.",
+        "Inspect the verified source snapshots behind the current thesis. Free accounts see the first three available cards; Unlimited unlocks the full evidence surface.",
       noSnapshots: "No verified snapshots available",
       noSnapshotsDescription:
         "The dashboard remains empty until production ingestion writes real source observations.",
-      proIndicatorDescription: "This indicator is part of Dralvo Pro.",
+      proIndicatorDescription: "This indicator is part of Dralvo Unlimited.",
       correlationEyebrow: "Correlation",
       correlationTitle: "Cross-driver relationship research",
       correlationDescription:
         "This surface remains gated until every coefficient is reproducible from aligned verified series.",
       correlationLockedTitle: "Full correlation matrix",
       correlationLockedDescription:
-        "Upgrade to Pro to unlock the complete cross-asset heatmap.",
+        "Upgrade to Unlimited to unlock the complete cross-asset heatmap.",
       alertsEyebrow: "Thesis Monitors",
       alertsTitle: "Know when the evidence changes",
       alertsDescription:
         "Monitor the overall thesis, individual driver states, or numeric evidence thresholds and receive an explanation through in-app, email, or Telegram notifications.",
-      alertsLockedTitle: "Custom alerts require Pro",
+      alertsLockedTitle: "Custom alerts require Unlimited",
       alertsLockedDescription:
-        "Free accounts can explore the dashboard. Pro unlocks thesis monitors, evidence thresholds, and notification delivery.",
+        "Free accounts can explore the dashboard. Unlimited unlocks thesis monitors, evidence thresholds, and notification delivery.",
       settingsEyebrow: "Settings",
       settingsTitle: "Account and notification settings",
       settingsDescription:
         "Manage your notification channels and billing flow from one operational panel.",
       notifications: "Notifications",
       notificationsLocked:
-        "Notification channels become available after upgrading to Pro.",
+        "Notification channels become available after upgrading to Unlimited.",
       dataStatus: "Data status",
       dataStatusDescription:
         "Data ingestion currently follows the configured production cron cadence.",
@@ -1004,10 +1016,10 @@ export const DASHBOARD_COPY = withLocaleFallback({
       activeSubscription:
         "Subscription is active. Manage renewal, card, or cancellation in Stripe.",
       upgradeDescription:
-        "Upgrade to Pro to unlock the complete thesis workflow and billing controls.",
+        "Upgrade to Unlimited to unlock the complete thesis workflow and billing controls.",
       openingBilling: "Opening billing...",
       manageBilling: "Manage billing",
-      upgrade: "Upgrade to Pro",
+      upgrade: "Upgrade to Unlimited",
       signOut: "Sign Out",
       billingError: "Failed to open billing portal.",
     },
@@ -1029,10 +1041,10 @@ export const DASHBOARD_COPY = withLocaleFallback({
       live: "Ao vivo",
     },
     checkout: {
-      successTitle: "Pro está ativo",
-      successBody: "O pagamento foi concluído e a Dralvo sincronizou o acesso Pro da sua conta.",
+      successTitle: "Unlimited está ativo",
+      successBody: "O pagamento foi concluído e a Dralvo sincronizou o acesso Unlimited da sua conta.",
       syncFailedTitle: "Pagamento aprovado, sincronização pendente",
-      syncFailedBody: "O Stripe retornou checkout bem-sucedido, mas a Dralvo ainda não conseguiu sincronizar o plano. Atualize a página ou contate suporte se o acesso Pro não aparecer.",
+      syncFailedBody: "O Stripe retornou checkout bem-sucedido, mas a Dralvo ainda não conseguiu sincronizar o plano. Atualize a página ou contate suporte se o acesso Unlimited não aparecer.",
       missingSessionTitle: "Sessão de checkout ausente",
       missingSessionBody: "A Dralvo não recebeu o id da sessão Stripe necessário para verificar o pagamento. Reinicie o checkout pela página Pricing.",
     },
@@ -1125,7 +1137,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Reconstrua a tese como ela era conhecível",
       description:
         "O replay usa o horário de divulgação quando disponível e o horário de coleta caso contrário. Evidências após o corte são excluídas.",
-      proTitle: "Replay histórico exige Pro",
+      proTitle: "Replay histórico exige Unlimited",
       proDescription:
         "Replay é um fluxo de pesquisa e nunca preenche histórico ausente com evidência simulada.",
       date: "Data do replay",
@@ -1133,7 +1145,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       evidenceCount: "observações historicamente disponíveis",
     },
     pages: {
-      upgrade: "Atualizar para Pro",
+      upgrade: "Atualizar para Unlimited",
       chartEyebrow: "Gráfico XAUUSD",
       chartTitle: "Visão operacional do preço do ouro",
       chartDescription:
@@ -1141,32 +1153,32 @@ export const DASHBOARD_COPY = withLocaleFallback({
       indicatorsEyebrow: "Superfície de evidências",
       indicatorsTitle: "Sinais nativos de ouro",
       indicatorsDescription:
-        "Inspecione snapshots verificados por trás da tese atual. Free mostra os três primeiros cards; Pro libera toda a superfície de evidências.",
+        "Inspecione snapshots verificados por trás da tese atual. Free mostra os três primeiros cards; Unlimited libera toda a superfície de evidências.",
       noSnapshots: "Nenhum snapshot verificado disponível",
       noSnapshotsDescription:
         "O painel permanece vazio até a ingestão de produção gravar observações reais de fontes.",
-      proIndicatorDescription: "Este indicador faz parte do Dralvo Pro.",
+      proIndicatorDescription: "Este indicador faz parte do Dralvo Unlimited.",
       correlationEyebrow: "Correlação",
       correlationTitle: "Pesquisa de relação entre drivers",
       correlationDescription:
         "Esta superfície continua bloqueada até que cada coeficiente seja reproduzível a partir de séries verificadas e alinhadas.",
       correlationLockedTitle: "Matriz de correlação completa",
       correlationLockedDescription:
-        "Atualize para Pro para liberar todo o heatmap cross-asset.",
+        "Atualize para Unlimited para liberar todo o heatmap cross-asset.",
       alertsEyebrow: "Monitores da tese",
       alertsTitle: "Saiba quando a evidência muda",
       alertsDescription:
         "Monitore a tese geral, estados de drivers ou limites numéricos de evidência e receba explicações por in-app, email ou Telegram.",
-      alertsLockedTitle: "Alertas personalizados exigem Pro",
+      alertsLockedTitle: "Alertas personalizados exigem Unlimited",
       alertsLockedDescription:
-        "Contas Free podem explorar o painel. Pro libera monitores de tese, limites de evidência e envio de notificações.",
+        "Contas Free podem explorar o painel. Unlimited libera monitores de tese, limites de evidência e envio de notificações.",
       settingsEyebrow: "Configurações",
       settingsTitle: "Conta e notificações",
       settingsDescription:
         "Gerencie canais de notificação e billing em um painel operacional.",
       notifications: "Notificações",
       notificationsLocked:
-        "Canais de notificação ficam disponíveis após atualizar para Pro.",
+        "Canais de notificação ficam disponíveis após atualizar para Unlimited.",
       dataStatus: "Estado dos dados",
       dataStatusDescription:
         "A ingestão de dados segue a cadência de cron de produção configurada.",
@@ -1177,10 +1189,10 @@ export const DASHBOARD_COPY = withLocaleFallback({
       activeSubscription:
         "Assinatura ativa. Gerencie renovação, cartão ou cancelamento no Stripe.",
       upgradeDescription:
-        "Atualize para Pro para liberar o fluxo completo de tese e controles de billing.",
+        "Atualize para Unlimited para liberar o fluxo completo de tese e controles de billing.",
       openingBilling: "Abrindo billing...",
       manageBilling: "Gerenciar billing",
-      upgrade: "Atualizar para Pro",
+      upgrade: "Atualizar para Unlimited",
       signOut: "Sair",
       billingError: "Não foi possível abrir o portal de billing.",
     },

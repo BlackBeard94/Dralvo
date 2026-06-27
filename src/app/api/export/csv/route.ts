@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/supabase/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getUserPlanTierByUserId } from "@/lib/subscription-gate";
+import { isPaidTier } from "@/lib/plan";
 import { recordProductEvent } from "@/lib/product-analytics";
 
 export const runtime = "nodejs";
@@ -44,9 +45,9 @@ export async function GET(_request: NextRequest) {
   }
 
   const tier = await getUserPlanTierByUserId(user.id);
-  if (tier !== "Pro") {
+  if (!isPaidTier(tier)) {
     return NextResponse.json(
-      { error: "CSV export is a Pro feature. Upgrade to access." },
+      { error: "CSV export is an Unlimited feature. Upgrade to access." },
       { status: 402 },
     );
   }

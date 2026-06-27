@@ -4,49 +4,29 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, Download, Check, ShieldCheck, ChevronDown,
-  ExternalLink, Copy, MessageCircle, TrendingUp, Activity,
+  ExternalLink, Copy, MessageCircle,
 } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { useLocale } from "@/hooks/use-locale";
 import { TIGOLD } from "@/lib/backtest-stats";
+import { TIGOLD_COPY } from "@/lib/tigold-copy";
+import { LANDING_COPY } from "@/lib/landing-copy";
 import { cn } from "@/lib/utils";
 
-/* -------------------------------------------------------------------------- */
-/*  Design tokens (DESIGN.md)                                                  */
-/* -------------------------------------------------------------------------- */
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
-const GOLD_HEX = "#d4a92d";
 const GOLD_BRIGHT = "#f0cf5a";
 const alpha = (a: number) => `rgba(212,169,45,${a})`;
 
-/* -------------------------------------------------------------------------- */
-/*  Data                                                                       */
-/* -------------------------------------------------------------------------- */
+/** Account types — ids/refs are data; display name/desc come from i18n (t.acc[key]). */
 const ACCOUNT_TYPES = [
-  { id: "gtc-usd", name: "Tài khoản USD", desc: "Spread thấp, khối lượng chuẩn", ref: "hc8B8eNC" },
-  { id: "gtc-cent", name: "Tài khoản Cent", desc: "Vốn nhỏ, rủi ro thấp", ref: "ADWMQMDP" },
+  { id: "gtc-usd", key: "usd", ref: "hc8B8eNC" },
+  { id: "gtc-cent", key: "cent", ref: "ADWMQMDP" },
 ] as const;
 
-const INSTALL_STEPS = [
-  { title: "Chép EA vào MT5", body: "Đóng MT5. <strong>File → Open Data Folder</strong>. Chép <code>Dralvo TiGold.ex5</code> vào <code>MQL5\\Experts\\</code>. Mở lại MT5." },
-  { title: "Kéo EA lên chart", body: "<strong>Navigator → Expert Advisors</strong>, chuột phải <strong>Refresh</strong>. Kéo <strong>Dralvo TiGold</strong> thả vào chart <strong>XAUUSD M1</strong>. Tab Common: tick <strong>Allow Algo Trading</strong>." },
-  { title: "Nạp file .set", body: "Tab <strong>Inputs → Load</strong>, chọn <strong>Dralvo tigold v1.set</strong>. Kiểm tra <code>InpFixedLot</code> phù hợp vốn. Bấm <strong>OK</strong>." },
-  { title: "Bật Auto Trading", body: "Bật nút <strong>Algo Trading</strong> trên thanh công cụ (biểu tượng sáng xanh). Góc trái chart hiện bảng <strong>DRALVO TiGOLD</strong> — EA đang chạy." },
-];
-
-const FAQ_ITEMS = [
-  ["EA có cần VPS không?", "Khuyến nghị dùng VPS để EA chạy 24/5 không gián đoạn. Có thể thuê VPS giá rẻ (~$5-10/tháng) và cài MT5 lên đó."],
-  ["Dùng được tài khoản demo không?", "Được. Mở tài khoản demo qua link IB Dralvo, xác nhận số tài khoản demo — bạn vẫn nhận được EA miễn phí."],
-  ["Sao PF chỉ 1.20 mà vẫn lãi?", "Vì 21,005 lệnh trong 3.5 năm (~16 lệnh/ngày). Edge mỏng nhưng volume cực lớn — lợi nhuận tích lũy. Đây là style khác biệt với GoldMaster (PF 2.65, 141 lệnh)."],
-  ["Cần bao nhiêu vốn để bắt đầu?", "Với tài khoản Cent: ~$10-50 là đủ chạy 0.10 lot cent. Với tài khoản USD: khuyến nghị tối thiểu $100 để chịu được drawdown 22%."],
-];
-
-/* -------------------------------------------------------------------------- */
-/*  Scroll reveal                                                              */
-/* -------------------------------------------------------------------------- */
 function useReveal<T extends HTMLElement = HTMLDivElement>(threshold = 0.1) {
   const ref = useRef<T>(null);
   const [visible, setVisible] = useState(false);
@@ -71,17 +51,15 @@ function Reveal({ children, className, delay = 0 }: { children: React.ReactNode;
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Small parts                                                                */
-/* -------------------------------------------------------------------------- */
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted" style={{ background: "rgba(26,26,42,0.4)" }}>{children}</div>;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Page                                                                       */
-/* -------------------------------------------------------------------------- */
 export default function TiGoldPage() {
+  const { locale } = useLocale();
+  const t = TIGOLD_COPY[locale];
+  const lc = LANDING_COPY[locale];
+
   const [accountType, setAccountType] = useState("");
   const [account, setAccount] = useState("");
   const [verifying, setVerifying] = useState(false);
@@ -93,7 +71,8 @@ export default function TiGoldPage() {
   const [openInstall, setOpenInstall] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
-  const selectedType = ACCOUNT_TYPES.find((t) => t.id === accountType);
+  const selectedType = ACCOUNT_TYPES.find((x) => x.id === accountType);
+  const selectedName = selectedType ? t.acc[selectedType.key].name : "";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -109,8 +88,8 @@ export default function TiGoldPage() {
       const res = await fetch("/api/ib/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account, broker: accountType }) });
       const data = await res.json();
       if (res.ok && data.verified) { setVerified(true); setDownloads(data.downloads); }
-      else { setError(data.error || "Xác nhận thất bại. Vui lòng thử lại."); }
-    } catch { setError("Lỗi kết nối. Vui lòng thử lại."); }
+      else { setError(data.error || t.s2.errFail); }
+    } catch { setError(t.s2.errConn); }
     setVerifying(false);
   };
 
@@ -123,7 +102,6 @@ export default function TiGoldPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
-      {/* Gold veins */}
       <div className="gold-veins" aria-hidden="true"><div className="v1" /><div className="v2" /><div className="v3" /><div className="h1" /><div className="h2" /></div>
 
       {/* Nav */}
@@ -131,8 +109,8 @@ export default function TiGoldPage() {
         <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center justify-between">
           <BrandLink />
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">Trang chủ</Link>
-            <Link href="/#pricing" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">Bảng giá</Link>
+            <Link href="/" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">{t.navHome}</Link>
+            <Link href="/#pricing" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">{lc.nav.pricing}</Link>
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
@@ -140,13 +118,13 @@ export default function TiGoldPage() {
       </nav>
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }} className="pt-16">
-        {/* ── Hero ── */}
+        {/* Hero */}
         <section className="relative pt-28 pb-16 px-6 overflow-hidden">
           <GridPattern />
           <GlowOrb className="w-[800px] h-[600px] -top-60 -right-32 opacity-50" />
           <GlowOrb className="w-[400px] h-[400px] bottom-0 left-0 opacity-30" />
           <div className="max-w-[900px] mx-auto relative z-10 text-center">
-            <Reveal><Eyebrow>Dralvo Capital · Miễn phí trọn đời</Eyebrow></Reveal>
+            <Reveal><Eyebrow>{t.heroEyebrow}</Eyebrow></Reveal>
             <Reveal delay={80}>
               <h1 className="text-[2.8rem] sm:text-6xl font-normal leading-[1.04] tracking-[-0.02em] mt-6 mb-5 text-balance" style={{ fontFamily: SERIF }}>
                 Dralvo <span style={{ color: GOLD_BRIGHT }}>TiGold</span>
@@ -154,12 +132,9 @@ export default function TiGoldPage() {
             </Reveal>
             <Reveal delay={120}>
               <p className="text-base sm:text-lg leading-relaxed max-w-[560px] mx-auto mb-8 text-text-secondary">
-                EA thích ứng cho XAUUSD — miễn phí khi mở tài khoản qua đối tác GTC của Dralvo.<br />
-                3 lớp bảo vệ vốn. Trailing stop thông minh. 21,005 lệnh đã kiểm chứng.
+                {t.heroSub1}<br />{t.heroSub2}
               </p>
             </Reveal>
-
-            {/* KPI strip — assay-style */}
             <Reveal delay={160}>
               <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
                 {TIGOLD.headline.map((kpi, i) => (
@@ -181,29 +156,27 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* ── Step 1: Chọn tài khoản ── */}
+        {/* Step 1: account */}
         <section className="relative py-20 px-6 bg-surface overflow-hidden">
           <GlowOrb className="w-[500px] h-[400px] -bottom-32 right-0 opacity-25" />
           <div className="max-w-[960px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
-              <Eyebrow>Bước 1</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>
-                Mở tài khoản GTC qua Dralvo
-              </h2>
-              <p className="text-text-secondary max-w-[520px] mx-auto">Chọn loại tài khoản, mở qua link đối tác. GTC là broker độc quyền của Dralvo.</p>
+              <Eyebrow>{t.s1.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.s1.title}</h2>
+              <p className="text-text-secondary max-w-[520px] mx-auto">{t.s1.sub}</p>
             </Reveal>
 
             <Reveal delay={60}>
               <div className="grid sm:grid-cols-2 gap-4 mb-6 max-w-[580px] mx-auto">
-                {ACCOUNT_TYPES.map((t) => (
-                  <button key={t.id} type="button" onClick={() => { setAccountType(t.id); setVerified(false); setError(""); }}
+                {ACCOUNT_TYPES.map((at) => (
+                  <button key={at.id} type="button" onClick={() => { setAccountType(at.id); setVerified(false); setError(""); }}
                     className={cn("lift group relative rounded-2xl border p-5 text-left transition-all duration-300 cursor-pointer",
-                      accountType === t.id ? "border-gold/40 bg-gold/5" : "border-border bg-card hover:border-gold/20")}>
+                      accountType === at.id ? "border-gold/40 bg-gold/5" : "border-border bg-card hover:border-gold/20")}>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className={cn("font-semibold text-sm", accountType === t.id ? "text-gold-bright" : "text-text-primary")}>{t.name}</span>
+                      <span className={cn("font-semibold text-sm", accountType === at.id ? "text-gold-bright" : "text-text-primary")}>{t.acc[at.key].name}</span>
                       <span className="text-[9px] px-1.5 py-0.5 rounded font-mono border border-gold/30 text-gold bg-gold/5">GTC</span>
                     </div>
-                    <p className="text-[12px] text-text-muted leading-relaxed">{t.desc}</p>
+                    <p className="text-[12px] text-text-muted leading-relaxed">{t.acc[at.key].desc}</p>
                   </button>
                 ))}
               </div>
@@ -212,17 +185,17 @@ export default function TiGoldPage() {
             {selectedType && (
               <Reveal delay={80}>
                 <div className="rounded-2xl border p-5 max-w-[580px] mx-auto" style={{ borderColor: alpha(0.25), background: alpha(0.04) }}>
-                  <div className="text-[10px] uppercase tracking-[0.12em] text-text-muted mb-3 font-semibold">Broker: GTC · {selectedType.name}</div>
+                  <div className="text-[10px] uppercase tracking-[0.12em] text-text-muted mb-3 font-semibold">Broker: GTC · {selectedName}</div>
                   <div className="flex items-center justify-between flex-wrap gap-3">
                     <code className="text-xs text-text-secondary break-all bg-deep/50 px-3 py-1.5 rounded-md">web.mygtc.app/register?ref={selectedType.ref}</code>
                     <div className="flex gap-2">
                       <button type="button" onClick={copyIB} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-border text-text-secondary hover:text-gold transition-colors cursor-pointer">
-                        {copyOk ? <><Check size={13} />Đã copy</> : <><Copy size={13} />Copy</>}
+                        {copyOk ? <><Check size={13} />{t.s1.copied}</> : <><Copy size={13} />{t.s1.copy}</>}
                       </button>
                       <a href={`https://web.mygtc.app/login/register?ref=${selectedType.ref}`} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-5 py-2 rounded-md text-xs font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
                         style={{ background: GOLD_BRIGHT }}>
-                        Mở tài khoản <ExternalLink size={13} />
+                        {t.s1.open} <ExternalLink size={13} />
                       </a>
                     </div>
                   </div>
@@ -232,16 +205,16 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* ── Step 2: Xác nhận ── */}
+        {/* Step 2: verify */}
         <section className="relative py-20 px-6 overflow-hidden">
           <GlowOrb className="w-[400px] h-[400px] -top-20 -left-20 opacity-20" />
           <div className="max-w-[580px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
-              <Eyebrow>Bước 2</Eyebrow>
+              <Eyebrow>{t.s2.eyebrow}</Eyebrow>
               <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>
-                {verified ? "Tài khoản đã xác nhận" : "Xác nhận tài khoản MT5"}
+                {verified ? t.s2.titleVerified : t.s2.titleDefault}
               </h2>
-              <p className="text-text-secondary">Nhập số tài khoản MT5 bạn vừa mở qua link IB Dralvo.</p>
+              <p className="text-text-secondary">{t.s2.sub}</p>
             </Reveal>
 
             <Reveal delay={60}>
@@ -249,24 +222,24 @@ export default function TiGoldPage() {
                 <div className="rounded-2xl border border-border bg-card p-6">
                   <div className="flex flex-col sm:flex-row gap-3">
                     <input type="text" value={account} onChange={(e) => { setAccount(e.target.value); setError(""); }}
-                      placeholder="Số tài khoản MT5"
+                      placeholder={t.s2.placeholder}
                       disabled={!selectedType}
                       className="flex-1 px-4 py-3 rounded-lg border border-border bg-deep text-text-primary text-sm font-mono outline-none focus:border-gold/40 transition-colors disabled:opacity-40" />
                     <button type="button" onClick={verify} disabled={!account || verifying || !selectedType}
                       className="px-7 py-3 rounded-lg text-sm font-semibold text-[#060609] transition-all duration-200 hover:scale-[1.02] disabled:opacity-40 cursor-pointer"
                       style={{ background: GOLD_BRIGHT }}>
-                      {verifying ? "Đang kiểm tra..." : "Xác nhận"}
+                      {verifying ? t.s2.verifying : t.s2.verify}
                     </button>
                   </div>
                   {error && <p className="text-red text-xs mt-3">{error}</p>}
-                  {!selectedType && <p className="text-text-muted text-xs mt-3">Chọn loại tài khoản ở bước 1 trước.</p>}
+                  {!selectedType && <p className="text-text-muted text-xs mt-3">{t.s2.selectFirst}</p>}
                 </div>
               ) : (
                 <div className="rounded-2xl border p-5 flex items-center gap-4" style={{ borderColor: alpha(0.3), background: alpha(0.04) }}>
                   <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: alpha(0.15) }}><Check size={20} style={{ color: GOLD_BRIGHT }} /></div>
                   <div>
-                    <div className="font-semibold text-text-primary">Tài khoản #{account} — GTC · {selectedType?.name}</div>
-                    <div className="text-xs text-text-muted">Đã xác nhận qua IB Dralvo.</div>
+                    <div className="font-semibold text-text-primary">{t.s2.account} #{account} — GTC · {selectedName}</div>
+                    <div className="text-xs text-text-muted">{t.s2.via}</div>
                   </div>
                 </div>
               )}
@@ -274,25 +247,23 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* ── Step 3: Tải EA ── */}
+        {/* Step 3: download */}
         <section className="relative py-20 px-6 bg-surface overflow-hidden">
           <GlowOrb className="w-[500px] h-[400px] -bottom-24 right-0 opacity-25" />
           <div className="max-w-[860px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
-              <Eyebrow>Bước 3</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>
-                {verified ? "Tải EA & cài đặt" : "Tải EA & cài đặt"}
-              </h2>
-              <p className="text-text-secondary">Hoàn thành bước 1 & 2 để mở khóa tải về.</p>
+              <Eyebrow>{t.s3.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.s3.title}</h2>
+              <p className="text-text-secondary">{t.s3.sub}</p>
             </Reveal>
 
             <Reveal delay={60}>
               {verified && downloads ? (
                 <div className="grid sm:grid-cols-3 gap-4 mb-14">
                   {[
-                    { label: "EA (.ex5)", href: downloads.ex5, desc: "Dralvo TiGold.ex5" },
-                    { label: "Preset (.set)", href: downloads.set, desc: "Dralvo tigold v1.set" },
-                    { label: "Hướng dẫn", href: downloads.guide, desc: "HTML · mở bằng trình duyệt" },
+                    { label: t.s3.ea, href: downloads.ex5, desc: "Dralvo TiGold.ex5" },
+                    { label: t.s3.preset, href: downloads.set, desc: "Dralvo tigold v1.set" },
+                    { label: t.s3.guide, href: downloads.guide, desc: t.s3.guideDesc },
                   ].map((f) => (
                     <a key={f.label} href={f.href} download
                       className="lift group flex flex-col items-center gap-3 p-6 rounded-2xl border border-border bg-card text-center no-underline transition-all duration-300 hover:border-gold/30 cursor-pointer"
@@ -310,19 +281,18 @@ export default function TiGoldPage() {
                   <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(255,255,255,0.03)" }}>
                     <Download size={22} className="text-text-muted" />
                   </div>
-                  <p className="text-text-muted text-sm">Hoàn thành Bước 1 & 2 để mở khóa tải về.</p>
+                  <p className="text-text-muted text-sm">{t.s3.locked}</p>
                 </div>
               )}
             </Reveal>
 
-            {/* Install guide */}
             <Reveal delay={80}>
               <h3 className="text-lg font-semibold text-text-primary mb-5 flex items-center gap-2">
                 <span className="w-1 h-5 rounded-full inline-block" style={{ background: GOLD_BRIGHT }} />
-                Hướng dẫn cài đặt
+                {t.s3.installHeading}
               </h3>
               <div className="space-y-2">
-                {INSTALL_STEPS.map((step, i) => (
+                {t.install.map((step, i) => (
                   <div key={i} className="rounded-xl border border-border bg-card overflow-hidden transition-colors duration-300 hover:border-gold/15">
                     <button type="button" onClick={() => setOpenInstall(openInstall === i ? null : i)}
                       className="w-full flex items-center gap-4 px-5 py-4 text-left cursor-pointer">
@@ -343,16 +313,14 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* ── Step 4: License ── */}
+        {/* Step 4: license */}
         <section className="relative py-20 px-6 overflow-hidden">
           <GlowOrb className="w-[500px] h-[400px] -top-16 right-0 opacity-25" />
           <div className="max-w-[720px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
-              <Eyebrow>Bước 4</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>
-                Kích hoạt license
-              </h2>
-              <p className="text-text-secondary">EA cần license key để chạy. Nhận key miễn phí qua Telegram.</p>
+              <Eyebrow>{t.s4.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.s4.title}</h2>
+              <p className="text-text-secondary">{t.s4.sub}</p>
             </Reveal>
 
             <Reveal delay={60}>
@@ -362,55 +330,49 @@ export default function TiGoldPage() {
                     <MessageCircle size={28} style={{ color: GOLD_BRIGHT }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-text-primary mb-3">Nhắn Telegram để nhận license key</h3>
+                    <h3 className="font-semibold text-text-primary mb-3">{t.s4.cardHeading}</h3>
                     <ol className="space-y-2 text-[13px] text-text-secondary leading-relaxed">
-                      <li>1. Mở Telegram, tìm <code className="font-mono text-gold bg-deep/60 px-1.5 py-0.5 rounded text-[11px]">@dralvo</code></li>
-                      <li>2. Gửi: <strong>"TiGold license [số tài khoản MT5]"</strong></li>
-                      <li>3. Admin kiểm tra tài khoản thuộc IB Dralvo</li>
-                      <li>4. Nhận license key → nhập vào EA → bắt đầu giao dịch</li>
+                      <li>1. {t.s4.l1} <code className="font-mono text-gold bg-deep/60 px-1.5 py-0.5 rounded text-[11px]">@dralvoea</code></li>
+                      <li dangerouslySetInnerHTML={{ __html: `2. ${t.s4.l2}` }} />
+                      <li>3. {t.s4.l3}</li>
+                      <li>4. {t.s4.l4}</li>
                     </ol>
                   </div>
                   <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
                     className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
                     style={{ background: GOLD_BRIGHT }}>
-                    Mở Telegram <ExternalLink size={15} />
+                    {t.s4.open} <ExternalLink size={15} />
                   </a>
                 </div>
-                <p className="mt-5 text-[11px] text-text-muted border-t border-border pt-4">
-                  License miễn phí vĩnh viễn cho tài khoản đăng ký qua IB Dralvo. Mỗi license gắn với 1 số tài khoản MT5.
-                </p>
+                <p className="mt-5 text-[11px] text-text-muted border-t border-border pt-4">{t.s4.note}</p>
               </div>
             </Reveal>
           </div>
         </section>
 
-        {/* ── Backtest ── */}
+        {/* Backtest */}
         <section className="relative py-20 px-6 bg-surface overflow-hidden">
           <GlowOrb className="w-[600px] h-[500px] -bottom-40 left-1/2 -translate-x-1/2 opacity-20" />
           <div className="max-w-[860px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
-              <Eyebrow>Hiệu suất đã kiểm chứng</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>
-                Số liệu nói thay lời.
-              </h2>
-              <p className="text-text-secondary max-w-[500px] mx-auto">MT5 Strategy Tester · 01/2023–06/2026 · 100% ticks thật (208.6M).</p>
+              <Eyebrow>{t.bt.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.bt.title}</h2>
+              <p className="text-text-secondary max-w-[500px] mx-auto">{t.bt.sub}</p>
             </Reveal>
 
             <Reveal delay={60}>
               <div className="rounded-2xl border border-border bg-card overflow-hidden">
-                {/* Header */}
                 <div className="px-6 py-4 border-b border-border bg-deep/40 flex items-center gap-2.5">
                   <ShieldCheck size={15} style={{ color: GOLD_BRIGHT }} />
-                  <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-gold">Hồ sơ rủi ro — TiGold v2.0</span>
+                  <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-gold">{t.bt.profile}</span>
                 </div>
 
-                {/* KPI grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border">
                   {[
-                    { v: TIGOLD.headline[0].value, l: "Lợi nhuận ròng", t: "good" },
-                    { v: TIGOLD.headline[1].value, l: "Profit Factor", t: "neutral" },
-                    { v: TIGOLD.headline[2].value, l: "Tỷ lệ thắng", t: "neutral" },
-                    { v: TIGOLD.headline[3].value, l: "Drawdown tối đa", t: "bad" },
+                    { v: TIGOLD.headline[0].value, l: t.bt.kNet, t: "good" },
+                    { v: TIGOLD.headline[1].value, l: t.bt.kPf, t: "neutral" },
+                    { v: TIGOLD.headline[2].value, l: t.bt.kWin, t: "neutral" },
+                    { v: TIGOLD.headline[3].value, l: t.bt.kDd, t: "bad" },
                   ].map((k) => (
                     <div key={k.l} className="bg-card p-5">
                       <div className={cn("font-mono text-2xl font-bold tracking-tight", k.t === "good" ? "text-green" : k.t === "bad" ? "text-red" : "text-text-primary")}>{k.v}</div>
@@ -419,21 +381,19 @@ export default function TiGoldPage() {
                   ))}
                 </div>
 
-                {/* Trade stats */}
                 <div className="p-6 grid sm:grid-cols-3 gap-x-8 gap-y-3">
                   {TIGOLD.tradeStats.map((s) => (
                     <div key={s.key} className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
                       <span className="text-[11px] uppercase tracking-[0.04em] text-text-muted">
-                        {s.key === "trades" ? "Tổng lệnh" : s.key === "winRate" ? "Tỷ lệ thắng" : s.key === "avgWin" ? "Lãi TB" : s.key === "avgLoss" ? "Lỗ TB" : s.key === "rr" ? "Lãi/Lỗ" : "Chuỗi T/B"}
+                        {s.key === "trades" ? t.bt.sTrades : s.key === "winRate" ? t.bt.sWin : s.key === "avgWin" ? t.bt.sAvgWin : s.key === "avgLoss" ? t.bt.sAvgLoss : s.key === "rr" ? t.bt.sRr : t.bt.sStreak}
                       </span>
                       <span className="font-mono text-sm text-text-primary">{s.value}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Final balance highlight */}
                 <div className="border-t border-border px-6 py-4 bg-deep/20 flex items-center justify-between">
-                  <span className="text-[11px] text-text-muted uppercase tracking-[0.06em]">Số dư cuối kỳ</span>
+                  <span className="text-[11px] text-text-muted uppercase tracking-[0.06em]">{t.bt.final}</span>
                   <span className="font-mono text-lg font-bold text-green">{TIGOLD.finalBalance}</span>
                 </div>
               </div>
@@ -441,16 +401,16 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* ── FAQ ── */}
+        {/* FAQ */}
         <section className="relative py-20 px-6 overflow-hidden">
           <div className="max-w-[720px] mx-auto">
             <Reveal className="text-center mb-10">
-              <Eyebrow>Hỏi đáp</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3" style={{ fontFamily: SERIF }}>Mọi điều bạn cần biết.</h2>
+              <Eyebrow>{t.faqEyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3" style={{ fontFamily: SERIF }}>{t.faqTitle}</h2>
             </Reveal>
             <Reveal delay={60}>
               <div className="space-y-3">
-                {FAQ_ITEMS.map(([q, a], i) => (
+                {t.faq.map(([q, a], i) => (
                   <div key={i} className="rounded-xl border transition-colors duration-300" style={{ borderColor: openFaq === i ? alpha(0.3) : "var(--border)", background: openFaq === i ? alpha(0.04) : "transparent" }}>
                     <button type="button" onClick={() => setOpenFaq(openFaq === i ? null : i)}
                       className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer">
@@ -467,32 +427,28 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* ── Final CTA ── */}
+        {/* Final CTA */}
         <section className="relative py-24 px-6 bg-surface overflow-hidden">
           <GlowOrb className="w-[700px] h-[500px] top-0 left-1/2 -translate-x-1/2 opacity-35" />
           <GridPattern />
           <div className="max-w-[720px] mx-auto relative z-10 text-center">
             <Reveal>
               <div className="rounded-3xl border border-gold/20 p-10 sm:p-14" style={{ background: `linear-gradient(168deg, ${alpha(0.08)}, var(--bg-card) 60%)`, boxShadow: "0 40px 90px -60px rgba(240,200,90,0.4)" }}>
-                <Eyebrow>Sẵn sàng?</Eyebrow>
-                <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>
-                  Miễn phí. Vĩnh viễn. Không bắt buộc.
-                </h2>
-                <p className="text-text-secondary mb-8 leading-relaxed max-w-[480px] mx-auto">
-                  Mở tài khoản GTC qua Dralvo, tải EA, nhận license — tất cả miễn phí. Bạn chỉ trả spread cho broker như mọi tài khoản bình thường.
-                </p>
+                <Eyebrow>{t.cta.eyebrow}</Eyebrow>
+                <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>{t.cta.title}</h2>
+                <p className="text-text-secondary mb-8 leading-relaxed max-w-[480px] mx-auto">{t.cta.body}</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <a href="#step1" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg text-[15px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
                     style={{ background: GOLD_BRIGHT, boxShadow: "0 0 40px rgba(240,200,90,0.15)" }}>
-                    Bắt đầu ngay <ArrowRight size={18} />
+                    {t.cta.primary} <ArrowRight size={18} />
                   </a>
                   <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg text-[15px] font-semibold border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold">
-                    Hỏi trên Telegram <MessageCircle size={17} />
+                    {t.cta.secondary} <MessageCircle size={17} />
                   </a>
                 </div>
-                <p className="mt-6 font-mono text-[11px] tracking-[0.04em] text-text-muted">Hủy bất cứ lúc nào · Không ràng buộc · Hỗ trợ cài đặt</p>
+                <p className="mt-6 font-mono text-[11px] tracking-[0.04em] text-text-muted">{t.cta.guarantee}</p>
               </div>
             </Reveal>
           </div>
@@ -505,36 +461,36 @@ export default function TiGoldPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
             <div>
               <BrandLink logoSize={28} wordmarkClassName="text-lg" />
-              <p className="text-sm text-text-muted leading-relaxed max-w-[220px] mt-4">Dralvo Capital — robot giao dịch vàng tự động. Chiến lược kiểm chứng trên dữ liệu thật.</p>
+              <p className="text-sm text-text-muted leading-relaxed max-w-[220px] mt-4">{lc.footer.tagline}</p>
             </div>
             <div>
-              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">Sản phẩm</div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{lc.footer.product}</div>
               <div className="flex flex-col gap-2.5">
-                <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">GoldMaster (D1)</Link>
-                <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">GoldScalp (M5)</Link>
-                <span className="text-sm font-medium" style={{ color: GOLD_BRIGHT }}>TiGold (miễn phí)</span>
-                <Link href="/tools/calculator" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Công cụ tính lot</Link>
+                <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.goldmaster}</Link>
+                <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.scalp}</Link>
+                <span className="text-sm font-medium" style={{ color: GOLD_BRIGHT }}>{lc.footer.tigold}</span>
+                <Link href="/tools/calculator" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.tools}</Link>
               </div>
             </div>
             <div>
-              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">Dralvo</div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{lc.footer.company}</div>
               <div className="flex flex-col gap-2.5">
-                <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Telegram</a>
-                <Link href="/#pricing" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Bảng giá</Link>
-                <Link href="/login" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Đăng nhập</Link>
+                <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.telegram}</a>
+                <Link href="/#pricing" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.nav.pricing}</Link>
+                <Link href="/login" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.login}</Link>
               </div>
             </div>
             <div>
-              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">Pháp lý</div>
+              <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{lc.footer.legal}</div>
               <div className="flex flex-col gap-2.5">
-                <Link href="/privacy" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Bảo mật</Link>
-                <Link href="/terms" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Điều khoản</Link>
-                <Link href="/disclaimer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Miễn trừ trách nhiệm</Link>
+                <Link href="/privacy" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.privacy}</Link>
+                <Link href="/terms" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.terms}</Link>
+                <Link href="/disclaimer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{lc.footer.disclaimer}</Link>
               </div>
             </div>
           </div>
           <div className="pt-7 border-t border-border">
-            <p className="text-[11px] text-text-muted">© 2026 Dralvo Capital.</p>
+            <p className="text-[11px] text-text-muted">{lc.footer.copyright}</p>
           </div>
         </div>
       </footer>

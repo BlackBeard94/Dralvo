@@ -2,6 +2,7 @@ import { getAuthenticatedUser } from "@/lib/supabase/auth";
 import { getAlertsByUserId, createAlert } from "@/lib/alerts";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limit";
 import { getUserPlanTierByUserId } from "@/lib/subscription-gate";
+import { isPaidTier } from "@/lib/plan";
 import type { CreateAlertInput } from "@/types/alerts";
 import { recordProductEvent } from "@/lib/product-analytics";
 
@@ -23,9 +24,9 @@ export async function GET(request: Request) {
     }
 
     const tier = await getUserPlanTierByUserId(user.id);
-    if (tier !== "Pro") {
+    if (!isPaidTier(tier)) {
       return Response.json(
-        { error: "Custom alerts require Dralvo Pro." },
+        { error: "Custom alerts require Dralvo Unlimited." },
         { status: 403 },
       );
     }
@@ -59,9 +60,9 @@ export async function POST(request: Request) {
     }
 
     const tier = await getUserPlanTierByUserId(user.id);
-    if (tier !== "Pro") {
+    if (!isPaidTier(tier)) {
       return Response.json(
-        { error: "Custom alerts require Dralvo Pro." },
+        { error: "Custom alerts require Dralvo Unlimited." },
         { status: 403 },
       );
     }

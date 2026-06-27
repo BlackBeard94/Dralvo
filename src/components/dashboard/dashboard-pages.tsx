@@ -28,6 +28,7 @@ import { IMPLEMENTED_DRIVER_SOURCE_REGISTRY } from "@/data/driver-registry";
 import { useIndicatorStream } from "@/hooks/use-indicator-stream";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
+import { isPaidTier, type PlanSource } from "@/lib/plan";
 import { cn } from "@/lib/utils";
 
 function PageHeader({
@@ -102,7 +103,7 @@ export function IndicatorsPage({ planTier = "Free" }: { planTier?: string }) {
   const { locale } = useLocale();
   const copy = DASHBOARD_COPY[locale].pages;
   const { snapshots, justUpdated, historyByKey } = useIndicatorStream();
-  const isPro = planTier === "Pro";
+  const isPro = isPaidTier(planTier);
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-5">
@@ -290,7 +291,7 @@ export function DriversPage() {
 export function CorrelationPage({ planTier = "Free" }: { planTier?: string }) {
   const { locale } = useLocale();
   const copy = DASHBOARD_COPY[locale].pages;
-  const isPro = planTier === "Pro";
+  const isPro = isPaidTier(planTier);
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-5">
@@ -317,7 +318,7 @@ export function CorrelationPage({ planTier = "Free" }: { planTier?: string }) {
 export function AlertsPage({ planTier = "Free" }: { planTier?: string }) {
   const { locale } = useLocale();
   const copy = DASHBOARD_COPY[locale].pages;
-  const isPro = planTier === "Pro";
+  const isPro = isPaidTier(planTier);
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-5">
@@ -345,12 +346,14 @@ export function SettingsPage({
   planTier = "Free",
   planStatus = "free",
   currentPeriodEnd = null,
+  planSource = "none",
 }: {
   planTier?: string;
   planStatus?: string;
   currentPeriodEnd?: string | null;
+  planSource?: PlanSource;
 }) {
-  const isPro = planTier === "Pro";
+  const isPro = isPaidTier(planTier);
   const { locale } = useLocale();
   const copy = DASHBOARD_COPY[locale].pages;
 
@@ -367,6 +370,7 @@ export function SettingsPage({
           planTier={planTier}
           planStatus={planStatus}
           currentPeriodEnd={currentPeriodEnd}
+          planSource={planSource}
         />
 
         <AiProviderSettings />

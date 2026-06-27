@@ -9,6 +9,7 @@ import { extractIndicatorNumericValue } from "@/lib/indicator-values";
 import { getAuthenticatedUser } from "@/lib/supabase/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getUserPlanTierByUserId } from "@/lib/subscription-gate";
+import { isPaidTier, type PlanTier } from "@/lib/plan";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -130,21 +131,22 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const requestedCount = parseRequestedCount(searchParams.get("count"), snapshots.length);
 
-  let tier: "Free" | "Pro" = "Free";
+  let tier: PlanTier = "Free";
   try {
     tier = await getUserPlanTierByUserId(user.id);
   } catch (error) {
     console.error("[indicators] Plan tier lookup failed", error);
   }
 
-  const visibleCount = tier === "Pro" ? requestedCount : Math.min(requestedCount, 3);
+  const isPaid = isPaidTier(tier);
+  const visibleCount = isPaid ? requestedCount : Math.min(requestedCount, 3);
   const limitedSnapshots = snapshots.slice(0, visibleCount);
   const visibleKeys = new Set(limitedSnapshots.map((snapshot) => snapshot.key));
   const allHistory = buildIndicatorHistory(rows);
   const history = Object.fromEntries(
     Object.entries(allHistory).filter(([key]) => visibleKeys.has(key)),
   );
-  const planLimit = tier !== "Pro" && requestedCount > visibleCount;
+  const planLimit = !isPaid && requestedCount > visibleCount;
 
   return NextResponse.json({
     ok: true,

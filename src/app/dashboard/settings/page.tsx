@@ -8,12 +8,14 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardSettingsRoute() {
-  const { planTier, planStatus, currentPeriodEnd } = await getDashboardPlan();
+  const { planTier, planStatus, currentPeriodEnd, planSource } =
+    await getDashboardPlan();
   return (
     <SettingsPage
       planTier={planTier}
       planStatus={planStatus}
       currentPeriodEnd={currentPeriodEnd}
+      planSource={planSource}
     />
   );
 }

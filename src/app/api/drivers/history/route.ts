@@ -5,6 +5,7 @@ import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limi
 import { getAuthenticatedUser } from "@/lib/supabase/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getUserPlanTierByUserId } from "@/lib/subscription-gate";
+import { isPaidTier } from "@/lib/plan";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,7 +55,8 @@ export async function GET(request: Request) {
   }
 
   const tier = await getUserPlanTierByUserId(user.id);
-  const limit = tier === "Pro" ? config.proLimit : config.freeLimit;
+  const isPaid = isPaidTier(tier);
+  const limit = isPaid ? config.proLimit : config.freeLimit;
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
     return NextResponse.json({ error: "Evidence store unavailable" }, { status: 503 });
@@ -85,7 +87,7 @@ export async function GET(request: Request) {
       unit: rows.at(-1)?.unit ?? "contracts",
       sourceUrl: rows.at(-1)?.source_url ?? null,
       planTier: tier,
-      limited: tier !== "Pro",
+      limited: !isPaid,
       windowLimit: limit,
       points,
       summary,

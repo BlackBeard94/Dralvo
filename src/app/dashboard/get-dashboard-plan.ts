@@ -1,40 +1,47 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
-import { hasProAccess, planTierForStatus } from "@/lib/stripe-subscriptions";
+import {
+  resolvePlan,
+  type PlanDetails,
+  type PlanTier,
+} from "@/lib/plan";
 
-export async function getDashboardPlanTier() {
+const FREE: PlanDetails = {
+  planTier: "Free",
+  planStatus: "free",
+  currentPeriodEnd: null,
+  planSource: "none",
+};
+
+export async function getDashboardPlanTier(): Promise<PlanTier> {
   const details = await getDashboardPlan();
   return details.planTier;
 }
 
-export async function getDashboardPlan() {
-  let planTier = "Free";
-  let planStatus = "free";
-  let currentPeriodEnd: string | null = null;
-
+export async function getDashboardPlan(): Promise<PlanDetails> {
   try {
     const supabase = await createServerSupabaseClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return { planTier, planStatus, currentPeriodEnd };
+    if (!user) return FREE;
 
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("plan_tier, status, current_period_end")
-      .eq("user_id", user.id)
-      .single();
+    const [{ data: license }, { data: subscription }] = await Promise.all([
+      supabase
+        .from("license_keys")
+        .select("plan, expires_at")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("subscriptions")
+        .select("plan_tier, status, current_period_end, stripe_subscription_id")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ]);
 
-    if (sub) {
-      planStatus = sub.status ?? "free";
-      currentPeriodEnd = sub.current_period_end ?? null;
-      planTier = hasProAccess(sub.status)
-        ? sub.plan_tier
-        : planTierForStatus(sub.status);
-    }
+    return resolvePlan(license, subscription);
   } catch {
-    // Default to Free.
+    // Default to Free when the plan store is unavailable.
+    return FREE;
   }
-
-  return { planTier, planStatus, currentPeriodEnd };
 }

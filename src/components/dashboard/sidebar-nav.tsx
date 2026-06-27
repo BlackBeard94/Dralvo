@@ -85,6 +85,8 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
               <li key={item.id}>
                 <Link
                   href={item.href}
+                  aria-label={collapsed ? label : undefined}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "group relative flex items-center rounded-md transition-all duration-200",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
@@ -122,11 +124,12 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
                   {/* Tooltip when collapsed */}
                   {collapsed && (
                     <span
-                      role="tooltip"
+                      aria-hidden="true"
                       className={cn(
                         "absolute left-full ml-3 px-2.5 py-1.5 rounded-md whitespace-nowrap",
                         "bg-card border border-border text-text-primary text-xs font-medium",
                         "opacity-0 invisible group-hover:opacity-100 group-hover:visible",
+                        "group-focus-within:opacity-100 group-focus-within:visible",
                         "transition-[opacity,visibility] duration-150 delay-300",
                         "pointer-events-none z-50",
                         "shadow-lg shadow-black/40",

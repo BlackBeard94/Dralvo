@@ -15,6 +15,7 @@ import { AlertNotifications } from "@/components/dashboard/alert-notifications";
 import { useIndicatorStream } from "@/hooks/use-indicator-stream";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
+import { isPaidTier } from "@/lib/plan";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -69,7 +70,7 @@ function UpgradeBanner() {
             You are on the Free plan
           </p>
           <p className="text-xs text-text-muted mt-0.5">
-            Upgrade to Pro for the complete verified evidence surface, custom alerts, exports, and research workflows.
+            Upgrade to Unlimited for the complete verified evidence surface, custom alerts, exports, and research workflows.
           </p>
         </div>
       </div>
@@ -85,7 +86,7 @@ function UpgradeBanner() {
             "no-underline whitespace-nowrap",
           )}
         >
-          Upgrade to Pro
+          Upgrade to Unlimited
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
         <button
@@ -176,7 +177,7 @@ function ProLockBadge({ featureName }: { featureName: string }) {
           {featureName}
         </p>
         <p className="text-xs text-text-muted mb-3">
-          Available on Pro plan
+          Available on Unlimited plan
         </p>
         <Link
           href="/pricing"
@@ -201,7 +202,7 @@ function ProLockBadge({ featureName }: { featureName: string }) {
 export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientProps) {
   const { snapshots, justUpdated, historyByKey } = useIndicatorStream();
 
-  const isPro = planTier === "Pro";
+  const isPro = isPaidTier(planTier);
 
   return (
     <>
@@ -299,7 +300,7 @@ export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientPr
               {!isPro && (
                 <span className="text-[12px] text-text-muted flex items-center gap-1 ml-auto">
                   <Lock className="w-3 h-3" />
-                  Pro feature
+                  Unlimited feature
                 </span>
               )}
             </div>
@@ -327,7 +328,7 @@ export function DashboardPageClient({ planTier = "Free" }: DashboardPageClientPr
                         "no-underline",
                       )}
                     >
-                      Upgrade to Pro
+                      Upgrade to Unlimited
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>

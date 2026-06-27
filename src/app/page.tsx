@@ -359,7 +359,7 @@ export default function LandingPage() {
             <Reveal delay={80}>
               <div className="grid lg:grid-cols-3 gap-6 items-stretch">
                 {EA_PRODUCTS.map((ea) => {
-                  const badge = ea.id === "tigold" ? "Phổ biến" : ea.id === "goldmaster" ? "Chuyên nghiệp" : undefined;
+                  const badge = ea.id === "tigold" ? p.badgePopular : ea.id === "goldmaster" ? p.badgePro : undefined;
                   return (<EaPlate key={ea.id} ea={ea} copy={p} badge={badge} onGet={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })} />);
                 })}
               </div>

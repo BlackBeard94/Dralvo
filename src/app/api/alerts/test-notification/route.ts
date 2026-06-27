@@ -4,6 +4,7 @@ import { buildAlertEmail, sendEmail } from "@/lib/notifications/email";
 import { buildAlertTelegramMessage, sendTelegramMessage } from "@/lib/notifications/telegram";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limit";
 import { getUserPlanTierByUserId } from "@/lib/subscription-gate";
+import { isPaidTier } from "@/lib/plan";
 import { getAuthenticatedUser } from "@/lib/supabase/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
@@ -30,9 +31,9 @@ export async function POST(request: Request) {
   }
 
   const tier = await getUserPlanTierByUserId(user.id);
-  if (tier !== "Pro") {
+  if (!isPaidTier(tier)) {
     return NextResponse.json(
-      { error: "Test notifications require Dralvo Pro." },
+      { error: "Test notifications require Dralvo Unlimited." },
       { status: 403 },
     );
   }

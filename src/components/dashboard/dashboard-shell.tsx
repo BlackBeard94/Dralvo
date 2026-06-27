@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import { UserMenu } from "@/components/dashboard/user-menu";
+import { MarketHeader } from "@/components/dashboard/market-header";
 import { ProductAnalyticsTracker } from "@/components/dashboard/product-analytics-tracker";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -17,11 +18,14 @@ import { DASHBOARD_COPY } from "@/lib/i18n";
 /*  Types                                                                     */
 /* -------------------------------------------------------------------------- */
 
+import type { PlanSource } from "@/lib/plan";
+
 export interface DashboardShellProps {
   children: React.ReactNode;
   userEmail?: string | null;
   planTier?: string;
   planStatus?: string;
+  planSource?: PlanSource;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -44,6 +48,7 @@ export function DashboardShell({
   userEmail,
   planTier = "Free",
   planStatus = "free",
+  planSource = "none",
 }: DashboardShellProps) {
   const pathname = usePathname();
   const { locale } = useLocale();
@@ -65,13 +70,11 @@ export function DashboardShell({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   /* ---- clock ---- */
-  const [timeString, setTimeString] = useState(() => formatUTCTime(new Date()));
+  const [now, setNow] = useState(() => new Date());
+  const timeString = formatUTCTime(now);
 
   useEffect(() => {
-    const id = setInterval(
-      () => setTimeString(formatUTCTime(new Date())),
-      1000,
-    );
+    const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -167,7 +170,7 @@ export function DashboardShell({
             {/* UTC clock */}
             <time
               className="hidden sm:block text-xs font-mono text-text-secondary tabular-nums select-none"
-              dateTime={new Date().toISOString()}
+              dateTime={now.toISOString()}
               suppressHydrationWarning
             >
               {timeString} UTC
@@ -183,6 +186,7 @@ export function DashboardShell({
                   userEmail={userEmail}
                   planTier={planTier}
                   planStatus={planStatus}
+                  planSource={planSource}
                 />
               </div>
             )}
@@ -190,7 +194,8 @@ export function DashboardShell({
         </header>
 
         {/* ── Content ── */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-4">
+          <MarketHeader />
           {children}
         </main>
       </div>

@@ -115,7 +115,7 @@ describe("GET /api/drivers/history", () => {
 
   it("allows a larger retained window for Pro", async () => {
     mocks.getAuthenticatedUser.mockResolvedValue({ id: "user-pro" });
-    mocks.getUserPlanTierByUserId.mockResolvedValue("Pro");
+    mocks.getUserPlanTierByUserId.mockResolvedValue("Unlimited");
     mocks.limit.mockResolvedValue({ data: [], error: null });
 
     await GET(request());
@@ -151,7 +151,7 @@ describe("GET /api/drivers/history", () => {
 
   it("supports XAUUSD close history", async () => {
     mocks.getAuthenticatedUser.mockResolvedValue({ id: "user-pro" });
-    mocks.getUserPlanTierByUserId.mockResolvedValue("Pro");
+    mocks.getUserPlanTierByUserId.mockResolvedValue("Unlimited");
     mocks.limit.mockResolvedValue({
       data: [
         {

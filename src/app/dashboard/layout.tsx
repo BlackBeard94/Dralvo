@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { ensureProfile } from "@/lib/supabase/profile";
-import { hasProAccess, planTierForStatus } from "@/lib/stripe-subscriptions";
+import { getDashboardPlan } from "@/app/dashboard/get-dashboard-plan";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -45,43 +45,15 @@ export default async function DashboardLayout({
 
   await ensureProfile(user);
 
-  let planTier = "Free";
-  let planStatus = "free";
-  try {
-    // ponytail: license_keys takes priority over subscriptions
-    const { data: licRows, error: licErr } = await supabase
-      .from("license_keys")
-      .select("plan, expires_at")
-      .eq("user_id", user.id)
-      .limit(1);
-
-    if (!licErr && licRows && licRows.length > 0) {
-      const lic = licRows[0];
-      if (!lic.expires_at || new Date(lic.expires_at) > new Date()) {
-        planTier = lic.plan === "unlimited" ? "Unlimited" : "Free";
-        planStatus = "active";
-      }
-    } else {
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("plan_tier, status")
-        .eq("user_id", user.id)
-        .single();
-
-      if (sub) {
-        planStatus = sub.status ?? "free";
-        planTier = hasProAccess(sub.status)
-          ? sub.plan_tier
-          : planTierForStatus(sub.status);
-      }
-    }
-  } catch {}
+  // Single source of truth for plan resolution (license_keys + legacy subscriptions).
+  const { planTier, planStatus, planSource } = await getDashboardPlan();
 
   return (
     <DashboardShell
       userEmail={user.email}
       planTier={planTier}
       planStatus={planStatus}
+      planSource={planSource}
     >
       {children}
     </DashboardShell>

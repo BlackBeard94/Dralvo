@@ -6,7 +6,8 @@ import { User, LogOut, CreditCard, Crown, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { hasProAccess, planStatusLabel } from "@/lib/stripe-subscriptions";
+import { planStatusLabel } from "@/lib/stripe-subscriptions";
+import { isPaidTier, type PlanSource } from "@/lib/plan";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
 
@@ -18,6 +19,7 @@ export interface UserMenuProps {
   userEmail: string;
   planTier: string;
   planStatus?: string;
+  planSource?: PlanSource;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -29,9 +31,9 @@ function getInitial(email: string): string {
 }
 
 function getPlanBadge(planTier: string, freeLabel: string, planStatus?: string) {
-  if (planTier.toLowerCase() === "pro" && hasProAccess(planStatus)) {
+  if (isPaidTier(planTier)) {
     return {
-      label: planStatusLabel(planStatus),
+      label: "Unlimited",
       className: "bg-gold/15 text-gold border-gold/30",
       icon: Crown,
     };
@@ -60,8 +62,12 @@ export function UserMenu({
   userEmail,
   planTier,
   planStatus = "free",
+  planSource = "none",
 }: UserMenuProps) {
   const router = useRouter();
+  const isPaid = isPaidTier(planTier);
+  // Only Stripe-backed subscriptions expose the billing portal.
+  const canManageBilling = planSource === "subscription";
   const [open, setOpen] = useState(false);
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingError, setBillingError] = useState<string | null>(null);
@@ -118,8 +124,9 @@ export function UserMenu({
     setOpen(false);
     setBillingError(null);
 
-    if (!hasProAccess(planStatus)) {
-      router.push("/pricing");
+    if (!canManageBilling) {
+      // License-based Unlimited → account settings; Free → pricing.
+      router.push(isPaid ? "/dashboard/settings" : "/pricing");
       return;
     }
 
@@ -144,7 +151,7 @@ export function UserMenu({
     } finally {
       setBillingLoading(false);
     }
-  }, [copy.billingError, planStatus, router]);
+  }, [canManageBilling, copy.billingError, isPaid, router]);
 
   return (
     <div className="relative flex items-center">
@@ -216,35 +223,35 @@ export function UserMenu({
               {plan.label}
             </span>
             <p className="mt-2 text-[13px] text-text-muted">
-              {hasProAccess(planStatus)
-                ? copy.activeSubscription
-                : copy.upgradeDescription}
+              {isPaid ? copy.activeSubscription : copy.upgradeDescription}
             </p>
           </div>
 
           {/* Actions */}
           <div className="py-1">
-            {/* Billing */}
-            <button
-              type="button"
-              role="menuitem"
-              onClick={handleBilling}
-              disabled={billingLoading}
-              className={cn(
-                "flex w-full items-center gap-3 px-4 py-2.5 text-sm",
-                "text-text-secondary hover:text-text-primary hover:bg-gold/5",
-                "transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait",
-              )}
-            >
-              <CreditCard size={15} className="text-text-muted" />
-              <span>
-                {hasProAccess(planStatus)
-                  ? billingLoading
-                    ? copy.openingBilling
-                    : copy.manageBilling
-                  : copy.upgrade}
-              </span>
-            </button>
+            {/* Billing — Stripe portal for subscribers, upgrade CTA for free users */}
+            {(canManageBilling || !isPaid) && (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleBilling}
+                disabled={billingLoading}
+                className={cn(
+                  "flex w-full items-center gap-3 px-4 py-2.5 text-sm",
+                  "text-text-secondary hover:text-text-primary hover:bg-gold/5",
+                  "transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait",
+                )}
+              >
+                <CreditCard size={15} className="text-text-muted" />
+                <span>
+                  {canManageBilling
+                    ? billingLoading
+                      ? copy.openingBilling
+                      : copy.manageBilling
+                    : copy.upgrade}
+                </span>
+              </button>
+            )}
 
             {billingError && (
               <p className="px-4 pb-2 text-xs text-red">
