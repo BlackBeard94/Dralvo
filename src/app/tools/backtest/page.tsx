@@ -47,6 +47,11 @@ import {
   type BacktestResult,
   type StrategySpec,
 } from "@/lib/backtest/strategy-lab";
+import {
+  FOREX_STRATEGY_CATEGORIES,
+  FOREX_STRATEGY_LIBRARY,
+  type ForexStrategyLibraryItem,
+} from "@/lib/backtest/strategy-library";
 import { MARKET_DATA_SYMBOLS, MARKET_DATA_TIMEFRAMES } from "@/lib/market-data/catalog";
 import { parseMarketCandlesCsv } from "@/lib/market-data/csv";
 import type {
@@ -60,51 +65,8 @@ import { cn } from "@/lib/utils";
 
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', serif";
 
-const SAMPLE_STRATEGIES = [
-  {
-    id: "ema-cross",
-    name: "EMA 20/50 Crossover",
-    badge: "Trend",
-    description: "Cross EMA nhanh/chậm, dùng ATR để đặt stop và target.",
-    prompt:
-      "Buy when EMA 20 crosses above EMA 50. Sell when EMA 20 crosses below EMA 50. Use 1.5 ATR stop, 3 ATR target, risk 1% per trade.",
-  },
-  {
-    id: "rsi-reversion",
-    name: "RSI Mean Reversion",
-    badge: "Mean reversion",
-    description: "Mua vùng quá bán, bán vùng quá mua, kiểm soát rủi ro theo ATR.",
-    prompt:
-      "Buy when RSI 14 is below 32. Sell when RSI 14 is above 68. Use 1 ATR stop, 2 ATR target, risk 1% per trade.",
-  },
-  {
-    id: "breakout",
-    name: "48 Candle Breakout",
-    badge: "Breakout",
-    description: "Vào lệnh khi giá phá đỉnh/đáy của vùng lookback.",
-    prompt:
-      "Buy when price closes above the highest high of the last 48 candles. Sell when price closes below the lowest low of the last 48 candles. Use 2 ATR stop, 4 ATR target, risk 1% per trade.",
-  },
-  {
-    id: "london-breakout",
-    name: "London Breakout",
-    badge: "Planned",
-    description: "Mẫu nâng cao để AI báo thiếu engine session/range nếu chưa hỗ trợ.",
-    prompt:
-      "Trade the London breakout: mark the Asian session high and low, buy a breakout above the range, sell a breakout below the range, filter false breaks, use ATR stop and 2R target.",
-  },
-  {
-    id: "smc-liquidity",
-    name: "SMC Liquidity Sweep",
-    badge: "Unsupported",
-    description: "Mẫu để kiểm tra logic không ép chiến lược lạ vào template cũ.",
-    prompt:
-      "Wait for a liquidity sweep, confirm an H4 order block, enter at fair value gap mitigation, use trailing stop after 1R.",
-  },
-] as const;
-
 const DEFAULT_PROMPT = "";
-const DEFAULT_STRATEGY_SPEC = parseStrategyPrompt(SAMPLE_STRATEGIES[0].prompt);
+const DEFAULT_STRATEGY_SPEC = parseStrategyPrompt(FOREX_STRATEGY_LIBRARY[0].prompt);
 
 type AiParseResponse = {
   spec?: StrategySpec;
@@ -148,6 +110,13 @@ const BACKTEST_COPY = withLocaleFallback({
     parseRules: "AI parse",
     createCampaign: "Create campaign & backtest",
     sampleStrategies: "Sample strategies",
+    strategyCategory: "Category",
+    strategySearch: "Search strategy",
+    strategySelect: "Strategy",
+    chooseStrategy: "Choose a strategy",
+    useStrategy: "Use this template",
+    allStrategies: "All strategies",
+    strategiesFound: "strategies",
     aiSource: "Source",
     aiError: "AI parser error",
     example: "Example",
@@ -228,6 +197,13 @@ const BACKTEST_COPY = withLocaleFallback({
     parseRules: "Đọc luật",
     createCampaign: "Tạo chiến dịch & backtest",
     sampleStrategies: "Chiến lược mẫu",
+    strategyCategory: "Nhóm chiến lược",
+    strategySearch: "Tìm chiến lược",
+    strategySelect: "Chiến lược",
+    chooseStrategy: "Chọn chiến lược",
+    useStrategy: "Dùng mẫu này",
+    allStrategies: "Tất cả chiến lược",
+    strategiesFound: "chiến lược",
     example: "Ví dụ",
     parsedSpec: "Cấu hình đã đọc",
     direction: "Hướng lệnh",
@@ -765,6 +741,8 @@ export default function BacktestToolPage() {
   const [symbol, setSymbol] = useState("xauusd");
   const [timeframe, setTimeframe] = useState<MarketDataTimeframe>("1h");
   const [selectedSampleId, setSelectedSampleId] = useState<string | null>(null);
+  const [strategyCategory, setStrategyCategory] = useState("all");
+  const [strategySearch, setStrategySearch] = useState("");
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
   const [spec, setSpec] = useState<StrategySpec>(DEFAULT_STRATEGY_SPEC);
   const [manifest, setManifest] = useState<MarketDatasetManifest | null>(null);
@@ -807,6 +785,18 @@ export default function BacktestToolPage() {
         return (!startDate || day >= startDate) && (!endDate || day <= endDate);
       }),
     [candles, endDate, startDate],
+  );
+  const filteredStrategyLibrary = useMemo(() => {
+    const query = strategySearch.trim().toLowerCase();
+    return FOREX_STRATEGY_LIBRARY.filter((item) => {
+      const matchesCategory = strategyCategory === "all" || item.category === strategyCategory;
+      const searchableText = `${item.name} ${item.category} ${item.badge} ${item.description}`.toLowerCase();
+      return matchesCategory && (!query || searchableText.includes(query));
+    });
+  }, [strategyCategory, strategySearch]);
+  const selectedLibraryStrategy = useMemo(
+    () => FOREX_STRATEGY_LIBRARY.find((item) => item.id === selectedSampleId) ?? null,
+    [selectedSampleId],
   );
 
   useEffect(() => {
@@ -928,7 +918,7 @@ export default function BacktestToolPage() {
     setSavedEdge(backtest.edgeVerdict === "candidate");
   };
 
-  const selectSampleStrategy = (sample: (typeof SAMPLE_STRATEGIES)[number]) => {
+  const selectSampleStrategy = (sample: ForexStrategyLibraryItem) => {
     setSelectedSampleId(sample.id);
     setPrompt(sample.prompt);
     setSpec(parseStrategyPrompt(sample.prompt));
@@ -1215,35 +1205,95 @@ export default function BacktestToolPage() {
                 </div>
 
                 <div className="mt-5">
-                  <p className="text-[12px] uppercase tracking-[0.14em] text-text-muted">
-                    {copy.sampleStrategies}
-                  </p>
-                  <div className="mt-3 grid gap-2 md:grid-cols-2">
-                    {SAMPLE_STRATEGIES.map((sample) => (
-                      <button
-                        type="button"
-                        key={sample.id}
-                        onClick={() => selectSampleStrategy(sample)}
-                        className={cn(
-                          "min-h-[86px] rounded-lg border p-3 text-left transition hover:border-gold/45 hover:bg-gold/5",
-                          selectedSampleId === sample.id
-                            ? "border-gold/55 bg-gold/10"
-                            : "border-border bg-deep/35",
-                        )}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-[12px] uppercase tracking-[0.14em] text-text-muted">
+                        {copy.sampleStrategies}
+                      </p>
+                      <p className="mt-1 text-xs text-text-muted">
+                        {filteredStrategyLibrary.length}/{FOREX_STRATEGY_LIBRARY.length} {copy.strategiesFound}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid gap-2 lg:grid-cols-[240px_minmax(220px,1fr)_220px]">
+                    <label className="grid gap-1 text-xs text-text-muted">
+                      {copy.strategyCategory}
+                      <select
+                        value={strategyCategory}
+                        onChange={(event) => setStrategyCategory(event.target.value)}
+                        className="h-10 rounded-md border border-border bg-[#080A0F] px-3 text-sm text-[#F5F2EA] outline-none transition focus:border-gold/60"
                       >
-                        <span className="flex items-start justify-between gap-3">
-                          <span className="text-sm font-semibold text-text-primary">
-                            {sample.name}
-                          </span>
-                          <span className="rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-[0.08em] text-text-muted">
-                            {sample.badge}
-                          </span>
-                        </span>
-                        <span className="mt-2 block text-xs leading-5 text-text-muted">
-                          {sample.description}
-                        </span>
-                      </button>
-                    ))}
+                        <option value="all">{copy.allStrategies}</option>
+                        {FOREX_STRATEGY_CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="grid gap-1 text-xs text-text-muted">
+                      {copy.strategySelect}
+                      <select
+                        value={filteredStrategyLibrary.some((item) => item.id === selectedSampleId) ? selectedSampleId ?? "" : ""}
+                        onChange={(event) => {
+                          const sample = FOREX_STRATEGY_LIBRARY.find((item) => item.id === event.target.value);
+                          if (sample) selectSampleStrategy(sample);
+                        }}
+                        className="h-10 rounded-md border border-border bg-[#080A0F] px-3 text-sm text-[#F5F2EA] outline-none transition focus:border-gold/60"
+                      >
+                        <option value="">{copy.chooseStrategy}</option>
+                        {filteredStrategyLibrary.map((sample) => (
+                          <option key={sample.id} value={sample.id}>
+                            {sample.sourceIndex}. {sample.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="grid gap-1 text-xs text-text-muted">
+                      {copy.strategySearch}
+                      <input
+                        type="search"
+                        value={strategySearch}
+                        onChange={(event) => setStrategySearch(event.target.value)}
+                        placeholder="EMA, RSI, London, SMC..."
+                        className="h-10 rounded-md border border-border bg-[#080A0F] px-3 text-sm text-[#F5F2EA] outline-none transition placeholder:text-[#6F7788] focus:border-gold/60"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-3 rounded-lg border border-border bg-deep/35 p-3">
+                    {selectedLibraryStrategy ? (
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="text-sm font-semibold text-text-primary">
+                              {selectedLibraryStrategy.sourceIndex}. {selectedLibraryStrategy.name}
+                            </p>
+                            <span className="rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-[0.08em] text-text-muted">
+                              {selectedLibraryStrategy.badge}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-xs leading-5 text-text-muted">
+                            {selectedLibraryStrategy.description}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => selectSampleStrategy(selectedLibraryStrategy)}
+                          className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md border border-gold/35 px-3 text-sm font-semibold text-gold transition hover:bg-gold/10"
+                        >
+                          <Wand2 className="h-4 w-4" />
+                          {copy.useStrategy}
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-text-muted">
+                        {filteredStrategyLibrary.length === 0
+                          ? "Không tìm thấy chiến lược phù hợp."
+                          : copy.chooseStrategy}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

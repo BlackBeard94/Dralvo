@@ -76,7 +76,7 @@ export const MARKET_DATA_SYMBOLS: MarketDataSymbol[] = [
     key: "usoil",
     label: "US Oil",
     twelveDataSymbol: "WTI/USD",
-    dukascopySymbol: "USOIL",
+    dukascopySymbol: "LIGHTCMDUSD",
     enabledTimeframes: MARKET_DATA_TIMEFRAMES,
   },
 ];

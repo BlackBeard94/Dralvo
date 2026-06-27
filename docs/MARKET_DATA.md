@@ -6,7 +6,8 @@ provider request on every user run.
 ## Sources
 
 - Twelve Data refreshes recent candles with `TWELVE_DATA_API_KEY`.
-- Dukascopy is used as a historical backfill source through exported CSV files.
+- Dukascopy BI5 is used as the main no-key historical backfill source.
+- Dukascopy exported CSV files can also be imported when available.
   Put converted/exported CSV files under `data/vendor/dukascopy/`.
 
 ## Output
@@ -66,6 +67,19 @@ Merge Dukascopy CSV history first, then refresh with Twelve Data:
 npm run data:seed
 ```
 
+Download raw Dukascopy BI5 tick data, convert it to candles, and write all
+configured public datasets:
+
+```powershell
+npm run data:seed:dukascopy:bi5 -- --days 180
+```
+
+Limit a BI5 run while testing:
+
+```powershell
+npm run data:seed:dukascopy:bi5 -- --symbols eurusd,xauusd --timeframes 1h,4h,1day --days 30
+```
+
 Limit a run while testing:
 
 ```powershell
@@ -96,6 +110,17 @@ or MT5-style:
 For raw Dukascopy BI5/tick archives, convert them to OHLC CSV first, then place
 the result in the paths above. This keeps the public app independent from heavy
 tick decompression work and lets the browser consume compact candle data.
+
+The built-in BI5 downloader handles this conversion automatically. It uses
+mid-price candles from bid/ask ticks and stores average spread per candle.
+
+Current Dukascopy symbol mapping includes:
+
+```text
+XAU/USD -> XAUUSD
+XAG/USD -> XAGUSD
+US Oil  -> LIGHTCMDUSD
+```
 
 ## Security
 

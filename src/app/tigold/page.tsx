@@ -99,7 +99,7 @@ export default function TiGoldPage() {
       const res = await fetch("/api/ib/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ account, accountType: accountType }),
+        body: JSON.stringify({ account, broker: accountType }),
       });
       const data = await res.json();
       if (res.ok && data.verified) {

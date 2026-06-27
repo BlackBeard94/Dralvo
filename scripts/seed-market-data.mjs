@@ -16,7 +16,7 @@ const symbols = [
   { key: "usdchf", label: "USD/CHF", twelveDataSymbol: "USD/CHF", dukascopySymbol: "USDCHF" },
   { key: "usdjpy", label: "USD/JPY", twelveDataSymbol: "USD/JPY", dukascopySymbol: "USDJPY" },
   { key: "xagusd", label: "XAG/USD", twelveDataSymbol: "XAG/USD", dukascopySymbol: "XAGUSD" },
-  { key: "usoil", label: "US Oil", twelveDataSymbol: "WTI/USD", dukascopySymbol: "USOIL" },
+  { key: "usoil", label: "US Oil", twelveDataSymbol: "WTI/USD", dukascopySymbol: "LIGHTCMDUSD" },
 ];
 
 const timeframes = ["5min", "15min", "1h", "4h", "1day"];

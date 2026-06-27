@@ -1,506 +1,507 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-19T11:21:15.171Z",
+  "source": "dukascopy-bi5",
+  "generatedAt": "2026-06-22T16:39:40.515227Z",
   "datasets": [
     {
-      "symbol": "xauusd",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/xauusd/5min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-14T06:21:14.917Z",
-      "lastTime": "2026-06-19T11:16:14.917Z",
-      "generatedAt": "2026-06-19T11:21:14.924Z"
-    },
-    {
-      "symbol": "xauusd",
-      "timeframe": "15min",
-      "provider": "static-cache",
-      "path": "/market-data/xauusd/15min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-03T20:21:14.927Z",
-      "lastTime": "2026-06-19T11:06:14.927Z",
-      "generatedAt": "2026-06-19T11:21:14.933Z"
-    },
-    {
-      "symbol": "xauusd",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/xauusd/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:14.933Z",
-      "lastTime": "2026-06-19T10:21:14.933Z",
-      "generatedAt": "2026-06-19T11:21:14.940Z"
-    },
-    {
-      "symbol": "xauusd",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/xauusd/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:14.941Z",
-      "lastTime": "2026-06-19T07:21:14.941Z",
-      "generatedAt": "2026-06-19T11:21:14.945Z"
-    },
-    {
-      "symbol": "xauusd",
-      "timeframe": "1day",
-      "provider": "static-cache",
-      "path": "/market-data/xauusd/1day.csv",
-      "candles": 1500,
-      "firstTime": "2022-05-11T11:21:14.945Z",
-      "lastTime": "2026-06-18T11:21:14.945Z",
-      "generatedAt": "2026-06-19T11:21:14.955Z"
-    },
-    {
-      "symbol": "eurusd",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/eurusd/5min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-14T06:21:14.957Z",
-      "lastTime": "2026-06-19T11:16:14.957Z",
-      "generatedAt": "2026-06-19T11:21:14.971Z"
-    },
-    {
-      "symbol": "eurusd",
-      "timeframe": "15min",
-      "provider": "static-cache",
-      "path": "/market-data/eurusd/15min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-03T20:21:14.972Z",
-      "lastTime": "2026-06-19T11:06:14.972Z",
-      "generatedAt": "2026-06-19T11:21:14.978Z"
-    },
-    {
-      "symbol": "eurusd",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/eurusd/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:14.978Z",
-      "lastTime": "2026-06-19T10:21:14.978Z",
-      "generatedAt": "2026-06-19T11:21:14.987Z"
-    },
-    {
-      "symbol": "eurusd",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/eurusd/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:14.987Z",
-      "lastTime": "2026-06-19T07:21:14.987Z",
-      "generatedAt": "2026-06-19T11:21:14.994Z"
-    },
-    {
-      "symbol": "eurusd",
-      "timeframe": "1day",
-      "provider": "static-cache",
-      "path": "/market-data/eurusd/1day.csv",
-      "candles": 1500,
-      "firstTime": "2022-05-11T11:21:14.994Z",
-      "lastTime": "2026-06-18T11:21:14.994Z",
-      "generatedAt": "2026-06-19T11:21:14.999Z"
-    },
-    {
-      "symbol": "gbpusd",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/gbpusd/5min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-14T06:21:14.999Z",
-      "lastTime": "2026-06-19T11:16:14.999Z",
-      "generatedAt": "2026-06-19T11:21:15.003Z"
-    },
-    {
-      "symbol": "gbpusd",
-      "timeframe": "15min",
-      "provider": "static-cache",
-      "path": "/market-data/gbpusd/15min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.004Z",
-      "lastTime": "2026-06-19T11:06:15.004Z",
-      "generatedAt": "2026-06-19T11:21:15.008Z"
-    },
-    {
-      "symbol": "gbpusd",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/gbpusd/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.008Z",
-      "lastTime": "2026-06-19T10:21:15.008Z",
-      "generatedAt": "2026-06-19T11:21:15.013Z"
-    },
-    {
-      "symbol": "gbpusd",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/gbpusd/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.013Z",
-      "lastTime": "2026-06-19T07:21:15.013Z",
-      "generatedAt": "2026-06-19T11:21:15.019Z"
-    },
-    {
-      "symbol": "gbpusd",
-      "timeframe": "1day",
-      "provider": "static-cache",
-      "path": "/market-data/gbpusd/1day.csv",
-      "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.019Z",
-      "lastTime": "2026-06-18T11:21:15.019Z",
-      "generatedAt": "2026-06-19T11:21:15.023Z"
-    },
-    {
-      "symbol": "audusd",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/audusd/5min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.023Z",
-      "lastTime": "2026-06-19T11:16:15.023Z",
-      "generatedAt": "2026-06-19T11:21:15.027Z"
-    },
-    {
       "symbol": "audusd",
       "timeframe": "15min",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/audusd/15min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.027Z",
-      "lastTime": "2026-06-19T11:06:15.027Z",
-      "generatedAt": "2026-06-19T11:21:15.031Z"
-    },
-    {
-      "symbol": "audusd",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/audusd/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.031Z",
-      "lastTime": "2026-06-19T10:21:15.031Z",
-      "generatedAt": "2026-06-19T11:21:15.034Z"
-    },
-    {
-      "symbol": "audusd",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/audusd/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.035Z",
-      "lastTime": "2026-06-19T07:21:15.035Z",
-      "generatedAt": "2026-06-19T11:21:15.038Z"
+      "candles": 2256,
+      "firstTime": "2025-07-21T19:00:00Z",
+      "lastTime": "2025-12-31T19:45:00Z",
+      "generatedAt": "2026-06-22T16:39:40.433031Z"
     },
     {
       "symbol": "audusd",
       "timeframe": "1day",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/audusd/1day.csv",
-      "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.038Z",
-      "lastTime": "2026-06-18T11:21:15.038Z",
-      "generatedAt": "2026-06-19T11:21:15.042Z"
+      "candles": 127,
+      "firstTime": "2025-07-21T00:00:00Z",
+      "lastTime": "2025-12-31T00:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.435031Z"
     },
     {
-      "symbol": "nzdusd",
+      "symbol": "audusd",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/audusd/1h.csv",
+      "candles": 564,
+      "firstTime": "2025-07-21T19:00:00Z",
+      "lastTime": "2025-12-31T19:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.434031Z"
+    },
+    {
+      "symbol": "audusd",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/audusd/4h.csv",
+      "candles": 469,
+      "firstTime": "2025-07-21T16:00:00Z",
+      "lastTime": "2025-12-31T16:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.434031Z"
+    },
+    {
+      "symbol": "audusd",
       "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/nzdusd/5min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.042Z",
-      "lastTime": "2026-06-19T11:16:15.042Z",
-      "generatedAt": "2026-06-19T11:21:15.046Z"
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/audusd/5min.csv",
+      "candles": 6760,
+      "firstTime": "2025-07-21T19:00:00Z",
+      "lastTime": "2025-12-31T19:55:00Z",
+      "generatedAt": "2026-06-22T16:39:40.429032Z"
+    },
+    {
+      "symbol": "eurusd",
+      "timeframe": "15min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/eurusd/15min.csv",
+      "candles": 2331,
+      "firstTime": "2025-07-06T23:00:00Z",
+      "lastTime": "2025-12-31T20:45:00Z",
+      "generatedAt": "2026-06-22T16:39:40.408034Z"
+    },
+    {
+      "symbol": "eurusd",
+      "timeframe": "1day",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/eurusd/1day.csv",
+      "candles": 146,
+      "firstTime": "2025-07-06T00:00:00Z",
+      "lastTime": "2025-12-31T00:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.410032Z"
+    },
+    {
+      "symbol": "eurusd",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/eurusd/1h.csv",
+      "candles": 583,
+      "firstTime": "2025-07-06T23:00:00Z",
+      "lastTime": "2025-12-31T20:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.409034Z"
+    },
+    {
+      "symbol": "eurusd",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/eurusd/4h.csv",
+      "candles": 501,
+      "firstTime": "2025-07-06T20:00:00Z",
+      "lastTime": "2025-12-31T20:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.410032Z"
+    },
+    {
+      "symbol": "eurusd",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/eurusd/5min.csv",
+      "candles": 6989,
+      "firstTime": "2025-07-06T23:00:00Z",
+      "lastTime": "2025-12-31T20:55:00Z",
+      "generatedAt": "2026-06-22T16:39:40.404031Z"
+    },
+    {
+      "symbol": "gbpusd",
+      "timeframe": "15min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/gbpusd/15min.csv",
+      "candles": 1692,
+      "firstTime": "2025-07-06T22:00:00Z",
+      "lastTime": "2025-11-14T20:45:00Z",
+      "generatedAt": "2026-06-22T16:39:40.419031Z"
+    },
+    {
+      "symbol": "gbpusd",
+      "timeframe": "1day",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/gbpusd/1day.csv",
+      "candles": 104,
+      "firstTime": "2025-07-06T00:00:00Z",
+      "lastTime": "2025-11-14T00:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.420031Z"
+    },
+    {
+      "symbol": "gbpusd",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/gbpusd/1h.csv",
+      "candles": 423,
+      "firstTime": "2025-07-06T22:00:00Z",
+      "lastTime": "2025-11-14T20:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.420031Z"
+    },
+    {
+      "symbol": "gbpusd",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/gbpusd/4h.csv",
+      "candles": 379,
+      "firstTime": "2025-07-06T20:00:00Z",
+      "lastTime": "2025-11-14T20:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.420031Z"
+    },
+    {
+      "symbol": "gbpusd",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/gbpusd/5min.csv",
+      "candles": 5076,
+      "firstTime": "2025-07-06T22:00:00Z",
+      "lastTime": "2025-11-14T20:55:00Z",
+      "generatedAt": "2026-06-22T16:39:40.417031Z"
     },
     {
       "symbol": "nzdusd",
       "timeframe": "15min",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/nzdusd/15min.csv",
       "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.046Z",
-      "lastTime": "2026-06-19T11:06:15.046Z",
-      "generatedAt": "2026-06-19T11:21:15.050Z"
-    },
-    {
-      "symbol": "nzdusd",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/nzdusd/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.050Z",
-      "lastTime": "2026-06-19T10:21:15.050Z",
-      "generatedAt": "2026-06-19T11:21:15.054Z"
-    },
-    {
-      "symbol": "nzdusd",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/nzdusd/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.054Z",
-      "lastTime": "2026-06-19T07:21:15.054Z",
-      "generatedAt": "2026-06-19T11:21:15.058Z"
+      "firstTime": "2026-06-03T20:21:15.046000Z",
+      "lastTime": "2026-06-19T11:06:15.046000Z",
+      "generatedAt": "2026-06-22T16:39:40.451224Z"
     },
     {
       "symbol": "nzdusd",
       "timeframe": "1day",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/nzdusd/1day.csv",
       "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.058Z",
-      "lastTime": "2026-06-18T11:21:15.058Z",
-      "generatedAt": "2026-06-19T11:21:15.062Z"
+      "firstTime": "2022-05-11T11:21:15.058000Z",
+      "lastTime": "2026-06-18T11:21:15.058000Z",
+      "generatedAt": "2026-06-22T16:39:40.458224Z"
     },
     {
-      "symbol": "usdcad",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/usdcad/5min.csv",
+      "symbol": "nzdusd",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/nzdusd/1h.csv",
       "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.062Z",
-      "lastTime": "2026-06-19T11:16:15.062Z",
-      "generatedAt": "2026-06-19T11:21:15.066Z"
+      "firstTime": "2026-04-17T23:21:15.050000Z",
+      "lastTime": "2026-06-19T10:21:15.050000Z",
+      "generatedAt": "2026-06-22T16:39:40.453224Z"
+    },
+    {
+      "symbol": "nzdusd",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/nzdusd/4h.csv",
+      "candles": 1500,
+      "firstTime": "2025-10-12T11:21:15.054000Z",
+      "lastTime": "2026-06-19T07:21:15.054000Z",
+      "generatedAt": "2026-06-22T16:39:40.455226Z"
+    },
+    {
+      "symbol": "nzdusd",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/nzdusd/5min.csv",
+      "candles": 1500,
+      "firstTime": "2026-06-14T06:21:15.042000Z",
+      "lastTime": "2026-06-19T11:16:15.042000Z",
+      "generatedAt": "2026-06-22T16:39:40.448224Z"
     },
     {
       "symbol": "usdcad",
       "timeframe": "15min",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usdcad/15min.csv",
       "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.066Z",
-      "lastTime": "2026-06-19T11:06:15.066Z",
-      "generatedAt": "2026-06-19T11:21:15.070Z"
-    },
-    {
-      "symbol": "usdcad",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/usdcad/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.070Z",
-      "lastTime": "2026-06-19T10:21:15.070Z",
-      "generatedAt": "2026-06-19T11:21:15.074Z"
-    },
-    {
-      "symbol": "usdcad",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/usdcad/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.074Z",
-      "lastTime": "2026-06-19T07:21:15.074Z",
-      "generatedAt": "2026-06-19T11:21:15.080Z"
+      "firstTime": "2026-06-03T20:21:15.066000Z",
+      "lastTime": "2026-06-19T11:06:15.066000Z",
+      "generatedAt": "2026-06-22T16:39:40.462224Z"
     },
     {
       "symbol": "usdcad",
       "timeframe": "1day",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usdcad/1day.csv",
       "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.080Z",
-      "lastTime": "2026-06-18T11:21:15.080Z",
-      "generatedAt": "2026-06-19T11:21:15.085Z"
+      "firstTime": "2022-05-11T11:21:15.080000Z",
+      "lastTime": "2026-06-18T11:21:15.080000Z",
+      "generatedAt": "2026-06-22T16:39:40.469224Z"
     },
     {
-      "symbol": "usdchf",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/usdchf/5min.csv",
+      "symbol": "usdcad",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdcad/1h.csv",
       "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.086Z",
-      "lastTime": "2026-06-19T11:16:15.086Z",
-      "generatedAt": "2026-06-19T11:21:15.091Z"
+      "firstTime": "2026-04-17T23:21:15.070000Z",
+      "lastTime": "2026-06-19T10:21:15.070000Z",
+      "generatedAt": "2026-06-22T16:39:40.465224Z"
+    },
+    {
+      "symbol": "usdcad",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdcad/4h.csv",
+      "candles": 1500,
+      "firstTime": "2025-10-12T11:21:15.074000Z",
+      "lastTime": "2026-06-19T07:21:15.074000Z",
+      "generatedAt": "2026-06-22T16:39:40.467224Z"
+    },
+    {
+      "symbol": "usdcad",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdcad/5min.csv",
+      "candles": 1500,
+      "firstTime": "2026-06-14T06:21:15.062000Z",
+      "lastTime": "2026-06-19T11:16:15.062000Z",
+      "generatedAt": "2026-06-22T16:39:40.460224Z"
     },
     {
       "symbol": "usdchf",
       "timeframe": "15min",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usdchf/15min.csv",
       "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.091Z",
-      "lastTime": "2026-06-19T11:06:15.091Z",
-      "generatedAt": "2026-06-19T11:21:15.096Z"
-    },
-    {
-      "symbol": "usdchf",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/usdchf/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.096Z",
-      "lastTime": "2026-06-19T10:21:15.096Z",
-      "generatedAt": "2026-06-19T11:21:15.101Z"
-    },
-    {
-      "symbol": "usdchf",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/usdchf/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.101Z",
-      "lastTime": "2026-06-19T07:21:15.101Z",
-      "generatedAt": "2026-06-19T11:21:15.106Z"
+      "firstTime": "2026-06-03T20:21:15.091000Z",
+      "lastTime": "2026-06-19T11:06:15.091000Z",
+      "generatedAt": "2026-06-22T16:39:40.473225Z"
     },
     {
       "symbol": "usdchf",
       "timeframe": "1day",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usdchf/1day.csv",
       "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.106Z",
-      "lastTime": "2026-06-18T11:21:15.106Z",
-      "generatedAt": "2026-06-19T11:21:15.111Z"
+      "firstTime": "2022-05-11T11:21:15.106000Z",
+      "lastTime": "2026-06-18T11:21:15.106000Z",
+      "generatedAt": "2026-06-22T16:39:40.480226Z"
     },
     {
-      "symbol": "usdjpy",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/usdjpy/5min.csv",
+      "symbol": "usdchf",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdchf/1h.csv",
       "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.111Z",
-      "lastTime": "2026-06-19T11:16:15.111Z",
-      "generatedAt": "2026-06-19T11:21:15.116Z"
+      "firstTime": "2026-04-17T23:21:15.096000Z",
+      "lastTime": "2026-06-19T10:21:15.096000Z",
+      "generatedAt": "2026-06-22T16:39:40.476224Z"
+    },
+    {
+      "symbol": "usdchf",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdchf/4h.csv",
+      "candles": 1500,
+      "firstTime": "2025-10-12T11:21:15.101000Z",
+      "lastTime": "2026-06-19T07:21:15.101000Z",
+      "generatedAt": "2026-06-22T16:39:40.478224Z"
+    },
+    {
+      "symbol": "usdchf",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdchf/5min.csv",
+      "candles": 1500,
+      "firstTime": "2026-06-14T06:21:15.086000Z",
+      "lastTime": "2026-06-19T11:16:15.086000Z",
+      "generatedAt": "2026-06-22T16:39:40.471225Z"
     },
     {
       "symbol": "usdjpy",
       "timeframe": "15min",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usdjpy/15min.csv",
       "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.116Z",
-      "lastTime": "2026-06-19T11:06:15.116Z",
-      "generatedAt": "2026-06-19T11:21:15.119Z"
-    },
-    {
-      "symbol": "usdjpy",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/usdjpy/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.120Z",
-      "lastTime": "2026-06-19T10:21:15.120Z",
-      "generatedAt": "2026-06-19T11:21:15.124Z"
-    },
-    {
-      "symbol": "usdjpy",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/usdjpy/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.124Z",
-      "lastTime": "2026-06-19T07:21:15.124Z",
-      "generatedAt": "2026-06-19T11:21:15.128Z"
+      "firstTime": "2026-06-03T20:21:15.116000Z",
+      "lastTime": "2026-06-19T11:06:15.116000Z",
+      "generatedAt": "2026-06-22T16:39:40.485225Z"
     },
     {
       "symbol": "usdjpy",
       "timeframe": "1day",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usdjpy/1day.csv",
       "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.128Z",
-      "lastTime": "2026-06-18T11:21:15.128Z",
-      "generatedAt": "2026-06-19T11:21:15.132Z"
+      "firstTime": "2022-05-11T11:21:15.128000Z",
+      "lastTime": "2026-06-18T11:21:15.128000Z",
+      "generatedAt": "2026-06-22T16:39:40.491224Z"
     },
     {
-      "symbol": "xagusd",
-      "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/xagusd/5min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.132Z",
-      "lastTime": "2026-06-19T11:16:15.132Z",
-      "generatedAt": "2026-06-19T11:21:15.136Z"
-    },
-    {
-      "symbol": "xagusd",
-      "timeframe": "15min",
-      "provider": "static-cache",
-      "path": "/market-data/xagusd/15min.csv",
-      "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.136Z",
-      "lastTime": "2026-06-19T11:06:15.136Z",
-      "generatedAt": "2026-06-19T11:21:15.140Z"
-    },
-    {
-      "symbol": "xagusd",
+      "symbol": "usdjpy",
       "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/xagusd/1h.csv",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdjpy/1h.csv",
       "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.140Z",
-      "lastTime": "2026-06-19T10:21:15.140Z",
-      "generatedAt": "2026-06-19T11:21:15.143Z"
+      "firstTime": "2026-04-17T23:21:15.120000Z",
+      "lastTime": "2026-06-19T10:21:15.120000Z",
+      "generatedAt": "2026-06-22T16:39:40.487225Z"
     },
     {
-      "symbol": "xagusd",
+      "symbol": "usdjpy",
       "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/xagusd/4h.csv",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdjpy/4h.csv",
       "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.144Z",
-      "lastTime": "2026-06-19T07:21:15.144Z",
-      "generatedAt": "2026-06-19T11:21:15.147Z"
+      "firstTime": "2025-10-12T11:21:15.124000Z",
+      "lastTime": "2026-06-19T07:21:15.124000Z",
+      "generatedAt": "2026-06-22T16:39:40.489225Z"
     },
     {
-      "symbol": "xagusd",
-      "timeframe": "1day",
-      "provider": "static-cache",
-      "path": "/market-data/xagusd/1day.csv",
-      "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.148Z",
-      "lastTime": "2026-06-18T11:21:15.148Z",
-      "generatedAt": "2026-06-19T11:21:15.152Z"
-    },
-    {
-      "symbol": "usoil",
+      "symbol": "usdjpy",
       "timeframe": "5min",
-      "provider": "static-cache",
-      "path": "/market-data/usoil/5min.csv",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usdjpy/5min.csv",
       "candles": 1500,
-      "firstTime": "2026-06-14T06:21:15.152Z",
-      "lastTime": "2026-06-19T11:16:15.152Z",
-      "generatedAt": "2026-06-19T11:21:15.156Z"
+      "firstTime": "2026-06-14T06:21:15.111000Z",
+      "lastTime": "2026-06-19T11:16:15.111000Z",
+      "generatedAt": "2026-06-22T16:39:40.483224Z"
     },
     {
       "symbol": "usoil",
       "timeframe": "15min",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usoil/15min.csv",
       "candles": 1500,
-      "firstTime": "2026-06-03T20:21:15.156Z",
-      "lastTime": "2026-06-19T11:06:15.156Z",
-      "generatedAt": "2026-06-19T11:21:15.159Z"
-    },
-    {
-      "symbol": "usoil",
-      "timeframe": "1h",
-      "provider": "static-cache",
-      "path": "/market-data/usoil/1h.csv",
-      "candles": 1500,
-      "firstTime": "2026-04-17T23:21:15.159Z",
-      "lastTime": "2026-06-19T10:21:15.159Z",
-      "generatedAt": "2026-06-19T11:21:15.163Z"
-    },
-    {
-      "symbol": "usoil",
-      "timeframe": "4h",
-      "provider": "static-cache",
-      "path": "/market-data/usoil/4h.csv",
-      "candles": 1500,
-      "firstTime": "2025-10-12T11:21:15.163Z",
-      "lastTime": "2026-06-19T07:21:15.163Z",
-      "generatedAt": "2026-06-19T11:21:15.167Z"
+      "firstTime": "2026-06-03T20:21:15.156000Z",
+      "lastTime": "2026-06-19T11:06:15.156000Z",
+      "generatedAt": "2026-06-22T16:39:40.508224Z"
     },
     {
       "symbol": "usoil",
       "timeframe": "1day",
-      "provider": "static-cache",
+      "provider": "dukascopy-bi5",
       "path": "/market-data/usoil/1day.csv",
       "candles": 1500,
-      "firstTime": "2022-05-11T11:21:15.167Z",
-      "lastTime": "2026-06-18T11:21:15.167Z",
-      "generatedAt": "2026-06-19T11:21:15.170Z"
+      "firstTime": "2022-05-11T11:21:15.167000Z",
+      "lastTime": "2026-06-18T11:21:15.167000Z",
+      "generatedAt": "2026-06-22T16:39:40.515227Z"
+    },
+    {
+      "symbol": "usoil",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usoil/1h.csv",
+      "candles": 1500,
+      "firstTime": "2026-04-17T23:21:15.159000Z",
+      "lastTime": "2026-06-19T10:21:15.159000Z",
+      "generatedAt": "2026-06-22T16:39:40.510224Z"
+    },
+    {
+      "symbol": "usoil",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usoil/4h.csv",
+      "candles": 1500,
+      "firstTime": "2025-10-12T11:21:15.163000Z",
+      "lastTime": "2026-06-19T07:21:15.163000Z",
+      "generatedAt": "2026-06-22T16:39:40.513224Z"
+    },
+    {
+      "symbol": "usoil",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/usoil/5min.csv",
+      "candles": 1500,
+      "firstTime": "2026-06-14T06:21:15.152000Z",
+      "lastTime": "2026-06-19T11:16:15.152000Z",
+      "generatedAt": "2026-06-22T16:39:40.506226Z"
+    },
+    {
+      "symbol": "xagusd",
+      "timeframe": "15min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xagusd/15min.csv",
+      "candles": 1500,
+      "firstTime": "2026-06-03T20:21:15.136000Z",
+      "lastTime": "2026-06-19T11:06:15.136000Z",
+      "generatedAt": "2026-06-22T16:39:40.496224Z"
+    },
+    {
+      "symbol": "xagusd",
+      "timeframe": "1day",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xagusd/1day.csv",
+      "candles": 1500,
+      "firstTime": "2022-05-11T11:21:15.148000Z",
+      "lastTime": "2026-06-18T11:21:15.148000Z",
+      "generatedAt": "2026-06-22T16:39:40.503225Z"
+    },
+    {
+      "symbol": "xagusd",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xagusd/1h.csv",
+      "candles": 1500,
+      "firstTime": "2026-04-17T23:21:15.140000Z",
+      "lastTime": "2026-06-19T10:21:15.140000Z",
+      "generatedAt": "2026-06-22T16:39:40.498225Z"
+    },
+    {
+      "symbol": "xagusd",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xagusd/4h.csv",
+      "candles": 1500,
+      "firstTime": "2025-10-12T11:21:15.144000Z",
+      "lastTime": "2026-06-19T07:21:15.144000Z",
+      "generatedAt": "2026-06-22T16:39:40.500225Z"
+    },
+    {
+      "symbol": "xagusd",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xagusd/5min.csv",
+      "candles": 1500,
+      "firstTime": "2026-06-14T06:21:15.132000Z",
+      "lastTime": "2026-06-19T11:16:15.132000Z",
+      "generatedAt": "2026-06-22T16:39:40.493225Z"
+    },
+    {
+      "symbol": "xauusd",
+      "timeframe": "15min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xauusd/15min.csv",
+      "candles": 2320,
+      "firstTime": "2025-07-06T23:00:00Z",
+      "lastTime": "2025-12-31T18:45:00Z",
+      "generatedAt": "2026-06-22T16:39:40.392032Z"
+    },
+    {
+      "symbol": "xauusd",
+      "timeframe": "1day",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xauusd/1day.csv",
+      "candles": 137,
+      "firstTime": "2025-07-06T00:00:00Z",
+      "lastTime": "2025-12-31T00:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.394031Z"
+    },
+    {
+      "symbol": "xauusd",
+      "timeframe": "1h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xauusd/1h.csv",
+      "candles": 581,
+      "firstTime": "2025-07-06T23:00:00Z",
+      "lastTime": "2025-12-31T18:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.393033Z"
+    },
+    {
+      "symbol": "xauusd",
+      "timeframe": "4h",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xauusd/4h.csv",
+      "candles": 507,
+      "firstTime": "2025-07-06T20:00:00Z",
+      "lastTime": "2025-12-31T16:00:00Z",
+      "generatedAt": "2026-06-22T16:39:40.394031Z"
+    },
+    {
+      "symbol": "xauusd",
+      "timeframe": "5min",
+      "provider": "dukascopy-bi5",
+      "path": "/market-data/xauusd/5min.csv",
+      "candles": 6960,
+      "firstTime": "2025-07-06T23:00:00Z",
+      "lastTime": "2025-12-31T18:55:00Z",
+      "generatedAt": "2026-06-22T16:39:40.388031Z"
     }
   ]
 }

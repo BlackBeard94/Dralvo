@@ -14,6 +14,7 @@
     "data:seed": "node scripts/seed-market-data.mjs",
     "data:seed:twelve": "node scripts/seed-market-data.mjs --provider twelve-data",
     "data:seed:dukascopy": "node scripts/seed-market-data.mjs --provider dukascopy",
+    "data:seed:dukascopy:bi5": "python scripts/seed-dukascopy-bi5.py",
     "telegram:webhook": "node scripts/set-telegram-webhook.mjs --site=https://www.dralvo.com"
   },
   "dependencies": {
