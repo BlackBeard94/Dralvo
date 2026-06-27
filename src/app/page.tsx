@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import Script from "next/script";
 import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
@@ -26,14 +25,20 @@ const accentText = (a: EaProduct["accent"]) => (a === "steel" ? "#7dc0f0" : a ==
 
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
 
-/* monthly base price per tier; index-aligned with copy.pricing.tiers */
-const TIER_PRICE = [0, 39, 99];
 const PERIODS = [
-  { id: "monthly", months: 1, discount: 0 },
-  { id: "sixmo", months: 6, discount: 0.15 },
-  { id: "yearly", months: 12, discount: 0.3 },
+  { id: "monthly", months: 1 },
+  { id: "sixmo", months: 6 },
+  { id: "yearly", months: 12 },
 ] as const;
 type PeriodId = (typeof PERIODS)[number]["id"];
+
+/* Dralvo Unlimited price by billing period (the Free tier is always $0).
+ * total = charged now for the period · perMo = per-month equivalent · off = % saved. */
+const UNLIMITED_PRICING: Record<PeriodId, { total: number; perMo: number; off: number }> = {
+  monthly: { total: 59, perMo: 59, off: 0 },
+  sixmo: { total: 318, perMo: 53, off: 10 },
+  yearly: { total: 599, perMo: 50, off: 15 },
+};
 
 /* Deterministic equity-curve shape (normalised) — compounding with pullbacks. */
 const EQUITY = [
@@ -173,7 +178,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<EaProduct["id"]>("goldmaster");
-  const [period, setPeriod] = useState<PeriodId>("yearly");
+  const [period, setPeriod] = useState<PeriodId>("monthly");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -184,7 +189,7 @@ export default function LandingPage() {
   }, []);
 
   const checkout = useCallback(
-    async (plan: "pro" | "elite") => {
+    async (plan: "unlimited") => {
       setLoading(true);
       setCheckoutError(null);
       try {
@@ -208,18 +213,77 @@ export default function LandingPage() {
 
   const activeEa = tab === "goldmaster" ? GOLDMASTER : tab === "scalp" ? GOLD_SCALP : TIGOLD;
   const p = t.products;
-  const activePeriod = PERIODS.find((x) => x.id === period)!;
+  const unlimitedPrice = UNLIMITED_PRICING[period];
 
   return (
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
-      <Script id="ld-json" type="application/ld+json" strategy="afterInteractive">{JSON.stringify({
-        "@context": "https://schema.org",
-        "@graph": [
-          { "@type": "Organization", name: "Dralvo Capital", url: "https://www.dralvo.com", sameAs: ["https://t.me/dralvo"] },
-          { "@type": "SoftwareApplication", name: "Dralvo Gold Robots — GoldMaster & Gold Scalp", applicationCategory: "FinanceApplication", operatingSystem: "Windows (MetaTrader 5)", description: "Two verified automated XAUUSD gold trading robots. No martingale, no grid.", offers: { "@type": "AggregateOffer", lowPrice: "39", highPrice: "99", priceCurrency: "USD", offerCount: "2" } },
-          { "@type": "FAQPage", mainEntity: t.faq.items.map(([q, an]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: an } })) },
-        ],
-      })}</Script>
+      {/* JSON-LD rendered into the initial server HTML (not a client Script) so
+          non-JS crawlers and LLM agents can read the structured data. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://www.dralvo.com/#org",
+                name: "Dralvo Capital",
+                url: "https://www.dralvo.com",
+                logo: "https://www.dralvo.com/brand/dralvo-icon-180.png",
+                description:
+                  "Dralvo Capital builds verified automated XAUUSD (gold) trading robots for MetaTrader 5: GoldMaster (D1 swing), GoldScalp (M5 momentum) and the free TiGold engine. No martingale, no grid.",
+                sameAs: ["https://t.me/dralvoea"],
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://www.dralvo.com/#website",
+                url: "https://www.dralvo.com",
+                name: "Dralvo",
+                publisher: { "@id": "https://www.dralvo.com/#org" },
+                inLanguage: ["en", "vi", "pt-BR", "zh", "es", "hi", "id", "ru"],
+              },
+              {
+                "@type": "Product",
+                name: "Dralvo Unlimited",
+                brand: { "@id": "https://www.dralvo.com/#org" },
+                category: "Automated trading software (MetaTrader 5 Expert Advisor)",
+                operatingSystem: "Windows (MetaTrader 5)",
+                description:
+                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M5 momentum) and TiGold robots for XAUUSD — with unlimited MT5 accounts. No martingale, no grid.",
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "USD",
+                  price: "59",
+                  availability: "https://schema.org/InStock",
+                  priceSpecification: [
+                    { "@type": "UnitPriceSpecification", price: "59", priceCurrency: "USD", referenceQuantity: { "@type": "QuantitativeValue", value: "1", unitCode: "MON" }, name: "Monthly" },
+                    { "@type": "UnitPriceSpecification", price: "599", priceCurrency: "USD", referenceQuantity: { "@type": "QuantitativeValue", value: "12", unitCode: "MON" }, name: "Yearly" },
+                  ],
+                },
+              },
+              {
+                "@type": "Product",
+                name: "Dralvo TiGold",
+                brand: { "@id": "https://www.dralvo.com/#org" },
+                category: "Automated trading software (MetaTrader 5 Expert Advisor)",
+                operatingSystem: "Windows (MetaTrader 5)",
+                description:
+                  "A free adaptive XAUUSD trading robot for MetaTrader 5, available at no cost through the Dralvo IB partnership.",
+                offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/InStock" },
+              },
+              {
+                "@type": "FAQPage",
+                mainEntity: t.faq.items.map(([q, an]) => ({
+                  "@type": "Question",
+                  name: q,
+                  acceptedAnswer: { "@type": "Answer", text: an },
+                })),
+              },
+            ],
+          }),
+        }}
+      />
       <div className="gold-veins" aria-hidden="true"><div className="v1" /><div className="v2" /><div className="v3" /><div className="h1" /><div className="h2" /></div>
 
       {/* Nav */}
@@ -425,7 +489,7 @@ export default function LandingPage() {
                   <h3 className="text-xl sm:text-2xl font-normal tracking-[-0.01em] text-balance" style={{ fontFamily: SERIF }}>{t.tools.title}</h3>
                   <p className="text-[13.5px] leading-relaxed text-text-secondary mt-1.5 max-w-[640px]">{t.tools.body}</p>
                 </div>
-                <Link href="/tools/backtest" className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]" style={{ background: "#7dc0f0" }}>{t.tools.cta}<ScanLine size={16} /></Link>
+                <Link href="/tools/calculator" className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]" style={{ background: "#7dc0f0" }}>{t.tools.cta}<ScanLine size={16} /></Link>
               </div>
             </Reveal>
           </div>
@@ -442,35 +506,34 @@ export default function LandingPage() {
               <div className="inline-flex rounded-lg border border-border bg-card p-1 gap-1">
                 {PERIODS.map((pr) => {
                   const on = period === pr.id;
-                  const save = pr.id === "sixmo" ? t.pricing.save.sixmo : pr.id === "yearly" ? t.pricing.save.yearly : null;
+                  const off = UNLIMITED_PRICING[pr.id].off;
                   return (
                     <button key={pr.id} type="button" aria-pressed={on} onClick={() => setPeriod(pr.id)} className={cn("px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer border-none flex items-center gap-1.5", on ? "bg-gold text-[#060609]" : "bg-transparent text-text-muted hover:text-text-primary")}>
-                      {t.pricing.periods[pr.id]}{save && <span className={cn("text-[10px]", on ? "text-[#060609]/70" : "text-green")}>{save}</span>}
+                      {t.pricing.periods[pr.id]}{off > 0 && <span className={cn("text-[10px] font-mono", on ? "text-[#060609]/70" : "text-green")}>−{off}%</span>}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 items-stretch">
-              {t.pricing.tiers.map((tier, i) => {
-                const base = TIER_PRICE[i];
-                const perMo = base === 0 ? 0 : Math.round(base * (1 - activePeriod.discount));
-                const popular = tier.id === "pro";
+            <div className="grid md:grid-cols-2 gap-6 items-stretch max-w-[820px] mx-auto">
+              {t.pricing.tiers.map((tier) => {
+                const isFree = tier.id === "free";
+                const popular = tier.id === "unlimited";
                 return (
-                  <div key={tier.id} className={cn("lift rounded-xl border p-6 flex flex-col relative", popular ? "" : "border-border bg-card")} style={popular ? { borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" } : undefined}>
+                  <div key={tier.id} className={cn("lift rounded-xl border p-6 sm:p-7 flex flex-col relative", popular ? "" : "border-border bg-card")} style={popular ? { borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" } : undefined}>
                     {popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold-bright text-[#060609] text-[11px] font-semibold rounded-full">{t.pricing.popular}</span>}
                     <h3 className={cn("text-lg font-semibold", popular ? "text-gold-bright" : "text-text-primary")}>{tier.name}</h3>
                     <p className="text-[12px] text-text-muted mt-1 mb-4">{tier.tagline}</p>
-                    <div className="mb-1 flex items-baseline gap-1">
-                      <span className={cn("font-mono text-4xl font-bold", popular ? "text-gold-bright" : "text-text-primary")}>${perMo}</span>
-                      {base > 0 && <span className="text-text-muted text-sm">{t.pricing.perMonth}</span>}
+                    <div className="mb-1 flex items-baseline gap-1.5">
+                      <span className={cn("font-mono text-4xl font-bold", popular ? "text-gold-bright" : "text-text-primary")}>${isFree ? 0 : unlimitedPrice.total}</span>
+                      {!isFree && <span className="text-text-muted text-sm">/ {t.pricing.periods[period]}</span>}
                     </div>
-                    <p className="text-[11px] text-text-muted mb-5 h-4">{base > 0 ? (activePeriod.months > 1 ? `$${perMo * activePeriod.months} / ${t.pricing.periods[period]} · ${t.pricing.save[period as "sixmo" | "yearly"]}` : t.pricing.periods.monthly) : " "}</p>
+                    <p className="text-[11px] text-text-muted mb-5 h-4">{!isFree && unlimitedPrice.off > 0 ? `≈ $${unlimitedPrice.perMo}${t.pricing.perMonth} · −${unlimitedPrice.off}%` : " "}</p>
                     <ul className="space-y-2.5 mb-7 flex-1">
                       {tier.features.map((f) => (<li key={f} className="flex items-start gap-2 text-[13px] text-text-secondary"><Check size={14} className={cn("shrink-0 mt-0.5", popular ? "text-gold-bright" : "text-green")} /><span>{f}</span></li>))}
                     </ul>
-                    <button type="button" onClick={tier.id === "free" ? () => { window.location.href = "/signup"; } : () => checkout(tier.id as "pro" | "elite")} disabled={loading} className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50", popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>{tier.cta}</button>
+                    <button type="button" onClick={isFree ? () => { window.location.href = "/tigold"; } : () => checkout("unlimited")} disabled={loading} className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50", popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>{tier.cta}</button>
                   </div>
                 );
               })}
@@ -487,7 +550,7 @@ export default function LandingPage() {
               <Eyebrow>{t.faq.eyebrow}</Eyebrow>
               <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-4" style={{ fontFamily: SERIF }}>{t.faq.title}</h2>
               <p className="text-text-secondary text-sm mb-4">{t.faq.notFound}</p>
-              <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gold hover:text-gold-bright transition-colors font-medium text-sm no-underline">{t.faq.telegram}<ArrowUpRight size={15} /></a>
+              <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gold hover:text-gold-bright transition-colors font-medium text-sm no-underline">{t.faq.telegram}<ArrowUpRight size={15} /></a>
             </div>
             <div className="space-y-3">{t.faq.items.map(([q, a]) => (<FaqItem key={q} q={q} a={a} />))}</div>
           </div>
@@ -512,7 +575,7 @@ export default function LandingPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="#pricing" className="inline-flex items-center justify-center gap-2 px-9 py-4 rounded-md text-[16px] font-bold bg-gold-bright text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.04]" style={{ boxShadow: "0 0 40px rgba(240,200,90,0.2)" }}>{t.finalCta.primaryCta}<ArrowRight size={19} /></Link>
-                <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-9 py-4 rounded-md text-[16px] font-semibold border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold">{t.finalCta.secondaryCta}<ArrowUpRight size={17} /></a>
+                <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-9 py-4 rounded-md text-[16px] font-semibold border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold">{t.finalCta.secondaryCta}<ArrowUpRight size={17} /></a>
               </div>
               <p className="mt-7 font-mono text-[11px] tracking-[0.04em] text-text-muted">{t.finalCta.guarantee}</p>
             </div>
@@ -534,14 +597,15 @@ export default function LandingPage() {
                 <Link href="#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.goldmaster}</Link>
                 <Link href="#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.scalp}</Link>
                 <Link href="/tigold" className="text-sm font-medium hover:opacity-80 transition-colors no-underline" style={{ color: "#00c98d" }}>{t.footer.tigold}</Link>
-                <Link href="/tools/backtest" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.tools}</Link>
+                <Link href="/tools/calculator" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.tools}</Link>
                 <Link href="/track-record" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.trackRecord}</Link>
+                <Link href="/compare" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.compare}</Link>
               </div>
             </div>
             <div>
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.company}</div>
               <div className="flex flex-col gap-2.5">
-                <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.telegram}</a>
+                <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.telegram}</a>
                 <Link href="#pricing" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.nav.pricing}</Link>
                 <Link href="/login" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.login}</Link>
               </div>

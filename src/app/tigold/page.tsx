@@ -370,7 +370,7 @@ export default function TiGoldPage() {
                       <li>4. Nhận license key → nhập vào EA → bắt đầu giao dịch</li>
                     </ol>
                   </div>
-                  <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer"
+                  <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
                     className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
                     style={{ background: GOLD_BRIGHT }}>
                     Mở Telegram <ExternalLink size={15} />
@@ -487,7 +487,7 @@ export default function TiGoldPage() {
                     style={{ background: GOLD_BRIGHT, boxShadow: "0 0 40px rgba(240,200,90,0.15)" }}>
                     Bắt đầu ngay <ArrowRight size={18} />
                   </a>
-                  <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer"
+                  <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg text-[15px] font-semibold border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold">
                     Hỏi trên Telegram <MessageCircle size={17} />
                   </a>
@@ -511,15 +511,15 @@ export default function TiGoldPage() {
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">Sản phẩm</div>
               <div className="flex flex-col gap-2.5">
                 <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">GoldMaster (D1)</Link>
-                <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Gold Scalp (M5)</Link>
+                <Link href="/#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">GoldScalp (M5)</Link>
                 <span className="text-sm font-medium" style={{ color: GOLD_BRIGHT }}>TiGold (miễn phí)</span>
-                <Link href="/tools/backtest" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Công cụ backtest</Link>
+                <Link href="/tools/calculator" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Công cụ tính lot</Link>
               </div>
             </div>
             <div>
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">Dralvo</div>
               <div className="flex flex-col gap-2.5">
-                <a href="https://t.me/dralvo" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Telegram</a>
+                <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Telegram</a>
                 <Link href="/#pricing" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Bảng giá</Link>
                 <Link href="/login" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Đăng nhập</Link>
               </div>
