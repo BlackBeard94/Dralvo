@@ -10,7 +10,7 @@ import { withLocaleFallback } from "@/lib/i18n";
 
 export const LANDING_COPY = withLocaleFallback({
   vi: {
-    nav: { products: "Sản phẩm", evidence: "Hiệu suất", pricing: "Bảng giá", tools: "Công cụ", login: "Đăng nhập", cta: "Dùng thử" },
+    nav: { products: "Sản phẩm", evidence: "Hiệu suất", pricing: "Bảng giá", tools: "Công cụ", tigold: "TiGold", login: "Đăng nhập", cta: "Dùng thử" },
     hero: {
       eyebrow: "Dralvo Capital · Robot giao dịch vàng tự động",
       titleA: "Hai cỗ máy. Một kim loại. ",
@@ -28,20 +28,23 @@ export const LANDING_COPY = withLocaleFallback({
       title: "Chọn khẩu vị của bạn.",
       intro:
         "Cùng triết lý kỷ luật rủi ro, khác nhịp giao dịch. Cả hai đều được kiểm chứng trên dữ liệu thị trường thật.",
-      styleTag: { swing: "D1 SWING", scalp: "M5 SCALP" },
-      styleName: { swing: "Kiên nhẫn — sóng lớn", scalp: "Tốc độ — xung lực" },
+      styleTag: { swing: "D1 SWING", scalp: "M5 SCALP", free: "FREE" },
+      styleName: { swing: "Kiên nhẫn — sóng lớn", scalp: "Tốc độ — xung lực", free: "Thích ứng — bảo vệ vốn" },
       directionLabels: { long: "Thuận xu hướng tăng", both: "Hai chiều" },
       headlineLabels: ["Lợi nhuận (cấu hình khuyến nghị)", "Profit Factor", "Tỷ lệ thắng", "Sụt giảm tối đa"],
       recommendedRiskLabel: "Cấu hình",
       verified: {
         goldmaster: "Kiểm chứng trên 10 năm dữ liệu vàng thật",
         scalp: "Kiểm chứng trên dữ liệu tick thật 100%",
+        tigold: "Miễn phí — mở tài khoản IB Dralvo",
       },
       pitch: {
         goldmaster:
           "Robot vàng cho người kiên nhẫn — bám theo những con sóng lớn của vàng, ưu tiên chất lượng hơn số lượng. Thắng chọn lọc nhưng mỗi lần thắng đủ lớn để dẫn dắt hiệu suất.",
         scalp:
           "Robot vàng cho người thích nhịp nhanh — nắm bắt các đợt biến động mạnh trong ngày, vào ra gọn gàng. Tỷ lệ thắng cao, hầu như không ôm lệnh qua đêm.",
+        tigold:
+          "EA thích ứng cho XAUUSD — miễn phí trọn đời khi mở tài khoản qua đối tác IB của Dralvo. 3 lớp bảo vệ vốn: chặn chuỗi thua, giới hạn lỗ ngày, lọc tin tức.",
       },
       bullets: {
         goldmaster: [
@@ -53,6 +56,11 @@ export const LANDING_COPY = withLocaleFallback({
           "Kiểm chứng trên dữ liệu tick thật 100% · 6/6 tháng dương",
           "KHÔNG Grid · KHÔNG Martingale · KHÔNG nhồi lệnh",
           "Vào ra dứt khoát, hạn chế tối đa rủi ro qua đêm",
+        ],
+        tigold: [
+          "Miễn phí trọn đời — chỉ cần mở tài khoản qua link IB Dralvo",
+          "Chạy XAUUSD · Trailing stop thông minh",
+          "3 lớp bảo vệ vốn: chuỗi thua → tạm nghỉ, lỗ ngày → dừng, tin tức → né",
         ],
       },
       cta: "Sở hữu",
@@ -83,7 +91,7 @@ export const LANDING_COPY = withLocaleFallback({
     pricing: {
       eyebrow: "Bảng giá",
       title: "Thuê robot, bắt đầu hôm nay.",
-      intro: "Thuê theo tháng — linh hoạt, hủy bất cứ lúc nào. Càng dài càng tiết kiệm.",
+      intro: "Free mở qua đối tác IB Dralvo. Pro & Elite thuê theo tháng — linh hoạt, hủy bất cứ lúc nào.",
       periods: { monthly: "1 tháng", sixmo: "6 tháng", yearly: "1 năm" },
       save: { sixmo: "tiết kiệm 15%", yearly: "tiết kiệm 30%" },
       perMonth: "/tháng",
@@ -93,23 +101,23 @@ export const LANDING_COPY = withLocaleFallback({
         {
           id: "free",
           name: "Free",
-          tagline: "Bắt đầu khám phá",
-          cta: "Bắt đầu miễn phí",
-          features: ["Indicator vàng cho MT5", "Công cụ backtest FX miễn phí", "Cộng đồng Telegram", "Tín hiệu thị trường cơ bản"],
+          tagline: "Dralvo TiGold miễn phí qua IB",
+          cta: "Mở tài khoản IB nhận EA",
+          features: ["Dralvo TiGold — EA thích ứng XAUUSD", "Bảo vệ vốn 3 lớp (chuỗi thua, lỗ ngày, lọc tin)", "Chạy 1 tài khoản MT5 thật qua link IB Dralvo", "1 tài khoản demo 30 ngày", "Công cụ backtest FX miễn phí", "Cộng đồng Telegram"],
         },
         {
           id: "pro",
           name: "Pro",
-          tagline: "1 robot + tín hiệu VIP",
+          tagline: "3 robot · tối đa 2 tài khoản MT5",
           cta: "Thuê Pro",
-          features: ["Robot GoldMaster (D1 swing)", "Tín hiệu VIP real-time", "Cập nhật & nâng cấp liên tục", "Hỗ trợ cài đặt qua Telegram", "Dùng trên 1 tài khoản MT5"],
+          features: ["Cả 3 robot: GoldMaster + Gold Scalp + TiGold", "Tải toàn bộ file EA (.ex5, .set, hướng dẫn)", "Tối đa 2 tài khoản MT5 thật", "Tối đa 5 tài khoản demo", "Cập nhật & nâng cấp liên tục", "Hỗ trợ cài đặt qua Telegram"],
         },
         {
           id: "elite",
           name: "Elite",
-          tagline: "Cả 2 robot + ưu tiên",
+          tagline: "3 robot · không giới hạn tài khoản",
           cta: "Thuê Elite",
-          features: ["Cả 2 robot: GoldMaster + Gold Scalp", "Dùng trên nhiều tài khoản MT5", "Hỗ trợ ưu tiên 1-1", "Hỗ trợ thiết lập VPS 24/5", "Tiếp cận sớm chiến lược mới"],
+          features: ["Cả 3 robot: GoldMaster + Gold Scalp + TiGold", "Tải toàn bộ file EA (.ex5, .set, hướng dẫn)", "Không giới hạn tài khoản MT5 thật", "Không giới hạn tài khoản demo", "Hỗ trợ ưu tiên 1-1", "Hỗ trợ thiết lập VPS 24/5", "Tiếp cận sớm chiến lược mới"],
         },
       ],
     },
@@ -117,7 +125,7 @@ export const LANDING_COPY = withLocaleFallback({
       eyebrow: "Hỏi đáp",
       title: "Mọi điều bạn cần biết.",
       items: [
-        ["Hai robot khác nhau thế nào?", "GoldMaster là swing D1 — kiên nhẫn, ít lệnh, giữ theo sóng lớn. Gold Scalp là M5 — vào theo nhịp nhanh, chốt trong ngày. Gói Elite cho bạn chạy cả hai trên các tài khoản/khung khác nhau."],
+        ["Các robot khác nhau thế nào?", "GoldMaster là swing D1 — kiên nhẫn, ít lệnh, giữ theo sóng lớn. Gold Scalp là M5 — vào theo nhịp nhanh, chốt trong ngày. Gói Elite cho bạn chạy cả hai trên các tài khoản/khung khác nhau."],
         ["GoldMaster thắng 43% — sao vẫn lãi?", "Vì mỗi lệnh thắng lớn hơn nhiều so với mỗi lệnh thua. Thua nhiều lần hơn nhưng mỗi lần thắng đủ to để dẫn dắt hiệu suất. Đây là lợi thế bất đối xứng."],
         ["Có Martingale / Grid không?", "Tuyệt đối không. Cả 2 robot đều giới hạn rủi ro rõ ràng trên mỗi lệnh, không nhồi lệnh, không gồng lỗ."],
         ["Tôi cần gì để chạy?", "MetaTrader 5 + tài khoản có vàng (XAUUSD), khuyến nghị tài khoản spread thấp. Nên dùng VPS để robot chạy 24/5 không gián đoạn."],
@@ -144,6 +152,7 @@ export const LANDING_COPY = withLocaleFallback({
       legal: "Pháp lý",
       goldmaster: "GoldMaster (D1)",
       scalp: "Gold Scalp (M5)",
+      tigold: "TiGold (miễn phí)",
       tools: "Công cụ backtest",
       trackRecord: "Hiệu suất",
       telegram: "Telegram",
@@ -155,7 +164,7 @@ export const LANDING_COPY = withLocaleFallback({
     },
   },
   en: {
-    nav: { products: "Products", evidence: "Performance", pricing: "Pricing", tools: "Tools", login: "Log in", cta: "Try it" },
+    nav: { products: "Products", evidence: "Performance", pricing: "Pricing", tools: "Tools", tigold: "TiGold", login: "Log in", cta: "Try it" },
     hero: {
       eyebrow: "Dralvo Capital · Automated gold trading robots",
       titleA: "Two machines. One metal. ",
@@ -172,20 +181,23 @@ export const LANDING_COPY = withLocaleFallback({
       eyebrow: "Two products — sold in parallel",
       title: "Pick your temper.",
       intro: "Same risk discipline, different cadence. Both verified on real market data.",
-      styleTag: { swing: "D1 SWING", scalp: "M5 SCALP" },
-      styleName: { swing: "Patient — the long wave", scalp: "Fast — the momentum strike" },
+      styleTag: { swing: "D1 SWING", scalp: "M5 SCALP", free: "FREE" },
+      styleName: { swing: "Patient — the long wave", scalp: "Fast — the momentum strike", free: "Adaptive — capital protection" },
       directionLabels: { long: "Trend-following", both: "Both directions" },
       headlineLabels: ["Return (recommended config)", "Profit Factor", "Win rate", "Max drawdown"],
       recommendedRiskLabel: "Config",
       verified: {
         goldmaster: "Verified on 10 years of real gold data",
         scalp: "Verified on 100% real tick data",
+        tigold: "Free — open a Dralvo IB account",
       },
       pitch: {
         goldmaster:
           "A gold robot for the patient — it rides gold's major waves and favors quality over quantity. It wins selectively, but each win is big enough to drive performance.",
         scalp:
           "A gold robot for the fast-paced — it captures strong intraday bursts and exits cleanly. High win rate, almost no overnight exposure.",
+        tigold:
+          "An adaptive EA for XAUUSD — free for life when you open an account through a Dralvo IB partner. 3-layer capital protection: loss-streak pause, daily stop, and news filter.",
       },
       bullets: {
         goldmaster: [
@@ -197,6 +209,11 @@ export const LANDING_COPY = withLocaleFallback({
           "Verified on 100% real tick data · 6/6 months positive",
           "NO grid · NO martingale · NO averaging down",
           "Decisive entries and exits, minimal overnight exposure",
+        ],
+        tigold: [
+          "Free for life — just open an account via the Dralvo IB link",
+          "Runs on XAUUSD · Smart trailing stop",
+          "3-layer capital protection: loss streak → pause, daily loss → stop, news → avoid",
         ],
       },
       cta: "Get",
@@ -227,23 +244,23 @@ export const LANDING_COPY = withLocaleFallback({
     pricing: {
       eyebrow: "Pricing",
       title: "Rent a robot, start today.",
-      intro: "Rent by the month — flexible, cancel anytime. The longer you commit, the more you save.",
+      intro: "Free is unlocked via Dralvo IB. Pro & Elite rent by the month — flexible, cancel anytime.",
       periods: { monthly: "1 month", sixmo: "6 months", yearly: "1 year" },
       save: { sixmo: "save 15%", yearly: "save 30%" },
       perMonth: "/mo",
       popular: "Popular",
       cancelNote: "Cancel anytime · no contract · install support included.",
       tiers: [
-        { id: "free", name: "Free", tagline: "Start exploring", cta: "Start free", features: ["Gold indicator for MT5", "Free FX backtest tool", "Telegram community", "Basic market signals"] },
-        { id: "pro", name: "Pro", tagline: "1 robot + VIP signals", cta: "Rent Pro", features: ["GoldMaster robot (D1 swing)", "Real-time VIP signals", "Continuous updates & upgrades", "Install support via Telegram", "Use on 1 MT5 account"] },
-        { id: "elite", name: "Elite", tagline: "Both robots + priority", cta: "Rent Elite", features: ["Both robots: GoldMaster + Gold Scalp", "Use on multiple MT5 accounts", "Priority 1:1 support", "VPS 24/5 setup help", "Early access to new strategies"] },
+        { id: "free", name: "Free", tagline: "Dralvo TiGold free via IB", cta: "Open IB account, get EA", features: ["Dralvo TiGold — adaptive XAUUSD engine", "3-layer capital protection (loss streak, daily stop, news)", "1 live MT5 account via Dralvo IB link", "1 demo account for 30 days", "Free FX backtest tool", "Telegram community"] },
+        { id: "pro", name: "Pro", tagline: "3 EAs · up to 2 MT5 accounts", cta: "Rent Pro", features: ["All 3 robots: GoldMaster + Gold Scalp + TiGold", "Full EA download (.ex5, .set, guide) — no .mq5 source", "Up to 2 live MT5 accounts", "Up to 5 demo accounts", "Continuous updates & upgrades", "Install support via Telegram"] },
+        { id: "elite", name: "Elite", tagline: "3 EAs · unlimited MT5 accounts", cta: "Rent Elite", features: ["All 3 robots: GoldMaster + Gold Scalp + TiGold", "Full EA download (.ex5, .set, guide) — no .mq5 source", "Unlimited live MT5 accounts", "Unlimited demo accounts", "Priority 1:1 support", "VPS 24/5 setup help", "Early access to new strategies"] },
       ],
     },
     faq: {
       eyebrow: "FAQ",
       title: "Everything you need to know.",
       items: [
-        ["How do the two robots differ?", "GoldMaster is a D1 swing — patient, few trades, riding the big waves. Gold Scalp is M5 — fast intraday entries, exits within the day. The Elite plan lets you run both on separate accounts/timeframes."],
+        ["How do the robots differ?", "GoldMaster is a D1 swing — patient, few trades, riding the big waves. Gold Scalp is M5 — fast intraday entries, exits within the day. The Elite plan lets you run both on separate accounts/timeframes."],
         ["GoldMaster wins 43% — how is it profitable?", "Because each win is far bigger than each loss. You lose more often but win big enough to drive performance. It's an asymmetric edge."],
         ["Any martingale / grid?", "Absolutely none. Both robots cap risk clearly per trade, no averaging down, no holding losers."],
         ["What do I need to run it?", "MetaTrader 5 + an account with gold (XAUUSD), preferably low-spread. A VPS is recommended for uninterrupted 24/5 operation."],
@@ -270,6 +287,7 @@ export const LANDING_COPY = withLocaleFallback({
       legal: "Legal",
       goldmaster: "GoldMaster (D1)",
       scalp: "Gold Scalp (M5)",
+      tigold: "TiGold (free)",
       tools: "Backtest tool",
       trackRecord: "Performance",
       telegram: "Telegram",

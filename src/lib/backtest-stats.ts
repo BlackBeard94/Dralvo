@@ -11,7 +11,7 @@
  *  - Gold Scalp: E:\EA Dralvo\Dralvo Gold Scalp\marketing\assets\BaoCao_HieuSuat_Backtest.html
  */
 
-export type EaAccent = "gold" | "steel";
+export type EaAccent = "gold" | "steel" | "emerald";
 
 export type RiskRow = {
   risk: string;
@@ -26,7 +26,7 @@ export type RiskRow = {
 export type EaStat = { key: string; value: string };
 
 export type EaProduct = {
-  id: "goldmaster" | "scalp";
+  id: "goldmaster" | "scalp" | "tigold";
   name: string;
   version: string;
   accent: EaAccent;
@@ -128,7 +128,43 @@ export const GOLD_SCALP: EaProduct = {
   ],
 };
 
-export const EA_PRODUCTS: EaProduct[] = [GOLDMASTER, GOLD_SCALP];
+/* -------------------------------------------------------------------------- */
+/*  TiGold — adaptive XAUUSD engine (free with Dralvo IB)                      */
+/*  Source: MT5 Strategy Tester · XAUUSD M1 · 01/2023–06/2026 · 100% ticks     */
+/* -------------------------------------------------------------------------- */
+export const TIGOLD: EaProduct = {
+  id: "tigold",
+  name: "Dralvo TiGold",
+  version: "v2.0",
+  accent: "emerald",
+  symbol: "XAUUSD",
+  timeframe: "M1",
+  direction: "both",
+  period: "3.5Y",
+  dataQuality: "100%",
+  recommendedRisk: "0.10 lot",
+  headline: [
+    { value: "+73,387%", tone: "good" },
+    { value: "1.20" },
+    { value: "63.7%" },
+    { value: "22.2%", tone: "bad" },
+  ],
+  finalBalance: "$100K → $73.5M",
+  matrixExtraKey: "trades",
+  riskMatrix: [
+    { risk: "0.10 lot", ret: "+73,387%", ddEquity: "22.2%", pf: "1.20", extra: "21,005", star: true },
+  ],
+  tradeStats: [
+    { key: "trades", value: "21,005" },
+    { key: "winRate", value: "63.65%" },
+    { key: "avgWin", value: "+$32,448" },
+    { key: "avgLoss", value: "-$47,209" },
+    { key: "rr", value: "0.69 : 1" },
+    { key: "streak", value: "21 / 10" },
+  ],
+};
+
+export const EA_PRODUCTS: EaProduct[] = [TIGOLD, GOLDMASTER, GOLD_SCALP];
 
 /* -------------------------------------------------------------------------- */
 /*  Legacy — Dralvo_GoldEA 20y run. Still consumed by /api/signal/current and  */

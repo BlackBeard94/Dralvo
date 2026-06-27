@@ -11,7 +11,7 @@ import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
 import { LANDING_COPY } from "@/lib/landing-copy";
-import { EA_PRODUCTS, GOLDMASTER, GOLD_SCALP, type EaProduct } from "@/lib/backtest-stats";
+import { EA_PRODUCTS, GOLDMASTER, GOLD_SCALP, TIGOLD, type EaProduct } from "@/lib/backtest-stats";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -19,9 +19,10 @@ import { cn } from "@/lib/utils";
 /* -------------------------------------------------------------------------- */
 const STEEL = "90,169,230";
 const GOLD = "212,168,67";
-const rgb = (a: EaProduct["accent"]) => (a === "steel" ? STEEL : GOLD);
+const EMERALD = "0,201,141";
+const rgb = (a: EaProduct["accent"]) => (a === "steel" ? STEEL : a === "emerald" ? EMERALD : GOLD);
 const accent = (a: EaProduct["accent"], al: number) => `rgba(${rgb(a)},${al})`;
-const accentText = (a: EaProduct["accent"]) => (a === "steel" ? "#7dc0f0" : "var(--gold-bright)");
+const accentText = (a: EaProduct["accent"]) => (a === "steel" ? "#7dc0f0" : a === "emerald" ? "#00c98d" : "var(--gold-bright)");
 
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
 
@@ -113,13 +114,14 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 /* -------------------------------------------------------------------------- */
 /*  EA assay plate                                                            */
 /* -------------------------------------------------------------------------- */
-function EaPlate({ ea, copy, onGet }: { ea: EaProduct; copy: (typeof LANDING_COPY)["en"]["products"]; onGet: () => void }) {
+function EaPlate({ ea, copy, onGet, badge }: { ea: EaProduct; copy: (typeof LANDING_COPY)["en"]["products"]; onGet: () => void; badge?: string }) {
   const a = ea.accent;
-  const styleKey = ea.id === "goldmaster" ? "swing" : "scalp";
+  const styleKey = ea.id === "goldmaster" ? "swing" : ea.id === "scalp" ? "scalp" : "free";
   return (
     <div className="lift group relative rounded-2xl border bg-card p-7 flex flex-col"
       style={{ borderColor: accent(a, 0.28), background: `linear-gradient(168deg, ${accent(a, 0.06)}, var(--bg-card) 55%)`, boxShadow: `0 1px 0 ${accent(a, 0.15)} inset, 0 24px 60px -40px ${accent(a, 0.5)}`, ["--lift" as string]: accent(a, 0.45), ["--lift-bd" as string]: accent(a, 0.5) } as React.CSSProperties}>
       <div className="absolute top-0 left-7 right-7 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent(a, 0.6)}, transparent)` }} />
+      {badge && <span className="absolute -top-3 right-4 px-3 py-0.5 rounded-full text-[10px] font-semibold border" style={{ background: accentText(a), color: "#060609", borderColor: accentText(a) }}>{badge}</span>}
       <div className="absolute top-4 right-4 flex items-center gap-2 select-none">
         <span className="text-[9px] font-mono tracking-[0.12em] uppercase" style={{ color: accentText(a) }}>{ea.version}</span>
         <span className="w-7 h-7 rotate-45 rounded-[3px] border flex items-center justify-center" style={{ borderColor: accent(a, 0.4) }}>
@@ -204,7 +206,7 @@ export default function LandingPage() {
     [period],
   );
 
-  const activeEa = tab === "goldmaster" ? GOLDMASTER : GOLD_SCALP;
+  const activeEa = tab === "goldmaster" ? GOLDMASTER : tab === "scalp" ? GOLD_SCALP : TIGOLD;
   const p = t.products;
   const activePeriod = PERIODS.find((x) => x.id === period)!;
 
@@ -228,6 +230,7 @@ export default function LandingPage() {
             <Link href="#products" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.products}</Link>
             <Link href="#evidence" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.evidence}</Link>
             <Link href="#fx-tool" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.tools}</Link>
+            <Link href="/tigold" className="hidden md:inline text-[13px] font-semibold hover:opacity-80 transition-colors no-underline px-2" style={{ color: "#00c98d" }}>{t.nav.tigold}</Link>
             <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.pricing}</Link>
             <Link href="/login" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.login}</Link>
             <Link href="#pricing" className="ml-1 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>
@@ -267,9 +270,9 @@ export default function LandingPage() {
               <div className="flex items-center justify-between px-5 pb-3 font-mono text-[11px] text-text-muted">
                 <span>$100K</span><span className="text-green">→ $1.6M</span>
               </div>
-              <div className="grid grid-cols-2 border-t border-border">
+              <div className="grid grid-cols-3 border-t border-border">
                 {EA_PRODUCTS.map((ea, i) => (
-                  <div key={ea.id} className={cn("px-5 py-3.5", i === 0 && "border-r border-border")}>
+                  <div key={ea.id} className={cn("px-5 py-3.5", i < 2 && "border-r border-border")}>
                     <div className="font-mono text-[10px] tracking-[0.12em] uppercase" style={{ color: accentText(ea.accent) }}>{ea.timeframe} · {ea.name.replace("Dralvo ", "")}</div>
                     <div className="font-mono text-2xl font-bold text-green mt-1">{ea.headline[0].value}</div>
                     <div className="font-mono text-[10.5px] text-text-muted mt-0.5">PF {ea.headline[1].value} · {ea.headline[2].value}</div>
@@ -290,8 +293,11 @@ export default function LandingPage() {
               <p className="text-text-secondary max-w-[600px] mx-auto">{p.intro}</p>
             </Reveal>
             <Reveal delay={80}>
-              <div className="grid md:grid-cols-2 gap-6 items-stretch">
-                {EA_PRODUCTS.map((ea) => (<EaPlate key={ea.id} ea={ea} copy={p} onGet={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })} />))}
+              <div className="grid lg:grid-cols-3 gap-6 items-stretch">
+                {EA_PRODUCTS.map((ea) => {
+                  const badge = ea.id === "tigold" ? "Phổ biến" : ea.id === "goldmaster" ? "Chuyên nghiệp" : undefined;
+                  return (<EaPlate key={ea.id} ea={ea} copy={p} badge={badge} onGet={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })} />);
+                })}
               </div>
             </Reveal>
           </div>
@@ -527,6 +533,7 @@ export default function LandingPage() {
               <div className="flex flex-col gap-2.5">
                 <Link href="#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.goldmaster}</Link>
                 <Link href="#products" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.scalp}</Link>
+                <Link href="/tigold" className="text-sm font-medium hover:opacity-80 transition-colors no-underline" style={{ color: "#00c98d" }}>{t.footer.tigold}</Link>
                 <Link href="/tools/backtest" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.tools}</Link>
                 <Link href="/track-record" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.trackRecord}</Link>
               </div>
