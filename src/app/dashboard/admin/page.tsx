@@ -11,7 +11,6 @@ import {
   DollarSign,
   Shield,
   Share2,
-  Server,
   Search,
   Trash2,
   Clock,
@@ -23,7 +22,7 @@ import {
 /*  Types                                                                     */
 /* -------------------------------------------------------------------------- */
 
-type TabId = "overview" | "users" | "finance" | "admins" | "affiliate" | "vps";
+type TabId = "overview" | "users" | "finance" | "admins" | "affiliate";
 
 interface OverviewStats {
   totalUsers: number;
@@ -59,18 +58,6 @@ interface SubAdminRow {
   created_at: string;
 }
 
-interface VpsRow {
-  id: string;
-  user_email: string | null;
-  ip: string;
-  username: string;
-  password: string;
-  status: string;
-  notes: string | null;
-  assigned_by_email: string | null;
-  assigned_at: string;
-}
-
 /* -------------------------------------------------------------------------- */
 /*  Constants                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -79,7 +66,6 @@ const TABS: { id: TabId; label: string; icon: typeof LayoutDashboard; adminOnly?
   { id: "overview", label: "Tổng quan", icon: LayoutDashboard },
   { id: "users", label: "Người dùng", icon: Users },
   { id: "finance", label: "Tài chính", icon: DollarSign },
-  { id: "vps", label: "VPS", icon: Server },
   { id: "affiliate", label: "Affiliate", icon: Share2 },
   { id: "admins", label: "Quản trị viên", icon: Shield, adminOnly: true },
 ];
@@ -111,7 +97,7 @@ function OverviewTab({ stats: initialStats, isSuperAdmin }: { stats: OverviewSta
     { label: "Affiliate chờ duyệt", value: stats.pendingCommissions },
   ];
 
-  return (
+  return (<>
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {cards.map((c) => (
         <div key={c.label} className="rounded-xl border border-border bg-card p-4">
@@ -120,8 +106,12 @@ function OverviewTab({ stats: initialStats, isSuperAdmin }: { stats: OverviewSta
         </div>
       ))}
     </div>
-    <NotificationSection isSuperAdmin={isSuperAdmin} />
-  );
+    {isSuperAdmin && (
+      <a href="/dashboard/admin/notifications" className="inline-block mt-3 text-sm text-gold hover:underline">
+        📢 Quản lý thông báo nội bộ →
+      </a>
+    )}
+  </>);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -477,128 +467,6 @@ function PermToggle({ label, active, onChange }: { label: string; active: boolea
 /*  Tab: VPS                                                                  */
 /* -------------------------------------------------------------------------- */
 
-function VpsTab() {
-  const [vpsList, setVpsList] = useState<VpsRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState<string | null>(null);
-  // Form
-  const [formEmail, setFormEmail] = useState("");
-  const [formIp, setFormIp] = useState("");
-  const [formUser, setFormUser] = useState("Administrator");
-  const [formPass, setFormPass] = useState("");
-  const [formNotes, setFormNotes] = useState("");
-
-  const load = () => {
-    setLoading(true);
-    fetch("/api/admin/vps")
-      .then((r) => r.json())
-      .then((d) => setVpsList(d.vps ?? []))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { load(); }, []);
-
-  const assign = async () => {
-    if (!formEmail || !formIp || !formPass) return;
-    setMsg(null);
-    const r = await fetch("/api/admin/vps", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "assign", email: formEmail, ip: formIp, username: formUser, password: formPass, notes: formNotes }),
-    });
-    const d = await r.json();
-    if (d.success) {
-      setFormEmail(""); setFormIp(""); setFormPass(""); setFormNotes("");
-      setMsg("Đã cấp VPS.");
-      setTimeout(() => setMsg(null), 2000);
-      load();
-    } else {
-      setMsg(d.error ?? "Lỗi");
-    }
-  };
-
-  const updateStatus = async (vpsId: string, status: string) => {
-    await fetch("/api/admin/vps", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "update_status", vpsId, status }),
-    });
-    load();
-  };
-
-  const remove = async (vpsId: string) => {
-    if (!confirm("Xác nhận xóa?")) return;
-    await fetch("/api/admin/vps", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "delete", vpsId }) });
-    load();
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Assign form */}
-      <div className="rounded-xl border border-border bg-card p-4 space-y-3 max-w-[520px]">
-        <h3 className="text-sm font-semibold text-text-primary">Cấp VPS cho user</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="Email user" className="rounded-md border border-border bg-deep px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted" />
-          <input value={formIp} onChange={(e) => setFormIp(e.target.value)} placeholder="IP VPS" className="rounded-md border border-border bg-deep px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted" />
-          <input value={formUser} onChange={(e) => setFormUser(e.target.value)} placeholder="Username" className="rounded-md border border-border bg-deep px-3 py-1.5 text-sm text-text-primary" />
-          <input value={formPass} onChange={(e) => setFormPass(e.target.value)} placeholder="Password" type="text" className="rounded-md border border-border bg-deep px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted" />
-        </div>
-        <input value={formNotes} onChange={(e) => setFormNotes(e.target.value)} placeholder="Ghi chú (tùy chọn)" className="w-full rounded-md border border-border bg-deep px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted" />
-        <button onClick={assign} className="rounded-md bg-gold text-[#060609] text-xs font-semibold px-4 py-2 cursor-pointer border-none hover:scale-[1.02] transition-transform">
-          Cấp VPS
-        </button>
-      </div>
-      {msg && <p className="text-[12px] text-green">{msg}</p>}
-
-      {loading ? (
-        <p className="text-text-muted text-sm">Đang tải...</p>
-      ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-[10px] uppercase tracking-[0.05em] text-text-muted border-b border-border">
-                <th className="text-left font-medium py-3 px-3">User</th>
-                <th className="text-left font-medium py-3 px-3">IP</th>
-                <th className="text-left font-medium py-3 px-3">User/Pass</th>
-                <th className="text-center font-medium py-3 px-3">Status</th>
-                <th className="text-left font-medium py-3 px-3">Ghi chú</th>
-                <th className="text-right font-medium py-3 px-3">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vpsList.map((v) => (
-                <tr key={v.id} className="border-t border-border">
-                  <td className="py-2.5 px-3 text-text-primary">{v.user_email ?? "—"}</td>
-                  <td className="py-2.5 px-3 font-mono text-text-secondary">{v.ip}</td>
-                  <td className="py-2.5 px-3 font-mono text-[11px] text-text-secondary">{v.username} / {v.password}</td>
-                  <td className="py-2.5 px-3 text-center">
-                    <span className={`text-[11px] font-medium ${v.status === "active" ? "text-green" : v.status === "suspended" ? "text-gold" : "text-red"}`}>{v.status}</span>
-                  </td>
-                  <td className="py-2.5 px-3 text-[12px] text-text-muted max-w-[120px] truncate">{v.notes ?? "—"}</td>
-                  <td className="py-2.5 px-3 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      {v.status !== "suspended" && (
-                        <button onClick={() => updateStatus(v.id, "suspended")} className="text-[11px] text-gold hover:underline border-none bg-transparent cursor-pointer">Tạm dừng</button>
-                      )}
-                      {v.status !== "active" && (
-                        <button onClick={() => updateStatus(v.id, "active")} className="text-[11px] text-green hover:underline border-none bg-transparent cursor-pointer">Kích hoạt</button>
-                      )}
-                      <button onClick={() => remove(v.id)} className="text-[11px] text-red hover:underline border-none bg-transparent cursor-pointer"><Trash2 size={11} className="inline" /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {vpsList.length === 0 && (
-                <tr><td colSpan={6} className="py-8 text-center text-text-muted">Chưa có VPS nào được cấp.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
 /* -------------------------------------------------------------------------- */
 /*  Tab: Affiliate (existing admin page inline)                               */
 /* -------------------------------------------------------------------------- */
@@ -736,11 +604,10 @@ export default function AdminPage() {
       </div>
 
       {/* Active tab content */}
-      {activeTab === "overview" && <OverviewTab stats={overviewStats} />}
+      {activeTab === "overview" && <OverviewTab stats={overviewStats} isSuperAdmin={isSuperAdmin} />}
       {activeTab === "users" && <UsersTab />}
       {activeTab === "finance" && <FinanceTab />}
       {activeTab === "admins" && isSuperAdmin && <AdminsTab />}
-      {activeTab === "vps" && <VpsTab />}
       {activeTab === "affiliate" && <AffiliateTab />}
     </div>
   );

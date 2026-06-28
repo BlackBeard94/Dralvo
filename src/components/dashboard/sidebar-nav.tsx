@@ -48,7 +48,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", labelKey: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
   { id: "kho", labelKey: "kho", icon: Package, href: "/dashboard/kho" },
   { id: "affiliate", labelKey: "affiliate", icon: Share2, href: "/dashboard/affiliate" },
-  { id: "settings", labelKey: "settings", icon: Settings, href: "/dashboard/settings" },
 ];
 
 const EXTERNAL_LINKS = [
@@ -229,22 +228,31 @@ export function SidebarNav({ collapsed, onToggle, isAdmin = false, userEmail, pl
         <button
           type="button"
           onClick={onToggle}
-          className={cn(
-            "flex items-center justify-center w-full h-9 rounded-md",
-            "text-text-muted hover:text-text-primary hover:bg-gold/5",
-            "transition-colors duration-200",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
-          )}
+          className="flex items-center justify-end w-full h-9 rounded-md text-text-muted hover:text-text-primary hover:bg-gold/5 transition-colors duration-200 cursor-pointer"
           aria-label={collapsed ? copy.expand : copy.collapse}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           {!collapsed && (
-            <span className="ml-2 text-xs font-medium text-text-muted">
+            <span className="mr-2 text-xs font-medium text-text-muted">
               {copy.collapse}
             </span>
           )}
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
+
+      {/* ── Settings link — bottom ── */}
+      <Link
+        href="/dashboard/settings"
+        className={cn(
+          "flex items-center rounded-md transition-all duration-200 no-underline shrink-0 border-t border-border",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
+          collapsed ? "justify-center h-10 mx-1.5 mb-1" : "h-10 px-3 mx-2 gap-3 mb-1",
+          "text-text-secondary hover:text-text-primary hover:bg-gold/5",
+        )}
+      >
+        <Settings size={18} className="shrink-0 text-text-muted" />
+        {!collapsed && <span className="text-[13px] font-medium whitespace-nowrap truncate">{copy.settings}</span>}
+      </Link>
 
       {/* ── User — bottom left ── */}
       {userEmail && (
