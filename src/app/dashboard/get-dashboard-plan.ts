@@ -1,9 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
-import {
-  resolvePlan,
-  type PlanDetails,
-  type PlanTier,
-} from "@/lib/plan";
+import { getPlanDetailsByUserId } from "@/lib/subscription-gate";
+import type { PlanDetails, PlanTier } from "@/lib/plan";
 
 const FREE: PlanDetails = {
   planTier: "Free",
@@ -26,20 +23,9 @@ export async function getDashboardPlan(): Promise<PlanDetails> {
 
     if (!user) return FREE;
 
-    const [{ data: license }, { data: subscription }] = await Promise.all([
-      supabase
-        .from("license_keys")
-        .select("plan, expires_at")
-        .eq("user_id", user.id)
-        .maybeSingle(),
-      supabase
-        .from("subscriptions")
-        .select("plan_tier, status, current_period_end, stripe_subscription_id")
-        .eq("user_id", user.id)
-        .maybeSingle(),
-    ]);
-
-    return resolvePlan(license, subscription);
+    // license_keys is not readable by the `authenticated` role under RLS,
+    // so resolve through the admin client scoped to this user id.
+    return await getPlanDetailsByUserId(user.id);
   } catch {
     // Default to Free when the plan store is unavailable.
     return FREE;

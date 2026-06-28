@@ -1,8 +1,20 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import { isPaidTier, resolvePlan, type PlanTier } from "@/lib/plan";
+import {
+  isPaidTier,
+  resolvePlan,
+  type PlanDetails,
+  type PlanTier,
+} from "@/lib/plan";
 
 export type { PlanTier } from "@/lib/plan";
+
+const FREE_DETAILS: PlanDetails = {
+  planTier: "Free",
+  planStatus: "free",
+  currentPeriodEnd: null,
+  planSource: "none",
+};
 
 export const PRO_FEATURES = [
   "complete_thesis",
@@ -20,6 +32,26 @@ const SUBSCRIPTION_SELECT =
   "plan_tier, status, current_period_end, stripe_subscription_id";
 
 /**
+ * Resolve full plan details for a user id using the admin (service-role)
+ * client. The dashboard reads through this because `license_keys` is not
+ * readable by the `authenticated` role under RLS — the same path the API
+ * enforcement routes already rely on. Reads are scoped to the given user id.
+ */
+export async function getPlanDetailsByUserId(
+  userId: string,
+): Promise<PlanDetails> {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return FREE_DETAILS;
+
+  const [{ data: license }, { data: subscription }] = await Promise.all([
+    supabase.from("license_keys").select(LICENSE_SELECT).eq("user_id", userId).maybeSingle(),
+    supabase.from("subscriptions").select(SUBSCRIPTION_SELECT).eq("user_id", userId).maybeSingle(),
+  ]);
+
+  return resolvePlan(license, subscription);
+}
+
+/**
  * Resolve the plan tier for the current (cookie-authenticated) user.
  * Returns "Free" if not authenticated or no valid paid access found.
  */
@@ -31,12 +63,7 @@ export async function getUserPlanTier(): Promise<PlanTier> {
     } = await supabase.auth.getUser();
     if (!user) return "Free";
 
-    const [{ data: license }, { data: subscription }] = await Promise.all([
-      supabase.from("license_keys").select(LICENSE_SELECT).eq("user_id", user.id).maybeSingle(),
-      supabase.from("subscriptions").select(SUBSCRIPTION_SELECT).eq("user_id", user.id).maybeSingle(),
-    ]);
-
-    return resolvePlan(license, subscription).planTier;
+    return (await getPlanDetailsByUserId(user.id)).planTier;
   } catch {
     return "Free";
   }
@@ -44,15 +71,7 @@ export async function getUserPlanTier(): Promise<PlanTier> {
 
 /** Resolve the plan tier for an arbitrary user id (uses the admin client). */
 export async function getUserPlanTierByUserId(userId: string): Promise<PlanTier> {
-  const supabase = getSupabaseAdminClient();
-  if (!supabase) return "Free";
-
-  const [{ data: license }, { data: subscription }] = await Promise.all([
-    supabase.from("license_keys").select(LICENSE_SELECT).eq("user_id", userId).maybeSingle(),
-    supabase.from("subscriptions").select(SUBSCRIPTION_SELECT).eq("user_id", userId).maybeSingle(),
-  ]);
-
-  return resolvePlan(license, subscription).planTier;
+  return (await getPlanDetailsByUserId(userId)).planTier;
 }
 
 /**

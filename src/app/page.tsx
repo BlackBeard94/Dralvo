@@ -65,7 +65,7 @@ function useReveal<T extends HTMLElement = HTMLDivElement>(threshold = 0.12) {
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted" style={{ background: "rgba(26,26,42,0.4)" }}>{children}</div>
+    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted bg-deep/40">{children}</div>
   );
 }
 
@@ -302,7 +302,7 @@ export default function LandingPage() {
             <span className="hidden sm:inline text-border mx-0.5">|</span>
             <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Bảng giá</Link>
           </div>
-          <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap" style={{ background: "rgba(0,0,0,0.25)" }}>
+          <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap bg-deep/25">
             <Link href="#pricing" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">Dùng thử</Link>
             <Link href="/login" className="rounded-md border border-border px-3 py-1.5 text-[13px] font-semibold text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">Đăng nhập</Link>
             <Link href="/signup" className="rounded-md bg-gold-action px-3 py-1.5 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.02]">Đăng ký</Link>

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
-const pagesWithHeaderToggle = new Set(["/", "/pricing", "/tools/calculator"]);
+const pagesWithHeaderToggle = new Set(["/", "/pricing", "/tools/calculator", "/tigold"]);
 
 export function GlobalThemeToggle() {
   const pathname = usePathname();

@@ -52,7 +52,7 @@ function Reveal({ children, className, delay = 0 }: { children: React.ReactNode;
 }
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted" style={{ background: "rgba(26,26,42,0.4)" }}>{children}</div>;
+  return <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted bg-deep/40">{children}</div>;
 }
 
 export default function TiGoldPage() {

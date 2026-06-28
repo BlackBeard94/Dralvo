@@ -1,6 +1,7 @@
 // ponytail: customer portal — license key + EA downloads
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -43,12 +44,15 @@ export default async function DashboardPage() {
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
+    const admin = getSupabaseAdminClient();
+    if (user && admin) {
+      // license_keys is not readable by the `authenticated` role under RLS,
+      // so read through the admin client scoped to this user id.
+      const { data } = await admin
         .from("license_keys")
         .select("key, plan, expires_at")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       if (data) {
         licenseKey = data.key;
         plan = data.plan;
