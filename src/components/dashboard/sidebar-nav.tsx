@@ -223,15 +223,15 @@ export function SidebarNav({ collapsed, onToggle, isAdmin = false, userEmail, pl
           </div>
       </nav>
 
-      {/* ── Collapse toggle ── */}
-      <div className="shrink-0 border-t border-border p-2">
+      {/* ── Collapse toggle — right edge ── */}
+      <div className="shrink-0 border-t border-border py-1.5 flex justify-end px-2">
         <button
           type="button"
           onClick={onToggle}
-          className="flex items-center justify-center w-full h-9 rounded-md text-text-muted hover:text-text-primary hover:bg-gold/5 transition-colors duration-200 cursor-pointer"
+          className="flex items-center justify-center w-6 h-6 rounded text-text-muted hover:text-gold hover:bg-gold/10 transition-colors cursor-pointer"
           aria-label={collapsed ? copy.expand : copy.collapse}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
 
