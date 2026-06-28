@@ -88,7 +88,7 @@ const TABS: { id: TabId; label: string; icon: typeof LayoutDashboard; adminOnly?
 /*  Tab: Overview                                                             */
 /* -------------------------------------------------------------------------- */
 
-function OverviewTab({ stats: initialStats }: { stats: OverviewStats | null }) {
+function OverviewTab({ stats: initialStats, isSuperAdmin }: { stats: OverviewStats | null; isSuperAdmin: boolean }) {
   const [stats, setStats] = useState<OverviewStats | null>(initialStats);
 
   // ponytail: if parent already loaded stats, use them; otherwise fetch
@@ -120,6 +120,7 @@ function OverviewTab({ stats: initialStats }: { stats: OverviewStats | null }) {
         </div>
       ))}
     </div>
+    <NotificationSection isSuperAdmin={isSuperAdmin} />
   );
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -181,6 +181,11 @@ export function DashboardShell({
 
             <LanguageSwitcher className="h-8 min-w-12" />
             <ThemeToggle className="h-8 w-8" />
+
+            {/* ── Notifications bell ── */}
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-gold/5 transition-colors cursor-pointer">
+              <Bell size={16} />
+            </button>
           </div>
         </header>
 

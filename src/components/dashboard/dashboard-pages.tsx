@@ -373,8 +373,6 @@ export function SettingsPage({
           planSource={planSource}
         />
 
-        <AiProviderSettings />
-
         {isPro ? (
           <NotificationPreferences />
         ) : (
@@ -390,18 +388,6 @@ export function SettingsPage({
             </p>
           </div>
         )}
-
-        <div className="rounded-2xl border border-border bg-surface/60 p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-gold" />
-            <h2 className="font-display text-lg text-text-primary">
-              {copy.dataStatus}
-            </h2>
-          </div>
-          <p className="text-sm text-text-muted">
-            {copy.dataStatusDescription}
-          </p>
-        </div>
 
         <RunLogsPanel />
         <ProductAnalyticsPanel />
