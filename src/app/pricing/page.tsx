@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -129,22 +130,18 @@ export default function PricingPage() {
       </div>
 
       {/* Nav — đồng bộ với landing */}
-      <nav className={cn("fixed top-0 inset-x-0 z-50 transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}>
-        <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center justify-between">
-          <BrandLink />
-          <div className="flex items-center gap-1 sm:gap-3">
-            <Link href="/#products" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.products}</Link>
-            <Link href="/#evidence" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.evidence}</Link>
-            <Link href="/#fx-tool" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.tools}</Link>
-            <Link href="/tigold" className="hidden md:inline text-[13px] font-semibold hover:opacity-80 transition-colors no-underline px-2" style={{ color: "#00c98d" }}>{t.nav.tigold}</Link>
-            <Link href="/pricing" className="hidden sm:inline text-[13px] text-gold transition-colors no-underline px-2 font-medium">{t.nav.pricing}</Link>
-            <Link href="/login" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.login}</Link>
-            <Link href="/#pricing" className="ml-1 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </nav>
+      <NavBar
+        navClassName={cn("transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}
+        links={[
+          { label: t.nav.products, href: "/#products", showFrom: "sm" as const },
+          { label: t.nav.evidence, href: "/#evidence", showFrom: "sm" as const },
+          { label: t.nav.tools, href: "/#fx-tool", showFrom: "md" as const },
+          { label: t.nav.tigold, href: "/tigold", showFrom: "md" as const, className: "font-semibold", style: { color: "#00c98d" } },
+          { label: t.nav.pricing, href: "/pricing", className: "text-gold font-medium" },
+          { label: t.nav.login, href: "/login", showFrom: "md" as const },
+        ]}
+        actions={<Link href="/#pricing" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>}
+      />
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
         {/* Hero */}

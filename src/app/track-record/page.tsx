@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ShieldCheck, TrendingUp } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -57,22 +58,12 @@ export default function TrackRecordPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border">
-        <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
-          <BrandLink />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-[13px] text-text-muted hover:text-gold transition-colors no-underline"
-            >
-              <ArrowLeft size={14} />
-              {t.back}
-            </Link>
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </nav>
+      <NavBar
+        navClassName="fixed top-0 left-0 right-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border"
+        containerClassName="max-w-[1100px] mx-auto px-6"
+        links={[{ label: t.back, href: "/" }]}
+      />
+
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
         {/* Hero */}
@@ -103,7 +94,7 @@ export default function TrackRecordPage() {
               <h2 className="text-2xl sm:text-3xl font-semibold mb-2">{t.backtestHeading}</h2>
               <p className="text-text-muted text-sm font-mono">{t.backtestNote}</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {METRICS.map((m) => (
                 <div
                   key={m.label}

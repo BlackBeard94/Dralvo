@@ -11,6 +11,9 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dralvo.com";
 
+// ponytail: native viewport — fixes all mobile rendering globally
+export const viewport = { width: "device-width", initialScale: 1 };
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {

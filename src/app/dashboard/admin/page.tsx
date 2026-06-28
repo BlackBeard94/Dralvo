@@ -98,7 +98,7 @@ function OverviewTab({ stats: initialStats, isSuperAdmin }: { stats: OverviewSta
   ];
 
   return (<>
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-1  grid-cols-2 lg:grid-cols-4 gap-3">
       {cards.map((c) => (
         <div key={c.label} className="rounded-xl border border-border bg-card p-4">
           <p className="text-[11px] tracking-[0.06em] uppercase text-text-muted mb-1">{c.label}</p>
@@ -428,7 +428,7 @@ function AdminsTab() {
             </button>
           </div>
           {/* Permissions toggle grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1  grid-cols-2 lg:grid-cols-4 gap-2">
             {(["users", "finance", "vps", "affiliate", "admins"] as const).map((scope) => (
               <div key={scope} className="space-y-1">
                 <p className="text-[10px] uppercase tracking-[0.06em] text-text-muted">{scope}</p>

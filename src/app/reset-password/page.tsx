@@ -293,7 +293,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-deep flex flex-col items-center justify-center px-4 relative">
+    <main className="min-h-screen bg-deep flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* Gold veins */}
       <div className="gold-veins" aria-hidden="true">
         <div className="v1" />
@@ -326,7 +326,7 @@ export default function ResetPasswordPage() {
           </span>
         </Link>
 
-        <div className="bg-surface border border-border rounded-xl p-8 animate-fade-in-up">
+        <div className="bg-surface border border-border rounded-xl p-5 sm:p-8 animate-fade-in-up">
           {success ? (
             <div className="text-center py-4">
               <div className="w-16 h-16 rounded-full bg-green/10 border border-green/20 flex items-center justify-center mx-auto mb-6">

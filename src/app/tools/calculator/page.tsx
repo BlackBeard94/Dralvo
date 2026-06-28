@@ -12,6 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
@@ -341,7 +342,7 @@ export default function RiskManagerPage() {
                 <h2 className="text-sm font-semibold text-text-primary">{copy.dashboard}</h2>
               </div>
               <ResultCard label={copy.accountBalance} value={formatMoney(balance)} />
-              <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="mt-3 grid grid-cols-1  grid-cols-2 gap-3">
                 <ResultCard label={copy.riskPerTrade} value={`${riskPct}%`} tone={riskPct > 2 ? "bad" : undefined} />
                 <ResultCard label={copy.riskAmount} value={formatMoney(riskAmount)} />
                 <ResultCard label={copy.dailyLoss} value={formatMoney(dailyLoss)} tone={dailyLoss > dailyLossLimit ? "bad" : undefined} />

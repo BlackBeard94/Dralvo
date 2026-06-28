@@ -170,7 +170,7 @@ export default function AffiliateDashboardPage() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1  grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { key: "clicks", value: data.stats.total_clicks, label: d.stats.clicks },
           { key: "conversions", value: data.stats.total_conversions, label: d.stats.conversions },

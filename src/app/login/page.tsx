@@ -90,7 +90,7 @@ function LoginForm() {
   };
 
   return (
-    <main className="min-h-screen bg-deep flex flex-col items-center justify-center px-4 relative">
+    <main className="min-h-screen bg-deep flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* Gold veins */}
       <div className="gold-veins" aria-hidden="true">
         <div className="v1" />
@@ -124,7 +124,7 @@ function LoginForm() {
         </Link>
 
         {/* Card */}
-        <div className="bg-surface border border-border rounded-xl p-8 animate-fade-in-up">
+        <div className="bg-surface border border-border rounded-xl p-5 sm:p-8 animate-fade-in-up">
           <h1 className="font-display text-2xl text-text-primary mb-1">
             {copy.login.title}
           </h1>

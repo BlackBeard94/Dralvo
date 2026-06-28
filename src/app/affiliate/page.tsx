@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
@@ -31,25 +32,15 @@ export default function AffiliatePage() {
       <AffiliateReferralTracker />
 
       {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border">
-        <div className="px-6 h-16 flex items-center max-w-[1100px] mx-auto">
-          <Link href="/">
-            <BrandLink wordmarkClassName="text-2xl font-black" />
-          </Link>
-          <div className="flex items-center gap-0 ml-8 whitespace-nowrap">
-            <Link href="/#products" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Sản phẩm</Link>
-            <span className="text-border mx-0.5">|</span>
-            <Link href="/#pricing" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Bảng giá</Link>
-            <span className="text-border mx-0.5">|</span>
-            <span className="text-[13px] text-gold font-medium px-2">{t.navLabel}</span>
-          </div>
-          <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap bg-deep/25">
-            <Link href="/login" className="text-[12px] font-semibold text-text-primary hover:text-gold transition-colors no-underline">Đăng nhập</Link>
-            <LanguageSwitcher />
-            <ThemeToggle />
-          </div>
-        </div>
-      </nav>
+      <NavBar
+        containerClassName="max-w-[1100px] mx-auto px-6"
+        links={[
+          { label: "Sản phẩm", href: "/#products" },
+          { label: "Bảng giá", href: "/#pricing" },
+          { label: t.navLabel, href: "/affiliate", className: "text-gold font-medium" },
+        ]}
+        actions={<Link href="/login" className="text-[12px] font-semibold text-text-primary hover:text-gold transition-colors no-underline">Đăng nhập</Link>}
+      />
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }} className="max-w-[1100px] mx-auto">
 
@@ -79,7 +70,7 @@ export default function AffiliatePage() {
             <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3" style={{ fontFamily: SERIF }}>{t.commission.title}</h2>
             <p className="text-text-secondary max-w-[480px] mx-auto">{t.commission.subtitle}</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-[720px] mx-auto">
+          <div className="grid grid-cols-1  grid-cols-2 md:grid-cols-4 gap-4 max-w-[720px] mx-auto">
             {t.commission.items.map((item) => (
               <div key={item.label} className="rounded-xl border border-border bg-card p-5 text-center">
                 <div className="text-2xl font-bold text-gold-bright font-mono">{item.value}</div>

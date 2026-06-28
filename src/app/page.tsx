@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine, Menu, X } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -148,7 +149,7 @@ function EaPlate({ ea, copy, onGet, badge }: { ea: EaProduct; copy: (typeof LAND
         <ShieldCheck size={13} />{copy.verified[ea.id]}
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 mt-6">
+      <div className="grid grid-cols-1  grid-cols-2 gap-2.5 mt-6">
         {ea.headline.map((kpi, i) => (
           <div key={i} className="rounded-lg border border-border bg-deep/40 p-3">
             <div className={cn("font-mono text-xl font-bold tracking-tight", kpi.tone === "good" ? "text-green" : kpi.tone === "bad" ? "text-red" : "")} style={kpi.tone ? undefined : { color: accentText(a) }}>{kpi.value}</div>
@@ -181,7 +182,7 @@ export default function LandingPage() {
   const [tab, setTab] = useState<EaProduct["id"]>("goldmaster");
   const [period, setPeriod] = useState<PeriodId>("monthly");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -290,31 +291,28 @@ export default function LandingPage() {
 
       {/* Nav — auto-hide on scroll, show on hover */}
       <div className="group fixed top-0 inset-x-0 z-50 h-12">
-      <nav className={cn("transition-all duration-300", scrolled ? "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto bg-deep/85 backdrop-blur-xl border-b border-border" : "opacity-100 bg-transparent")}>
-        <div className="px-6 h-16 flex items-center">
-          <BrandLink wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary" />
-          <div className="flex items-center gap-0 ml-8 whitespace-nowrap">
-            <Link href="#products" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Sản phẩm</Link>
-            <span className="hidden sm:inline text-border mx-0.5">|</span>
-            <Link href="#evidence" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Hiệu suất</Link>
-            <span className="hidden sm:inline text-border mx-0.5">|</span>
-            <Link href="#fx-tool" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Công cụ</Link>
-            <span className="hidden md:inline text-border mx-0.5">|</span>
-            <Link href="/tigold" className="hidden md:inline text-[13px] font-semibold hover:opacity-80 transition-colors no-underline px-2" style={{ color: "#00c98d" }}>TiGold</Link>
-            <span className="hidden sm:inline text-border mx-0.5">|</span>
-            <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Bảng giá</Link>
-            <span className="hidden sm:inline text-border mx-0.5">|</span>
-            <Link href="/affiliate" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Affiliate</Link>
-          </div>
-          <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap bg-deep/25">
-            <Link href="#pricing" className="rounded-md bg-gold-action px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Dùng thử miễn phí</Link>
-            <Link href="/signup" className="rounded-md bg-gold-bright px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Đăng ký</Link>
-            <Link href="/login" className="rounded-md border border-border px-2 py-1 text-[12px] font-semibold text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">Đăng nhập</Link>
-            <LanguageSwitcher className="hidden sm:flex" />
-            <ThemeToggle className="hidden sm:flex" />
-          </div>
+        <div className={cn("transition-all duration-300", scrolled ? "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto" : "opacity-100")}>
+          <NavBar
+            navClassName="bg-deep/85 backdrop-blur-xl border-b border-border"
+            wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary"
+            containerClassName="px-6"
+            links={[
+              { label: "Sản phẩm", href: "#products", showFrom: "sm" as const },
+              { label: "Hiệu suất", href: "#evidence", showFrom: "sm" as const },
+              { label: "Công cụ", href: "#fx-tool", showFrom: "md" as const },
+              { label: "TiGold", href: "/tigold", showFrom: "md" as const, className: "font-semibold", style: { color: "#00c98d" } },
+              { label: "Bảng giá", href: "#pricing", showFrom: "sm" as const },
+              { label: "Affiliate", href: "/affiliate", showFrom: "sm" as const },
+            ]}
+            actions={
+              <>
+                <Link href="#pricing" className="rounded-md bg-gold-action px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Dùng thử miễn phí</Link>
+                <Link href="/signup" className="rounded-md bg-gold-bright px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Đăng ký</Link>
+                <Link href="/login" className="rounded-md border border-border px-2 py-1 text-[12px] font-semibold text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">Đăng nhập</Link>
+              </>
+            }
+          />
         </div>
-      </nav>
       </div>
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -429,7 +427,7 @@ export default function LandingPage() {
               </div>
               <div className="space-y-5">
                 <div className="rounded-xl border border-border bg-card p-5">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  <div className="grid grid-cols-1  grid-cols-2 gap-x-4 gap-y-3">
                     {activeEa.tradeStats.map((s) => (
                       <div key={s.key} className="flex flex-col">
                         <span className="font-mono text-base text-text-primary">{s.value}</span>

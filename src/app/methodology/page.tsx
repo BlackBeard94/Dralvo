@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -110,18 +111,15 @@ export default function MethodologyPage() {
         <div className="h1" /><div className="h2" />
       </div>
 
-      <nav className="sticky top-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border shadow-[0_1px_0_rgba(212,168,67,0.04)]">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
-          <BrandLink />
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-[13px] tracking-[0.03em] text-text-muted hover:text-gold transition-colors no-underline">{pageCopy.home}</Link>
-            <Link href="/login" className="hidden md:inline text-[13px] tracking-[0.03em] text-text-muted hover:text-gold transition-colors no-underline">{pageCopy.signIn}</Link>
-            <Link href="/signup" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{productCopy.primaryCta}</Link>
-            <LanguageSwitcher />
-            <ThemeToggle />
-          </div>
-        </div>
-      </nav>
+      <NavBar
+        navClassName="sticky top-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border shadow-[0_1px_0_rgba(212,168,67,0.04)]"
+        containerClassName="max-w-[1200px] mx-auto px-6"
+        links={[
+          { label: pageCopy.home, href: "/" },
+          { label: pageCopy.signIn, href: "/login", showFrom: "md" as const },
+        ]}
+        actions={<Link href="/signup" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{productCopy.primaryCta}</Link>}
+      />
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
         <section className="relative pt-24 pb-12 overflow-hidden">

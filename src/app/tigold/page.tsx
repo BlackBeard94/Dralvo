@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
+import { NavBar } from "@/components/shared/nav-bar";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -105,17 +106,13 @@ export default function TiGoldPage() {
       <div className="gold-veins" aria-hidden="true"><div className="v1" /><div className="v2" /><div className="v3" /><div className="h1" /><div className="h2" /></div>
 
       {/* Nav */}
-      <nav className={cn("fixed top-0 inset-x-0 z-50 transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}>
-        <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center">
-          <BrandLink wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary" />
-          <div className="flex items-center gap-3 ml-auto whitespace-nowrap">
-            <Link href="/" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">Trang chủ</Link>
-            <Link href="/#pricing" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">Bảng giá</Link>
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </nav>
+      <NavBar
+        navClassName={cn("transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}
+        links={[
+          { label: "Trang chủ", href: "/" },
+          { label: "Bảng giá", href: "/#pricing" },
+        ]}
+      />
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }} className="pt-16">
         {/* Hero */}
@@ -367,7 +364,7 @@ export default function TiGoldPage() {
                   <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-gold">{t.bt.profile}</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border">
+                <div className="grid grid-cols-1  grid-cols-2 sm:grid-cols-4 gap-px bg-border">
                   {[
                     { v: TIGOLD.headline[0].value, l: t.bt.kNet, t: "good" },
                     { v: TIGOLD.headline[1].value, l: t.bt.kPf, t: "neutral" },
