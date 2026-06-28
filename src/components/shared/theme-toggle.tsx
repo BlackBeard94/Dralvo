@@ -7,10 +7,6 @@ import { cn } from "@/lib/utils";
 
 type Theme = "dark" | "light";
 
-function getSystemTheme(): Theme {
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-}
-
 function getStoredTheme(): Theme | null {
   const stored = localStorage.getItem("dralvo-theme");
   if (stored === "dark" || stored === "light") return stored;
@@ -30,7 +26,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const initial = getStoredTheme() ?? getSystemTheme();
+    const initial = getStoredTheme() ?? "dark";
     applyTheme(initial);
 
     const frame = window.requestAnimationFrame(() => {

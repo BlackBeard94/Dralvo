@@ -50,16 +50,15 @@ export default async function DashboardPage() {
       // so read through the admin client scoped to this user id.
       const { data } = await admin
         .from("license_keys")
-        .select("key, plan, expires_at, is_lifetime")
+        .select("key, plan, expires_at")
         .eq("user_id", user.id)
         .maybeSingle();
-      // Valid only if lifetime comp or a future expiry. A null expiry without
-      // is_lifetime is treated as no access (never free-forever from a bug).
+      // ponytail: valid = unlimited AND not expired
+      const currentPeriodEnd = data?.expires_at;
       const valid =
         !!data &&
         data.plan === "unlimited" &&
-        (data.is_lifetime === true ||
-          (!!data.expires_at && new Date(data.expires_at) > new Date()));
+        (!currentPeriodEnd || new Date(currentPeriodEnd) > new Date());
       if (valid) {
         licenseKey = data.key;
         plan = data.plan;
