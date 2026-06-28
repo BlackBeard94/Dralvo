@@ -228,14 +228,9 @@ export function SidebarNav({ collapsed, onToggle, isAdmin = false, userEmail, pl
         <button
           type="button"
           onClick={onToggle}
-          className="flex items-center justify-end w-full h-9 rounded-md text-text-muted hover:text-text-primary hover:bg-gold/5 transition-colors duration-200 cursor-pointer"
+          className="flex items-center justify-center w-full h-9 rounded-md text-text-muted hover:text-text-primary hover:bg-gold/5 transition-colors duration-200 cursor-pointer"
           aria-label={collapsed ? copy.expand : copy.collapse}
         >
-          {!collapsed && (
-            <span className="mr-2 text-xs font-medium text-text-muted">
-              {copy.collapse}
-            </span>
-          )}
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
