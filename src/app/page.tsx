@@ -290,16 +290,20 @@ export default function LandingPage() {
       <nav className={cn("fixed top-0 inset-x-0 z-50 transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}>
         <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center">
           <BrandLink wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary" />
-          <div className="flex items-center gap-1 sm:gap-2 ml-8 whitespace-nowrap">
-            <Link href="#products" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.products}</Link>
-            <Link href="#evidence" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.evidence}</Link>
-            <Link href="#fx-tool" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.tools}</Link>
-            <Link href="/tigold" className="hidden md:inline text-[13px] font-semibold hover:opacity-80 transition-colors no-underline px-2" style={{ color: "#00c98d" }}>{t.nav.tigold}</Link>
-            <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.pricing}</Link>
+          <div className="flex items-center gap-0 ml-8 whitespace-nowrap">
+            <Link href="#products" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Sản phẩm</Link>
+            <span className="hidden sm:inline text-border mx-0.5">|</span>
+            <Link href="#evidence" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Hiệu suất</Link>
+            <span className="hidden sm:inline text-border mx-0.5">|</span>
+            <Link href="#fx-tool" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Công cụ</Link>
+            <span className="hidden md:inline text-border mx-0.5">|</span>
+            <Link href="/tigold" className="hidden md:inline text-[13px] font-semibold hover:opacity-80 transition-colors no-underline px-2" style={{ color: "#00c98d" }}>TiGold</Link>
+            <span className="hidden sm:inline text-border mx-0.5">|</span>
+            <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Bảng giá</Link>
           </div>
-          <div className="flex items-center gap-2 ml-auto whitespace-nowrap">
-            <Link href="#pricing" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>
-            <Link href="/login" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.login}</Link>
+          <Link href="#pricing" className="ml-4 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03] whitespace-nowrap">Dùng thử</Link>
+          <div className="flex items-center gap-2 ml-3 pl-3 border-l border-border whitespace-nowrap" style={{ background: "rgba(0,0,0,0.25)" }}>
+            <Link href="/login" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Đăng nhập</Link>
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
