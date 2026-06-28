@@ -54,7 +54,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     <div ref={ref} className={cn("relative", className)}>
       <button
         type="button"
-        className="theme-toggle gap-1.5 px-2.5 text-[13px] font-semibold"
+        className="theme-toggle gap-1 px-1.5 text-[12px] font-semibold"
         style={{ width: "auto", minWidth: 0 }}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
