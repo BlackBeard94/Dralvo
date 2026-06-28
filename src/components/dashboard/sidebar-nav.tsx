@@ -7,6 +7,7 @@ import {
   Package,
   Server,
   Settings,
+  Share2,
   ChevronLeft,
   ChevronRight,
   type LucideIcon,
@@ -40,6 +41,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", labelKey: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
   { id: "kho", labelKey: "kho", icon: Package, href: "/dashboard/kho" },
+  { id: "affiliate", labelKey: "affiliate", icon: Share2, href: "/dashboard/affiliate" },
   { id: "settings", labelKey: "settings", icon: Settings, href: "/dashboard/settings" },
 ];
 

@@ -12,6 +12,7 @@ import { useLocale } from "@/hooks/use-locale";
 import { LANDING_COPY } from "@/lib/landing-copy";
 import { EA_PRODUCTS, GOLDMASTER, GOLD_SCALP, TIGOLD, type EaProduct } from "@/lib/backtest-stats";
 import { cn } from "@/lib/utils";
+import { AffiliateReferralTracker } from "@/components/affiliate/affiliate-referral-tracker";
 
 /* -------------------------------------------------------------------------- */
 /*  Accent system — gold = patient swing, steel = fast scalp                   */
@@ -217,6 +218,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
+      <AffiliateReferralTracker />
       {/* JSON-LD rendered into the initial server HTML (not a client Script) so
           non-JS crawlers and LLM agents can read the structured data. */}
       <script
@@ -301,6 +303,8 @@ export default function LandingPage() {
             <Link href="/tigold" className="hidden md:inline text-[13px] font-semibold hover:opacity-80 transition-colors no-underline px-2" style={{ color: "#00c98d" }}>TiGold</Link>
             <span className="hidden sm:inline text-border mx-0.5">|</span>
             <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Bảng giá</Link>
+            <span className="hidden sm:inline text-border mx-0.5">|</span>
+            <Link href="/affiliate" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Affiliate</Link>
           </div>
           <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap bg-deep/25">
             <Link href="#pricing" className="rounded-md bg-gold-action px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Dùng thử miễn phí</Link>
@@ -609,6 +613,7 @@ export default function LandingPage() {
                 <Link href="/tools/calculator" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.tools}</Link>
                 <Link href="/track-record" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.trackRecord}</Link>
                 <Link href="/compare" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.compare}</Link>
+                <Link href="/affiliate" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Affiliate</Link>
               </div>
             </div>
             <div>

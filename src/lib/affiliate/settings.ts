@@ -25,26 +25,33 @@ export async function getAffiliateSettings(): Promise<AffiliateSettings> {
   const supabase = getSupabaseAdminClient();
   if (!supabase) return DEFAULTS;
 
-  const { data } = await supabase
-    .from("affiliate_settings")
-    .select("*")
-    .eq("id", 1)
-    .single();
+  // ponytail: table may not exist yet (migration not run) — fall back to defaults
+  try {
+    const { data, error } = await supabase
+      .from("affiliate_settings")
+      .select("*")
+      .eq("id", 1)
+      .single();
 
-  if (!data) {
+    if (error || !data) {
+      cachedSettings = DEFAULTS;
+      cacheTime = now;
+      return DEFAULTS;
+    }
+
+    cachedSettings = {
+      commission_rate: data.commission_rate ?? DEFAULTS.commission_rate,
+      cookie_days: data.cookie_days ?? DEFAULTS.cookie_days,
+      min_payout: data.min_payout ?? DEFAULTS.min_payout,
+      program_active: data.program_active ?? DEFAULTS.program_active,
+    };
+    cacheTime = now;
+    return cachedSettings;
+  } catch {
     cachedSettings = DEFAULTS;
     cacheTime = now;
     return DEFAULTS;
   }
-
-  cachedSettings = {
-    commission_rate: data.commission_rate ?? DEFAULTS.commission_rate,
-    cookie_days: data.cookie_days ?? DEFAULTS.cookie_days,
-    min_payout: data.min_payout ?? DEFAULTS.min_payout,
-    program_active: data.program_active ?? DEFAULTS.program_active,
-  };
-  cacheTime = now;
-  return cachedSettings;
 }
 
 /** Invalidate cache (call after admin updates settings) */

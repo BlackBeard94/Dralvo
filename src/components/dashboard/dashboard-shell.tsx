@@ -9,6 +9,7 @@ import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { MarketHeader } from "@/components/dashboard/market-header";
 import { ProductAnalyticsTracker } from "@/components/dashboard/product-analytics-tracker";
+import { AffiliateConversionTracker } from "@/components/affiliate/affiliate-conversion-tracker";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
@@ -99,6 +100,7 @@ export function DashboardShell({
   return (
     <div className="flex h-dvh overflow-hidden bg-deep">
       <ProductAnalyticsTracker />
+      <AffiliateConversionTracker />
       {/* ── Desktop sidebar ── */}
       <div className="hidden md:flex h-full shrink-0">
         <SidebarNav

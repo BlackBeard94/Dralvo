@@ -219,7 +219,7 @@ async function handleAffiliateCommission(
       referral.affiliate_id,
       referral.id,
       userId,
-      typeof session.subscription === "string" ? session.subscription : session.subscription?.id ?? null,
+      (typeof session.subscription === "string" ? session.subscription : (session.subscription?.id ?? "")) as string,
       amountTotal,
       null,
       null,
