@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
+  Server,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -42,6 +43,10 @@ const NAV_ITEMS: NavItem[] = [
   { id: "settings", labelKey: "settings", icon: Settings, href: "/dashboard/settings" },
 ];
 
+const EXTERNAL_LINKS = [
+  { label: "Mua VPS", icon: Server, href: "https://my.gencloud.vn/aff.php?aff=79" },
+];
+
 /* -------------------------------------------------------------------------- */
 /*  Component                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -74,77 +79,106 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
 
       {/* ── Navigation ── */}
       <nav className="flex-1 py-3 overflow-y-auto overflow-x-hidden">
-        <ul className="flex flex-col gap-0.5 px-2">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const label = copy[item.labelKey];
-            const isActive =
-              item.href === "/dashboard"
-                ? pathname === "/dashboard"
-                : pathname.startsWith(item.href);
+          <ul className="flex flex-col gap-0.5 px-2">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const label = copy[item.labelKey];
+              const isActive =
+                item.href === "/dashboard"
+                  ? pathname === "/dashboard"
+                  : pathname.startsWith(item.href);
 
-            return (
-              <li key={item.id}>
-                <Link
-                  href={item.href}
-                  aria-label={collapsed ? label : undefined}
-                  aria-current={isActive ? "page" : undefined}
+              return (
+                <li key={item.id}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "group relative flex items-center rounded-md transition-all duration-200",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
+                      collapsed ? "justify-center h-10 w-10 mx-auto" : "h-10 px-3 gap-3",
+                      isActive
+                        ? "bg-gold/10 text-gold"
+                        : "text-text-secondary hover:text-text-primary hover:bg-gold/5",
+                    )}
+                  >
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <span
+                        className={cn(
+                          "absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-gold",
+                          collapsed && "left-0.5",
+                        )}
+                      />
+                    )}
+
+                    <Icon
+                      size={18}
+                      className={cn(
+                        "shrink-0 transition-colors duration-200",
+                        isActive ? "text-gold" : "text-text-muted group-hover:text-text-secondary",
+                      )}
+                      aria-hidden="true"
+                    />
+
+                    {!collapsed && (
+                      <span className="text-[13px] font-medium whitespace-nowrap truncate">
+                        {label}
+                      </span>
+                    )}
+
+                    {/* Tooltip when collapsed */}
+                    {collapsed && (
+                      <span
+                        role="tooltip"
+                        className={cn(
+                          "absolute left-full ml-3 px-2.5 py-1.5 rounded-md whitespace-nowrap",
+                          "bg-card border border-border text-text-primary text-xs font-medium",
+                          "opacity-0 invisible group-hover:opacity-100 group-hover:visible",
+                          "transition-[opacity,visibility] duration-150 delay-300",
+                          "pointer-events-none z-50",
+                          "shadow-lg shadow-black/40",
+                        )}
+                      >
+                        {label}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* External links */}
+          <div className="mt-2 px-2 border-t border-border pt-2">
+            {EXTERNAL_LINKS.map((link) => {
+              const Icon = link.icon;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={cn(
-                    "group relative flex items-center rounded-md transition-all duration-200",
+                    "group relative flex items-center rounded-md transition-all duration-200 no-underline",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
                     collapsed ? "justify-center h-10 w-10 mx-auto" : "h-10 px-3 gap-3",
-                    isActive
-                      ? "bg-gold/10 text-gold"
-                      : "text-text-secondary hover:text-text-primary hover:bg-gold/5",
+                    "text-text-secondary hover:text-text-primary hover:bg-gold/5",
                   )}
                 >
-                  {/* Active indicator bar */}
-                  {isActive && (
-                    <span
-                      className={cn(
-                        "absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-gold",
-                        collapsed && "left-0.5",
-                      )}
-                    />
-                  )}
-
-                  <Icon
-                    size={18}
-                    className={cn(
-                      "shrink-0 transition-colors duration-200",
-                      isActive ? "text-gold" : "text-text-muted group-hover:text-text-secondary",
-                    )}
-                    aria-hidden="true"
-                  />
-
+                  <Icon size={18} className="shrink-0 text-text-muted group-hover:text-text-secondary" aria-hidden="true" />
                   {!collapsed && (
-                    <span className="text-[13px] font-medium whitespace-nowrap truncate">
-                      {label}
-                    </span>
+                    <span className="text-[13px] font-medium whitespace-nowrap truncate">{link.label}</span>
                   )}
-
-                  {/* Tooltip when collapsed */}
                   {collapsed && (
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "absolute left-full ml-3 px-2.5 py-1.5 rounded-md whitespace-nowrap",
-                        "bg-card border border-border text-text-primary text-xs font-medium",
-                        "opacity-0 invisible group-hover:opacity-100 group-hover:visible",
-                        "group-focus-within:opacity-100 group-focus-within:visible",
-                        "transition-[opacity,visibility] duration-150 delay-300",
-                        "pointer-events-none z-50",
-                        "shadow-lg shadow-black/40",
-                      )}
-                    >
-                      {label}
+                    <span role="tooltip"
+                      className="absolute left-full ml-3 px-2.5 py-1.5 rounded-md whitespace-nowrap bg-card border border-border text-text-primary text-xs font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,visibility] duration-150 delay-300 pointer-events-none z-50 shadow-lg shadow-black/40">
+                      {link.label}
                     </span>
                   )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                </a>
+              );
+            })}
+          </div>
       </nav>
 
       {/* ── Collapse toggle ── */}

@@ -6,6 +6,7 @@ import {
   hasProAccess,
   upsertProSubscriptionFromCheckoutSession,
 } from "@/lib/stripe-subscriptions";
+import { createCommission, convertReferral } from "@/lib/affiliate/server";
 import type Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
@@ -64,6 +65,9 @@ export async function POST(request: NextRequest) {
             plan: "unlimited",
             expires_at: sub?.current_period_end ?? null,
           }, { onConflict: "user_id" });
+
+          // affiliate: check for referral conversion and create commission
+          await handleAffiliateCommission(supabase, userId, session);
         }
         break;
       }
@@ -175,6 +179,54 @@ export async function POST(request: NextRequest) {
       { error: "Webhook processing failed." },
       { status: 500 },
     );
+  }
+}
+
+/** Create affiliate commission if customer was referred */
+async function handleAffiliateCommission(
+  supabase: ReturnType<typeof getSupabaseAdminClient>,
+  userId: string,
+  session: Stripe.Checkout.Session,
+) {
+  try {
+    if (!supabase) return;
+
+    // Find a converted referral for this customer
+    const { data: referral } = await supabase
+      .from("affiliate_referrals")
+      .select("*")
+      .eq("customer_id", userId)
+      .eq("converted", true)
+      .order("converted_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!referral) return;
+
+    // Check this customer hasn't already earned a commission for this referral
+    const { data: existing } = await supabase
+      .from("affiliate_commissions")
+      .select("id")
+      .eq("referral_id", referral.id)
+      .limit(1);
+
+    if (existing && existing.length > 0) return; // already commissioned
+
+    const amountTotal = (session.amount_total ?? 0) / 100; // cents → dollars
+    if (amountTotal <= 0) return;
+
+    await createCommission(
+      referral.affiliate_id,
+      referral.id,
+      userId,
+      typeof session.subscription === "string" ? session.subscription : session.subscription?.id ?? null,
+      amountTotal,
+      null,
+      null,
+    );
+  } catch (err) {
+    console.error("[Affiliate Commission] Failed:", err);
+    // Don't fail the webhook — commission is non-critical
   }
 }
 
