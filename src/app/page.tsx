@@ -301,11 +301,11 @@ export default function LandingPage() {
             <span className="hidden sm:inline text-border mx-0.5">|</span>
             <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Bảng giá</Link>
           </div>
-          <Link href="#pricing" className="ml-4 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03] whitespace-nowrap">Dùng thử</Link>
           <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap" style={{ background: "rgba(0,0,0,0.25)" }}>
             <Link href="/login" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Đăng nhập</Link>
             <ThemeToggle />
             <LanguageSwitcher />
+            <Link href="#pricing" className="ml-1 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">Dùng thử</Link>
           </div>
         </div>
       </nav>
