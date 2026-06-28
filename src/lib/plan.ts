@@ -27,8 +27,6 @@ export interface PlanDetails {
 export interface LicenseRow {
   plan: string | null;
   expires_at: string | null;
-  /** Lifetime comp (admin-granted). Only such rows may have a null expiry. */
-  is_lifetime?: boolean | null;
 }
 
 export interface SubscriptionRow {
@@ -61,8 +59,7 @@ export function resolvePlan(
   const licenseValid =
     !!license &&
     license.plan === "unlimited" &&
-    (license.is_lifetime === true ||
-      (!!license.expires_at && new Date(license.expires_at) > now));
+    (!license.expires_at || new Date(license.expires_at) > now);
 
   // Stripe subscriptions: trust status (webhook keeps it fresh).
   // Non-Stripe subscriptions (manual / VietQR): also require the period to not

@@ -27,7 +27,7 @@ export const PRO_FEATURES = [
 
 export type ProFeature = (typeof PRO_FEATURES)[number];
 
-const LICENSE_SELECT = "plan, expires_at, is_lifetime";
+const LICENSE_SELECT = "plan, expires_at";
 const SUBSCRIPTION_SELECT =
   "plan_tier, status, current_period_end, stripe_subscription_id";
 
