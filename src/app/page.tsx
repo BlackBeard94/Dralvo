@@ -310,8 +310,8 @@ export default function LandingPage() {
             <Link href="#pricing" className="rounded-md bg-gold-action px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Dùng thử miễn phí</Link>
             <Link href="/signup" className="rounded-md bg-gold-bright px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Đăng ký</Link>
             <Link href="/login" className="rounded-md border border-border px-2 py-1 text-[12px] font-semibold text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">Đăng nhập</Link>
-            <LanguageSwitcher />
-            <ThemeToggle />
+            <LanguageSwitcher className="hidden sm:flex" />
+            <ThemeToggle className="hidden sm:flex" />
           </div>
         </div>
       </nav>
@@ -347,7 +347,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-between px-5 pb-3 font-mono text-[11px] text-text-muted">
                 <span>$100K</span><span className="text-green">→ $1.6M</span>
               </div>
-              <div className="grid grid-cols-3 border-t border-border">
+              <div className="grid grid-cols-1 sm:grid-cols-3 border-t border-border">
                 {EA_PRODUCTS.map((ea, i) => (
                   <div key={ea.id} className={cn("px-5 py-3.5", i < 2 && "border-r border-border")}>
                     <div className="font-mono text-[10px] tracking-[0.12em] uppercase" style={{ color: accentText(ea.accent) }}>{ea.timeframe} · {ea.name.replace("Dralvo ", "")}</div>
