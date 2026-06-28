@@ -1,5 +1,6 @@
 // ponytail: EA Vault — unlocked with Unlimited plan
 import type { Metadata } from "next";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
 import Link from "next/link";
 
@@ -28,8 +29,9 @@ export default async function KhoEAPage() {
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data, error } = await supabase
+    const admin = getSupabaseAdminClient();
+    if (user && admin) {
+      const { data, error } = await admin
         .from("license_keys")
         .select("expires_at")
         .eq("user_id", user.id)

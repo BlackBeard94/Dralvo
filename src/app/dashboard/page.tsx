@@ -1,6 +1,7 @@
 // ponytail: customer portal — license key + EA downloads
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
 export const metadata: Metadata = {
