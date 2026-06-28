@@ -27,6 +27,8 @@ export interface PlanDetails {
 export interface LicenseRow {
   plan: string | null;
   expires_at: string | null;
+  /** Lifetime comp (admin-granted). Only such rows may have a null expiry. */
+  is_lifetime?: boolean | null;
 }
 
 export interface SubscriptionRow {
@@ -53,15 +55,28 @@ export function resolvePlan(
   subscription: SubscriptionRow | null | undefined,
   now: Date = new Date(),
 ): PlanDetails {
+  // A license grants access only if it is an explicit lifetime comp, or it has
+  // a concrete expiry still in the future. A null expiry without is_lifetime is
+  // treated as invalid so a bug can never produce free-forever access.
   const licenseValid =
     !!license &&
     license.plan === "unlimited" &&
-    (!license.expires_at || new Date(license.expires_at) > now);
+    (license.is_lifetime === true ||
+      (!!license.expires_at && new Date(license.expires_at) > now));
 
-  const subscriptionActive = !!subscription && hasProAccess(subscription.status);
+  // Stripe subscriptions: trust status (webhook keeps it fresh).
+  // Non-Stripe subscriptions (manual / VietQR): also require the period to not
+  // have lapsed, so a one-off payment cannot grant indefinite access.
+  const isStripeSub = !!subscription?.stripe_subscription_id;
+  const subPeriodOk =
+    isStripeSub ||
+    !subscription?.current_period_end ||
+    new Date(subscription.current_period_end) > now;
+  const subscriptionActive =
+    !!subscription && hasProAccess(subscription.status) && subPeriodOk;
 
   if (licenseValid || subscriptionActive) {
-    const viaStripe = subscriptionActive && !!subscription?.stripe_subscription_id;
+    const viaStripe = subscriptionActive && isStripeSub;
     return {
       planTier: "Unlimited",
       planStatus: subscriptionActive ? subscription!.status ?? "active" : "active",

@@ -4,6 +4,8 @@ import { recordRunLog } from "@/lib/run-logs";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import {
   hasProAccess,
+  periodEndFromPlan,
+  subscriptionPeriodEndIso,
   upsertProSubscriptionFromCheckoutSession,
 } from "@/lib/stripe-subscriptions";
 import { createCommission, convertReferral } from "@/lib/affiliate/server";
@@ -52,7 +54,8 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session;
         await upsertProSubscriptionFromCheckoutSession(session);
 
-        // ponytail: auto-generate license key for Unlimited buyers
+        // ponytail: auto-generate license key for Unlimited buyers.
+        // Rental model — always a concrete expiry, never lifetime.
         const userId = session.client_reference_id;
         if (userId) {
           const { data: sub } = await supabase
@@ -60,10 +63,14 @@ export async function POST(request: NextRequest) {
             .select("current_period_end")
             .eq("user_id", userId)
             .single();
+          const expiresAt =
+            sub?.current_period_end ??
+            periodEndFromPlan(session.metadata?.period);
           await supabase.from("license_keys").upsert({
             user_id: userId,
             plan: "unlimited",
-            expires_at: sub?.current_period_end ?? null,
+            is_lifetime: false,
+            expires_at: expiresAt,
           }, { onConflict: "user_id" });
 
           // affiliate: check for referral conversion and create commission
@@ -76,9 +83,7 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeSubscriptionId = subscription.id;
         const status = subscription.status;
-        const currentPeriodEnd = (subscription as any).current_period_end
-          ? new Date((subscription as any).current_period_end * 1000).toISOString()
-          : null;
+        const currentPeriodEnd = subscriptionPeriodEndIso(subscription);
 
         const { error } = await supabase
           .from("subscriptions")

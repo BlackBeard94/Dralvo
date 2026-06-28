@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
-import { UserMenu } from "@/components/dashboard/user-menu";
 import { MarketHeader } from "@/components/dashboard/market-header";
 import { ProductAnalyticsTracker } from "@/components/dashboard/product-analytics-tracker";
 import { AffiliateConversionTracker } from "@/components/affiliate/affiliate-conversion-tracker";
@@ -19,14 +18,12 @@ import { DASHBOARD_COPY } from "@/lib/i18n";
 /*  Types                                                                     */
 /* -------------------------------------------------------------------------- */
 
-import type { PlanSource } from "@/lib/plan";
-
 export interface DashboardShellProps {
   children: React.ReactNode;
   userEmail?: string | null;
   planTier?: string;
   planStatus?: string;
-  planSource?: PlanSource;
+  isAdmin?: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -49,7 +46,7 @@ export function DashboardShell({
   userEmail,
   planTier = "Free",
   planStatus = "free",
-  planSource = "none",
+  isAdmin = false,
 }: DashboardShellProps) {
   const pathname = usePathname();
   const { locale } = useLocale();
@@ -106,6 +103,10 @@ export function DashboardShell({
         <SidebarNav
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed((prev) => !prev)}
+          isAdmin={isAdmin}
+          userEmail={userEmail}
+          planTier={planTier}
+          planStatus={planStatus}
         />
       </div>
 
@@ -121,7 +122,7 @@ export function DashboardShell({
           />
           {/* Drawer */}
           <div className="relative z-50 h-full w-60 animate-slide-in-left">
-            <SidebarNav collapsed={false} onToggle={closeMobileSidebar} />
+            <SidebarNav collapsed={false} onToggle={closeMobileSidebar} isAdmin={isAdmin} userEmail={userEmail} planTier={planTier} planStatus={planStatus} />
           </div>
         </div>
       )}
@@ -180,18 +181,6 @@ export function DashboardShell({
 
             <LanguageSwitcher className="h-8 min-w-12" />
             <ThemeToggle className="h-8 w-8" />
-
-            {/* ── User menu ── */}
-            {userEmail && (
-              <div className="border-l border-border pl-3 ml-1">
-                <UserMenu
-                  userEmail={userEmail}
-                  planTier={planTier}
-                  planStatus={planStatus}
-                  planSource={planSource}
-                />
-              </div>
-            )}
           </div>
         </header>
 

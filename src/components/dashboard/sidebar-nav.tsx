@@ -8,6 +8,7 @@ import {
   Server,
   Settings,
   Share2,
+  Shield,
   ChevronLeft,
   ChevronRight,
   type LucideIcon,
@@ -15,6 +16,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { DralvoWordmark, LogoMark } from "@/components/shared/brand";
+import { UserMenu } from "@/components/dashboard/user-menu";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
 
@@ -25,6 +27,10 @@ import { DASHBOARD_COPY } from "@/lib/i18n";
 export interface SidebarNavProps {
   collapsed: boolean;
   onToggle: () => void;
+  isAdmin?: boolean;
+  userEmail?: string | null;
+  planTier?: string;
+  planStatus?: string;
 }
 
 interface NavItem {
@@ -53,7 +59,7 @@ const EXTERNAL_LINKS = [
 /*  Component                                                                 */
 /* -------------------------------------------------------------------------- */
 
-export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
+export function SidebarNav({ collapsed, onToggle, isAdmin = false, userEmail, planTier, planStatus }: SidebarNavProps) {
   const pathname = usePathname();
   const { locale } = useLocale();
   const copy = DASHBOARD_COPY[locale].nav;
@@ -148,6 +154,41 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
                 </li>
               );
             })}
+            {/* Admin link — only if user is admin */}
+            {isAdmin && (
+              <li>
+                <Link
+                  href="/dashboard/admin"
+                  className={cn(
+                    "group relative flex items-center rounded-md transition-all duration-200",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
+                    collapsed ? "justify-center h-10 w-10 mx-auto" : "h-10 px-3 gap-3",
+                    pathname.startsWith("/dashboard/admin")
+                      ? "bg-gold/10 text-gold"
+                      : "text-text-secondary hover:text-text-primary hover:bg-gold/5",
+                  )}
+                >
+                  {pathname.startsWith("/dashboard/admin") && (
+                    <span className={cn(
+                      "absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-gold",
+                      collapsed && "left-0.5",
+                    )} />
+                  )}
+                  <Shield size={18} className={cn(
+                    "shrink-0 transition-colors duration-200",
+                    pathname.startsWith("/dashboard/admin") ? "text-gold" : "text-text-muted group-hover:text-text-secondary",
+                  )} aria-hidden="true" />
+                  {!collapsed && (
+                    <span className="text-[13px] font-medium whitespace-nowrap truncate">Admin</span>
+                  )}
+                  {collapsed && (
+                    <span role="tooltip" className="absolute left-full ml-3 px-2.5 py-1.5 rounded-md whitespace-nowrap bg-card border border-border text-text-primary text-xs font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,visibility] duration-150 delay-300 pointer-events-none z-50 shadow-lg shadow-black/40">
+                      Admin
+                    </span>
+                  )}
+                </Link>
+              </li>
+            )}
           </ul>
 
           {/* External links */}
@@ -204,6 +245,13 @@ export function SidebarNav({ collapsed, onToggle }: SidebarNavProps) {
           )}
         </button>
       </div>
+
+      {/* ── User — bottom left ── */}
+      {userEmail && (
+        <div className={cn("shrink-0 border-t border-border", collapsed ? "p-1.5 flex justify-center" : "px-3 py-2")}>
+          <UserMenu userEmail={userEmail} planTier={planTier ?? "Free"} planStatus={planStatus} />
+        </div>
+      )}
     </aside>
   );
 }

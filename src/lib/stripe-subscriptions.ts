@@ -37,6 +37,50 @@ function getObjectId(value: string | { id: string } | null) {
   return typeof value === "string" ? value : value.id;
 }
 
+const PERIOD_MONTHS: Record<string, number> = {
+  monthly: 1,
+  sixmo: 6,
+  yearly: 12,
+};
+
+/**
+ * Guaranteed period end derived from the purchased plan period. Used as a
+ * fallback so a paid (rental) license never ends up with a null/lifetime
+ * expiry. monthly → +1mo, sixmo → +6mo, yearly → +12mo.
+ */
+export function periodEndFromPlan(
+  period: string | null | undefined,
+  from: Date = new Date(),
+): string {
+  const months = PERIOD_MONTHS[period ?? "monthly"] ?? 1;
+  const d = new Date(from);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d.toISOString();
+}
+
+/**
+ * Read the current period end (unix seconds) from a subscription. Stripe API
+ * versions since `basil` (2025) moved `current_period_end` off the subscription
+ * root onto the subscription item, so check both.
+ */
+function subscriptionPeriodEndUnix(sub: Stripe.Subscription): number | null {
+  const root = (sub as unknown as { current_period_end?: number })
+    .current_period_end;
+  const item = sub.items?.data?.[0]?.current_period_end;
+  return root ?? item ?? null;
+}
+
+/**
+ * Resolve a subscription's period end as an ISO string, never null:
+ * use Stripe's value when present, otherwise fall back to the plan period
+ * from subscription metadata.
+ */
+export function subscriptionPeriodEndIso(sub: Stripe.Subscription): string {
+  const unix = subscriptionPeriodEndUnix(sub);
+  if (unix) return new Date(unix * 1000).toISOString();
+  return periodEndFromPlan(sub.metadata?.period);
+}
+
 async function getSubscriptionDetails(
   subscription: string | Stripe.Subscription | null,
 ) {
@@ -59,14 +103,10 @@ async function getSubscriptionDetails(
     throw new Error("Stripe subscription could not be retrieved.");
   }
 
-  const currentPeriodEnd = (subscriptionObject as any).current_period_end
-    ? new Date((subscriptionObject as any).current_period_end * 1000).toISOString()
-    : null;
-
   return {
     subscriptionId,
     status: subscriptionObject.status ?? "active",
-    currentPeriodEnd,
+    currentPeriodEnd: subscriptionPeriodEndIso(subscriptionObject),
   };
 }
 

@@ -252,7 +252,7 @@ export default function LandingPage() {
                 category: "Automated trading software (MetaTrader 5 Expert Advisor)",
                 operatingSystem: "Windows (MetaTrader 5)",
                 description:
-                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M5 momentum) and TiGold robots for XAUUSD — with unlimited MT5 accounts. No martingale, no grid.",
+                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M5 momentum) and TiGold robots for XAUUSD. No martingale, no grid.",
                 offers: {
                   "@type": "Offer",
                   priceCurrency: "USD",
