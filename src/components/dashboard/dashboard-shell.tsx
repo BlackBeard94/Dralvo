@@ -95,7 +95,7 @@ export function DashboardShell({
   }, []);
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-deep">
+    <div className="flex h-dvh bg-deep">
       <ProductAnalyticsTracker />
       <AffiliateConversionTracker />
       {/* ── Desktop sidebar ── */}
