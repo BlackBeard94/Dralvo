@@ -298,10 +298,10 @@ export default function LandingPage() {
             <Link href="#pricing" className="hidden sm:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.pricing}</Link>
           </div>
           <div className="flex items-center gap-2 ml-auto whitespace-nowrap">
-            <Link href="/login" className="hidden md:inline text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.login}</Link>
+            <Link href="#pricing" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>
+            <Link href="/login" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">{t.nav.login}</Link>
             <ThemeToggle />
             <LanguageSwitcher />
-            <Link href="#pricing" className="ml-1 rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>
           </div>
         </div>
       </nav>
