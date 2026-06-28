@@ -251,11 +251,13 @@ export function SidebarNav({ collapsed, onToggle, isAdmin = false, userEmail, pl
 
       {/* ── User — bottom left ── */}
       {userEmail && (
-        <div className={cn("shrink-0 border-t border-border", collapsed ? "p-1.5 flex flex-col items-center gap-0.5" : "px-3 py-2")}>
-          <UserMenu userEmail={userEmail} planTier={planTier ?? "Free"} planStatus={planStatus} />
-          {!collapsed && planTier && planTier !== "Free" && (
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-gold mt-0.5">Unlimited</span>
-          )}
+        <div className={cn("shrink-0 border-t border-border", collapsed ? "p-1.5 flex justify-center" : "px-3 py-2")}>
+          <div className="relative">
+            <UserMenu userEmail={userEmail} planTier={planTier ?? "Free"} planStatus={planStatus} />
+            {planTier && planTier !== "Free" && (
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-gold-bright border-2 border-card" />
+            )}
+          </div>
         </div>
       )}
     </aside>
