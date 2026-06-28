@@ -55,7 +55,7 @@ export default async function DashboardLayout({
       userEmail={user.email}
       planTier={planTier}
       planStatus={planStatus}
-      isAdmin={isAdmin}
+      isAdmin={userIsAdmin}
     >
       {children}
     </DashboardShell>
