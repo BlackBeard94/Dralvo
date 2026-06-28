@@ -101,7 +101,7 @@ export const LANDING_COPY = withLocaleFallback({
       cancelNote: "Hủy bất cứ lúc nào · không ràng buộc hợp đồng · hỗ trợ cài đặt.",
       tiers: [
         { id: "free", name: "Free", tagline: "Nhận EA miễn phí qua Dralvo IB", cta: "Mở tài khoản nhận EA", features: ["TiGold EA miễn phí", "1 tài khoản MT5 thật qua IB", "Công cụ tính lot", "Telegram Community", "Cập nhật EA cơ bản"] },
-        { id: "unlimited", name: "Dralvo Unlimited", tagline: "Toàn bộ hệ sinh thái Dralvo", cta: "Mở khóa toàn bộ Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "Telegram VIP", "Cập nhật EA liên tục", "Hỗ trợ cài đặt", "Hỗ trợ 1 VPS tương ứng", "Truy cập sớm EA mới", "Ưu tiên hỗ trợ"] },
+        { id: "unlimited", name: "Dralvo Unlimited", tagline: "Toàn bộ hệ sinh thái Dralvo", cta: "Mở khóa toàn bộ Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "Telegram VIP", "Cập nhật EA liên tục", "Hỗ trợ cài đặt", "Truy cập sớm EA mới", "Ưu tiên hỗ trợ"] },
       ],
     },
     faq: {
