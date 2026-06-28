@@ -202,7 +202,7 @@ export function UserMenu({
           ref={menuRef}
           role="menu"
           className={cn(
-            "absolute right-0 top-full mt-1.5 w-64 rounded-lg z-50",
+            "absolute right-0 bottom-full mb-1.5 w-64 rounded-lg z-50",
             "bg-card border border-border",
             "shadow-xl shadow-black/40",
             "animate-in fade-in slide-in-from-top-2 duration-150",
