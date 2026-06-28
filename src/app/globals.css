@@ -20,47 +20,47 @@
 
   /* ── DARK THEME (default) ── */
   :root {
-    --bg-deep: #060609;
-    --bg-surface: #0C0C14;
-    --bg-card: #11111C;
-    --bg-border: #1A1A2A;
-    --text-primary: #EDE8E0;
-    --text-secondary: #9A958A;
-    --text-muted: #5C5852;
-    --gold-primary: #D4A843;
-    --gold-bright: #F0C85A;
-    --gold-action: #D4A843;
-    --gold-action-hover: #F0C85A;
-    --gold-pale: #C49A3C;
+    --bg-deep: #0B0E11;
+    --bg-surface: #181A20;
+    --bg-card: #1E2329;
+    --bg-border: #2B3139;
+    --text-primary: #EAECEF;
+    --text-secondary: #848E9C;
+    --text-muted: #5E6673;
+    --gold-primary: #F0B90B;
+    --gold-bright: #FCD535;
+    --gold-action: #F0B90B;
+    --gold-action-hover: #FCD535;
+    --gold-pale: #C99A08;
     --gold-dim: #8B6914;
-    --gold-ghost: rgba(212, 168, 67, 0.08);
-    --gold-glow: rgba(212, 168, 67, 0.25);
-    --border-gold: rgba(212, 168, 67, 0.2);
-    --red: #E8483B;
-    --green: #3BA87E;
+    --gold-ghost: rgba(240, 185, 11, 0.08);
+    --gold-glow: rgba(240, 185, 11, 0.2);
+    --border-gold: rgba(240, 185, 11, 0.2);
+    --red: #F6465D;
+    --green: #0ECB81;
     --ring: var(--gold-primary);
   }
 
   /* ── LIGHT THEME ── */
   [data-theme="light"] {
-    --bg-deep: #F5F3EE;
+    --bg-deep: #FAFAFA;
     --bg-surface: #FFFFFF;
-    --bg-card: #F9F8F5;
-    --bg-border: #E5E0D5;
-    --text-primary: #1A1815;
-    --text-secondary: #5C5852;
-    --text-muted: #6F695F;
-    --gold-primary: #7A5A12;
-    --gold-bright: #8F6A17;
-    --gold-action: #B8922E;
-    --gold-action-hover: #D4A843;
-    --gold-pale: #6F510F;
-    --gold-dim: #6B5A1E;
-    --gold-ghost: rgba(184, 146, 46, 0.08);
-    --gold-glow: rgba(184, 146, 46, 0.15);
-    --border-gold: rgba(184, 146, 46, 0.25);
-    --red: #D9352E;
-    --green: #247348;
+    --bg-card: #FFFFFF;
+    --bg-border: #EAECEF;
+    --text-primary: #1E2329;
+    --text-secondary: #707A8A;
+    --text-muted: #AEB4BC;
+    --gold-primary: #F0B90B;
+    --gold-bright: #C99A08;
+    --gold-action: #F0B90B;
+    --gold-action-hover: #FCD535;
+    --gold-pale: #E6B205;
+    --gold-dim: #C99A08;
+    --gold-ghost: rgba(240, 185, 11, 0.06);
+    --gold-glow: rgba(240, 185, 11, 0.12);
+    --border-gold: rgba(240, 185, 11, 0.2);
+    --red: #F6465D;
+    --green: #0ECB81;
     --ring: var(--gold-primary);
   }
 

@@ -72,10 +72,10 @@ const config: Config = {
         },
         pulseOnce: {
           "0%": {
-            boxShadow: "0 0 0 0 rgba(212, 168, 67, 0.4)",
+            boxShadow: "0 0 0 0 rgba(240, 185, 11, 0.4)",
           },
           "70%": {
-            boxShadow: "0 0 0 12px rgba(212, 168, 67, 0)",
+            boxShadow: "0 0 0 12px rgba(240, 185, 11, 0)",
           },
           "100%": {
             boxShadow: "0 0 0 0 rgba(212, 168, 67, 0)",
