@@ -1,7 +1,6 @@
 // ponytail: customer portal — license key + EA downloads
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
-import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -31,19 +30,6 @@ const EA_DOWNLOADS = {
     set: "/downloads/tigold/Dralvo tigold v1.set",
     guide: "/downloads/tigold/Huong_dan_su_dung.html",
   },
-  // ponytail: Kho EA — unlocked with Unlimited, no license key
-  "bb-return": { name: "BB Return", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/BB Return MT5.ex5" },
-  osmosis: { name: "Osmosis", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Osmosis 1.3_ MT5.ex5" },
-  perceptrader: { name: "Perceptrader AI", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Perceptrader AI MT5 v2.43.ex5" },
-  "quantum-athena": { name: "Quantum Athena", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Quantum Athena_1.1_MT5.ex5" },
-  "quantum-emperor": { name: "Quantum Gold Emperor", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Quantum Gold Emperor MT5 v1.2.ex5" },
-  "quantum-king": { name: "Quantum King EA", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Quantum King EA_3.1_MT5.ex5" },
-  "quantum-queen": { name: "Quantum Queen", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Quantum Queen v2.1_MT5.ex5" },
-  "scalping-robot": { name: "Scalping Robot Pro", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Scalping Robot Pro MT5_2.0.ex5" },
-  sharkyra: { name: "Sharkyra Gold", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Sharkyra Gold v1.1_MT5.ex5" },
-  "gold-reaper": { name: "The Gold Reaper", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/The Gold Reaper MT5 v4.3.ex5" },
-  twisterpro: { name: "TwisterPro Scalper", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/TwisterPro Scalper v1.8_MT5.ex5" },
-  "wave-rider": { name: "Wave Rider EA", tf: "—", accent: "#a855f7", ex5: "/downloads/kho/Wave Rider EA MT5_4.1.ex5" },
 } as const;
 
 type EaKey = keyof typeof EA_DOWNLOADS;
@@ -76,11 +62,6 @@ export default async function DashboardPage() {
   } catch { /* table may not exist — show free UI */ }
 
   const eaList: EaKey[] = hasAccess ? ["goldmaster", "scalp", "tigold"] : ["tigold"];
-  const vaultList: EaKey[] = [
-    "bb-return", "osmosis", "perceptrader", "quantum-athena",
-    "quantum-emperor", "quantum-king", "quantum-queen",
-    "scalping-robot", "sharkyra", "gold-reaper", "twisterpro", "wave-rider",
-  ];
 
   return (
     <div className="space-y-6">
@@ -106,7 +87,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* EA cards */}
+      {/* Dralvo EA */}
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
         {eaList.map((id) => {
           const ea = EA_DOWNLOADS[id];
@@ -141,41 +122,6 @@ export default async function DashboardPage() {
           );
         })}
       </div>
-
-      {/* Kho EA — Unlimited only */}
-      {hasAccess && (
-        <>
-          <h2 className="text-lg font-semibold text-text-primary pt-2">Kho EA</h2>
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {vaultList.map((id) => {
-              const ea = EA_DOWNLOADS[id];
-              return (
-                <div key={id} className="rounded-xl border border-border bg-card p-6" style={{ borderColor: "rgba(168,85,247,0.2)" }}>
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="font-semibold text-text-primary">{ea.name}</h3>
-                    </div>
-                    <span className="w-10 h-10 rounded-lg flex items-center justify-center"
-                      style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)" }}>
-                      <span className="text-xs font-mono font-bold" style={{ color: "#a855f7" }}>EA</span>
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <a href={ea.ex5} download className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold bg-gold/10 border border-gold/20 text-gold hover:bg-gold/15 no-underline transition-colors">
-                      Tải .ex5
-                    </a>
-                    {"set" in ea && (
-                      <a href={ea.set} download className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold bg-card border border-border text-text-secondary hover:text-text-primary no-underline transition-colors">
-                        Tải .set
-                      </a>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
     </div>
   );
 }

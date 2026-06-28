@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Package,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -37,6 +38,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", labelKey: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
+  { id: "kho", labelKey: "kho", icon: Package, href: "/dashboard/kho" },
   { id: "settings", labelKey: "settings", icon: Settings, href: "/dashboard/settings" },
 ];
 

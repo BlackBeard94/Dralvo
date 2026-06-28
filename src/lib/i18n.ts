@@ -681,6 +681,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
   vi: {
     nav: {
       dashboard: "Hôm nay",
+      kho: "Kho EA",
       chart: "Biểu đồ XAUUSD",
       drivers: "Nguồn lực",
       monitors: "Theo dõi",
@@ -854,6 +855,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
   en: {
     nav: {
       dashboard: "Today",
+      kho: "EA Vault",
       chart: "XAUUSD Chart",
       drivers: "Drivers",
       monitors: "Monitors",
