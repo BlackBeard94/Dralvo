@@ -20,6 +20,7 @@ export interface UserMenuProps {
   planTier: string;
   planStatus?: string;
   planSource?: PlanSource;
+  badge?: React.ReactNode;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -63,6 +64,7 @@ export function UserMenu({
   planTier,
   planStatus = "free",
   planSource = "none",
+  badge,
 }: UserMenuProps) {
   const router = useRouter();
   const isPaid = isPaidTier(planTier);
@@ -161,7 +163,7 @@ export function UserMenu({
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          "flex items-center gap-2 rounded-md px-2 py-1.5",
+          "relative flex items-center gap-2 rounded-md px-2 py-1.5",
           "text-text-secondary hover:text-text-primary hover:bg-gold/5",
           "transition-colors duration-200",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-surface",
@@ -173,10 +175,7 @@ export function UserMenu({
       >
         {/* Avatar circle */}
         <span
-          className={cn(
-            "flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold shrink-0",
-            "bg-gold/15 text-gold border border-gold/30",
-          )}
+          className="flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold shrink-0 bg-gold/15 text-gold border border-gold/30"
           aria-hidden="true"
         >
           {initial}
@@ -194,6 +193,7 @@ export function UserMenu({
             open && "rotate-180",
           )}
         />
+        {badge}
       </button>
 
       {/* ── Dropdown ── */}
