@@ -63,7 +63,7 @@ describe("resolvePlan", () => {
   });
 
   it("denies a non-Stripe subscription whose period has lapsed", () => {
-    // VietQR / manual sub: a one-off payment must not grant indefinite access.
+    // Manual sub: a one-off payment must not grant indefinite access.
     const r = resolvePlan(
       null,
       { status: "active", stripe_subscription_id: null, current_period_end: PAST },

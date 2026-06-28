@@ -26,7 +26,6 @@ const REQUIRED_TABLES = [
   "evidence_observations",
   "thesis_snapshots",
   "evidence_corrections",
-  "vietqr_payment_requests",
   "product_events",
 ] as const;
 
@@ -61,7 +60,6 @@ export async function GET(request: Request) {
     notificationResult,
     runLogsResult,
     evidenceResult,
-    sepayRpcResult,
     tableResults,
   ] = await Promise.all([
     supabase
@@ -100,14 +98,6 @@ export async function GET(request: Request) {
       )
       .order("observed_at", { ascending: false })
       .limit(500),
-    supabase.rpc("confirm_sepay_vietqr_payment", {
-      p_reference: null,
-      p_amount_vnd: null,
-      p_provider_transaction_id: null,
-      p_provider_reference_code: null,
-      p_provider_transaction_at: null,
-      p_provider_payload: null,
-    }),
     Promise.all(
       REQUIRED_TABLES.map(async (table) => {
         const { error } = await supabase
@@ -177,14 +167,6 @@ export async function GET(request: Request) {
     cron_secret: Boolean(process.env.CRON_SECRET),
     twelve_data: Boolean(process.env.TWELVE_DATA_API_KEY),
     fred: Boolean(process.env.FRED_API_KEY),
-    vietqr: Boolean(
-      process.env.VIETQR_BANK_BIN &&
-        process.env.VIETQR_BANK_CODE &&
-        process.env.VIETQR_ACCOUNT_NO &&
-        process.env.VIETQR_ACCOUNT_NAME &&
-        process.env.SEPAY_WEBHOOK_API_KEY &&
-        process.env.VIETQR_PRO_PRICE_VND,
-    ),
     ops_alerts: Boolean(
       process.env.OPS_ALERT_EMAILS ||
         process.env.ADMIN_EMAILS ||
@@ -193,10 +175,6 @@ export async function GET(request: Request) {
     site_url: process.env.NEXT_PUBLIC_SITE_URL ?? null,
   };
   const schemaReady = tableResults.every((table) => table.ready);
-  const sepaySchemaReady =
-    !sepayRpcResult.error &&
-    Array.isArray(sepayRpcResult.data) &&
-    sepayRpcResult.data[0]?.result === "invalid";
   const coreEnvReady =
     env.supabase &&
     env.stripe &&
@@ -210,17 +188,14 @@ export async function GET(request: Request) {
     {
       ok: true,
       readiness: {
-        ready: schemaReady && sepaySchemaReady && coreEnvReady && env.vietqr,
+        ready: schemaReady && coreEnvReady,
         core_env_ready: coreEnvReady,
         schema_ready: schemaReady,
-        sepay_schema_ready: sepaySchemaReady,
-        vietqr_ready: env.vietqr,
         ops_alerts_ready: env.ops_alerts,
       },
       env,
       schema: {
         required_tables: tableResults,
-        sepay_rpc_error: sepayRpcResult.error?.message ?? null,
       },
       data: {
         latest_snapshot: snapshotResult.data ?? null,

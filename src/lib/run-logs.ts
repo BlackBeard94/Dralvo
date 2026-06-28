@@ -10,8 +10,7 @@ export type RunLogType =
   | "xauusd_price_backfill"
   | "gold_thesis_generate"
   | "source_health_alert"
-  | "stripe_webhook"
-  | "sepay_reconcile";
+  | "stripe_webhook";
 
 type RunLogInput = {
   runType: RunLogType;

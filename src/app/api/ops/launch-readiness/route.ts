@@ -48,8 +48,6 @@ export async function GET(request: Request) {
     evidenceResult,
     productEventsResult,
     activeSubscriptionsResult,
-    confirmedVietQrResult,
-    pendingVietQrResult,
   ] = await Promise.all([
     supabase
       .from("indicator_snapshots")
@@ -87,14 +85,6 @@ export async function GET(request: Request) {
       .select("id", { count: "exact", head: true })
       .eq("status", "active")
       .eq("plan_tier", "Pro"),
-    supabase
-      .from("vietqr_payment_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "confirmed"),
-    supabase
-      .from("vietqr_payment_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pending"),
   ]);
 
   const queryError =
@@ -103,9 +93,7 @@ export async function GET(request: Request) {
     runLogsResult.error ??
     evidenceResult.error ??
     productEventsResult.error ??
-    activeSubscriptionsResult.error ??
-    confirmedVietQrResult.error ??
-    pendingVietQrResult.error;
+    activeSubscriptionsResult.error;
 
   if (queryError) {
     return NextResponse.json({ error: queryError.message }, { status: 500 });
@@ -152,17 +140,7 @@ export async function GET(request: Request) {
           process.env.STRIPE_WEBHOOK_SECRET &&
           process.env.STRIPE_PRO_PRICE_ID,
       ),
-      vietqrConfigured: Boolean(
-        process.env.VIETQR_BANK_BIN &&
-          process.env.VIETQR_BANK_CODE &&
-          process.env.VIETQR_ACCOUNT_NO &&
-          process.env.VIETQR_ACCOUNT_NAME &&
-          process.env.SEPAY_WEBHOOK_API_KEY,
-      ),
-      sepayApiConfigured: Boolean(process.env.SEPAY_API_TOKEN),
       activePaidSubscriptions: activeSubscriptionsResult.count ?? 0,
-      confirmedVietQrPayments: confirmedVietQrResult.count ?? 0,
-      pendingVietQrPayments: pendingVietQrResult.count ?? 0,
     },
   });
 

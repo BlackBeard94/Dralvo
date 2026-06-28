@@ -50,7 +50,7 @@ export const AFFILIATE_COPY = withLocaleFallback({
         { title: "Sản phẩm đã kiểm chứng", body: "EA được backtest trên dữ liệu thật 10 năm. Không phải 'bot ma' — khách hàng thấy được kết quả." },
         { title: "Hoa hồng minh bạch", body: "Dashboard real-time: click, conversion, earnings. Không delay, không ẩn số." },
         { title: "Hỗ trợ tận răng", body: "Có Telegram riêng cho affiliate. Hỗ trợ content, banner, landing page." },
-        { title: "Thanh toán đúng hạn", body: "Rút qua Sepay/chuyển khoản. Tự request payout khi đạt $50." },
+        { title: "Thanh toán đúng hạn", body: "Rút qua chuyển khoản. Tự request payout khi đạt $50." },
       ],
     },
 
@@ -184,7 +184,7 @@ export const AFFILIATE_COPY = withLocaleFallback({
         { title: "Verified product", body: "EAs backtested on 10 years of real data. Not ghost bots — customers see real results." },
         { title: "Transparent earnings", body: "Real-time dashboard: clicks, conversions, earnings. No delays, no hidden numbers." },
         { title: "Full support", body: "Dedicated Telegram group for affiliates. Content, banners, landing page support." },
-        { title: "On-time payouts", body: "Withdraw via Sepay/bank transfer. Request payout once you hit $50." },
+        { title: "On-time payouts", body: "Withdraw via bank transfer. Request payout once you hit $50." },
       ],
     },
 

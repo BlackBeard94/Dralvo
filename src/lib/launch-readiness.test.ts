@@ -44,7 +44,6 @@ const baseAnalytics: ProductAnalyticsSummary = {
     dashboard_view: 0,
     monitor_created: 0,
     checkout_started: 0,
-    vietqr_requested: 0,
     evidence_exported: 0,
   },
   topRoutes: [],
@@ -69,11 +68,7 @@ describe("buildLaunchReadinessSummary", () => {
       },
       payment: {
         stripeConfigured: true,
-        vietqrConfigured: true,
-        sepayApiConfigured: true,
         activePaidSubscriptions: 1,
-        confirmedVietQrPayments: 0,
-        pendingVietQrPayments: 0,
       },
       now: new Date("2026-06-13T10:00:00Z"),
     });
@@ -92,16 +87,12 @@ describe("buildLaunchReadinessSummary", () => {
         activeUsers: { current7Days: 3, previous7Days: 1, returningCurrentWeek: 1 },
         funnel: {
           ...baseAnalytics.funnel,
-          vietqr_requested: 1,
+          checkout_started: 1,
         },
       },
       payment: {
         stripeConfigured: true,
-        vietqrConfigured: true,
-        sepayApiConfigured: true,
         activePaidSubscriptions: 0,
-        confirmedVietQrPayments: 0,
-        pendingVietQrPayments: 1,
       },
     });
 

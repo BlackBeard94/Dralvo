@@ -7,8 +7,6 @@ const PUBLIC_API_ROUTES = new Set([
   "/api/waitlist",
   "/api/xauusd",
   "/api/stripe/webhook",
-  "/api/sepay/webhook",
-  "/api/sepay/reconcile",
   "/api/telegram/webhook",
 ]);
 
@@ -22,6 +20,15 @@ function safeInternalRedirect(value: string | null) {
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Edge IP geolocation (Vercel / Cloudflare). Exposed to the client via a
+  // readable cookie so the UI can default the language and payment method by
+  // country. Empty on local dev → callers gracefully fall back.
+  const country = (
+    request.headers.get("x-vercel-ip-country") ||
+    request.headers.get("cf-ipcountry") ||
+    ""
+  ).toUpperCase();
 
   if (PUBLIC_API_ROUTES.has(pathname)) {
     return NextResponse.next();
@@ -82,6 +89,14 @@ export async function proxy(request: NextRequest) {
     url.pathname = targetPath;
     url.search = targetSearch ? `?${targetSearch}` : "";
     return NextResponse.redirect(url);
+  }
+
+  if (country && request.cookies.get("dralvo-country")?.value !== country) {
+    supabaseResponse.cookies.set("dralvo-country", country, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+    });
   }
 
   return supabaseResponse;

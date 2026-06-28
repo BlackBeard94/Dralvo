@@ -4,7 +4,6 @@ export const PRODUCT_EVENT_NAMES = [
   "dashboard_view",
   "monitor_created",
   "checkout_started",
-  "vietqr_requested",
   "evidence_exported",
 ] as const;
 

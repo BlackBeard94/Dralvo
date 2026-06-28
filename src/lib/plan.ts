@@ -62,7 +62,7 @@ export function resolvePlan(
     (!license.expires_at || new Date(license.expires_at) > now);
 
   // Stripe subscriptions: trust status (webhook keeps it fresh).
-  // Non-Stripe subscriptions (manual / VietQR): also require the period to not
+  // Non-Stripe subscriptions (manual): also require the period to not
   // have lapsed, so a one-off payment cannot grant indefinite access.
   const isStripeSub = !!subscription?.stripe_subscription_id;
   const subPeriodOk =

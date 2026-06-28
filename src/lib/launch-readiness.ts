@@ -22,11 +22,7 @@ type BuildLaunchReadinessInput = {
   analytics: ProductAnalyticsSummary;
   payment: {
     stripeConfigured: boolean;
-    vietqrConfigured: boolean;
-    sepayApiConfigured: boolean;
     activePaidSubscriptions: number;
-    confirmedVietQrPayments: number;
-    pendingVietQrPayments: number;
   };
   now?: Date;
 };
@@ -95,12 +91,8 @@ function schedulerItem(freshness: FreshnessReport): LaunchReadinessItem {
 function paymentItem(
   payment: BuildLaunchReadinessInput["payment"],
 ): LaunchReadinessItem {
-  const configured =
-    payment.stripeConfigured &&
-    payment.vietqrConfigured &&
-    payment.sepayApiConfigured;
-  const hasRealPaymentEvidence =
-    payment.activePaidSubscriptions > 0 || payment.confirmedVietQrPayments > 0;
+  const configured = payment.stripeConfigured;
+  const hasRealPaymentEvidence = payment.activePaidSubscriptions > 0;
   const status = !configured
     ? "blocked"
     : hasRealPaymentEvidence
@@ -113,17 +105,13 @@ function paymentItem(
     status,
     detail:
       status === "ready"
-        ? "Stripe/VietQR are configured and at least one paid activation exists."
+        ? "Stripe is configured and at least one paid activation exists."
         : status === "attention"
           ? "Payment rails are configured, but a real paid activation still needs to be verified."
-          : "A required Stripe, VietQR, or SePay configuration value is missing.",
+          : "A required Stripe configuration value is missing.",
     evidence: [
       `stripe configured: ${payment.stripeConfigured}`,
-      `vietqr configured: ${payment.vietqrConfigured}`,
-      `sepay api configured: ${payment.sepayApiConfigured}`,
       `active paid subscriptions: ${payment.activePaidSubscriptions}`,
-      `confirmed VietQR payments: ${payment.confirmedVietQrPayments}`,
-      `pending VietQR payments: ${payment.pendingVietQrPayments}`,
     ],
   };
 }
@@ -135,9 +123,7 @@ function validationItem(
   const hasClosedRetention =
     analytics.retention.week4.eligibleUsers > 0 ||
     analytics.retention.week8.eligibleUsers > 0;
-  const hasConversionIntent =
-    analytics.funnel.checkout_started > 0 ||
-    analytics.funnel.vietqr_requested > 0;
+  const hasConversionIntent = analytics.funnel.checkout_started > 0;
   const status = hasUsage && hasClosedRetention && hasConversionIntent
     ? "ready"
     : hasUsage || hasConversionIntent
@@ -157,7 +143,6 @@ function validationItem(
     evidence: [
       `7-day active users: ${analytics.activeUsers.current7Days}`,
       `checkout intent users: ${analytics.funnel.checkout_started}`,
-      `VietQR request users: ${analytics.funnel.vietqr_requested}`,
       `week 4 eligible users: ${analytics.retention.week4.eligibleUsers}`,
       `week 8 eligible users: ${analytics.retention.week8.eligibleUsers}`,
     ],

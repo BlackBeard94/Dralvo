@@ -72,14 +72,4 @@ describe("proxy auth redirects", () => {
     );
   });
 
-  it("lets cron-protected SePay reconciliation reach its route handler", async () => {
-    mockUser(null);
-
-    const response = await proxy(
-      request("https://www.dralvo.com/api/sepay/reconcile"),
-    );
-
-    expect(response.status).toBe(200);
-    expect(response.headers.get("location")).toBeNull();
-  });
 });

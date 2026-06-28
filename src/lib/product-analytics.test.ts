@@ -82,7 +82,6 @@ describe("product analytics", () => {
         dashboard_view: 1,
         monitor_created: 1,
         checkout_started: 1,
-        vietqr_requested: 0,
         evidence_exported: 0,
       },
       topRoutes: [

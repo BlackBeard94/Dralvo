@@ -79,6 +79,28 @@ export function normalizeLocale(
   return DEFAULT_LOCALE;
 }
 
+/** ISO country code → preferred site locale. Used to auto-select the language
+ *  by the visitor's country (from edge IP geo) on first visit. Unmapped
+ *  countries return null so the caller falls back to browser language / en. */
+const COUNTRY_LOCALE: Record<string, SupportedLocale> = {
+  VN: "vi",
+  BR: "pt-BR", PT: "pt-BR", AO: "pt-BR", MZ: "pt-BR",
+  CN: "zh", TW: "zh", HK: "zh", MO: "zh", SG: "zh",
+  ES: "es", MX: "es", AR: "es", CO: "es", CL: "es", PE: "es", VE: "es",
+  EC: "es", GT: "es", CU: "es", BO: "es", DO: "es", HN: "es", PY: "es",
+  SV: "es", NI: "es", CR: "es", PA: "es", UY: "es",
+  IN: "hi",
+  ID: "id",
+  RU: "ru", BY: "ru", KZ: "ru", KG: "ru",
+};
+
+export function localeForCountry(
+  country: string | null | undefined,
+): SupportedLocale | null {
+  if (!country) return null;
+  return COUNTRY_LOCALE[country.toUpperCase()] ?? null;
+}
+
 /**
  * Build a complete locale->copy record from a partial set of translations.
  * Any locale not provided falls back to the FALLBACK_LOCALE ("en") entry, so

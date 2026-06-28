@@ -14,44 +14,27 @@ export async function GET(_request: NextRequest) {
   if (!client) return NextResponse.json({ error: "Server config" }, { status: 500 });
 
   try {
-    // Total users (auth.users count via profiles table — ponytail: count profiles)
-    const { count: totalUsers } = await client
-      .from("profiles")
-      .select("*", { count: "exact", head: true });
-
-    // Unlimited licenses active
-    const { count: unlimitedActive } = await client
-      .from("license_keys")
-      .select("*", { count: "exact", head: true })
-      .eq("plan", "unlimited");
-
-    // TiGold licenses
-    const { count: tigoldCount } = await client
-      .from("license_keys")
-      .select("*", { count: "exact", head: true })
-      .eq("plan", "tigold");
-
-    // Stripe active subs this month
     const monthStart = new Date();
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
-    const { count: stripeActiveSubs } = await client
-      .from("subscriptions")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "active")
-      .gte("current_period_end", monthStart.toISOString());
+    const monthISO = monthStart.toISOString();
 
-    // Stripe revenue total (all-time active subs × $59)
-    const { count: totalStripeActive } = await client
-      .from("subscriptions")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "active");
-
-    // Pending affiliate commissions
-    const { count: pendingCommissions } = await client
-      .from("affiliate_commissions")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "pending");
+    // ponytail: all counts are independent — parallel
+    const [
+      { count: totalUsers },
+      { count: unlimitedActive },
+      { count: tigoldCount },
+      { count: stripeActiveSubs },
+      { count: totalStripeActive },
+      { count: pendingCommissions },
+    ] = await Promise.all([
+      client.from("profiles").select("*", { count: "exact", head: true }),
+      client.from("license_keys").select("*", { count: "exact", head: true }).eq("plan", "unlimited"),
+      client.from("license_keys").select("*", { count: "exact", head: true }).eq("plan", "tigold"),
+      client.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active").gte("current_period_end", monthISO),
+      client.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
+      client.from("affiliate_commissions").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    ]);
 
     return NextResponse.json({
       role: admin.role,

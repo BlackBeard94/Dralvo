@@ -255,7 +255,7 @@ export function SidebarNav({ collapsed, onToggle, isAdmin = false, userEmail, pl
           <div className="relative">
             <UserMenu userEmail={userEmail} planTier={planTier ?? "Free"} planStatus={planStatus}
               badge={planTier && planTier !== "Free" ? (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-gold-bright border border-card" />
+                <span className="absolute -top-1.5 -right-1 text-[8px] font-bold px-1 py-px rounded bg-gold-bright text-[#060609]">Unlimited</span>
               ) : undefined}
             />
           </div>
