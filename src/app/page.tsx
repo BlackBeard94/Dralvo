@@ -286,8 +286,9 @@ export default function LandingPage() {
       />
       <div className="gold-veins" aria-hidden="true"><div className="v1" /><div className="v2" /><div className="v3" /><div className="h1" /><div className="h2" /></div>
 
-      {/* Nav */}
-      <nav className={cn("fixed top-0 inset-x-0 z-50 transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}>
+      {/* Nav — auto-hide on scroll, show on hover */}
+      <div className="group fixed top-0 inset-x-0 z-50 h-12">
+      <nav className={cn("transition-all duration-300", scrolled ? "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto bg-deep/85 backdrop-blur-xl border-b border-border" : "opacity-100 bg-transparent")}>
         <div className="px-6 h-16 flex items-center">
           <BrandLink wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary" />
           <div className="flex items-center gap-0 ml-8 whitespace-nowrap">
@@ -303,13 +304,14 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-2 ml-auto pl-3 border-l border-border whitespace-nowrap" style={{ background: "rgba(0,0,0,0.25)" }}>
             <Link href="#pricing" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">Dùng thử</Link>
-            <Link href="/login" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Đăng nhập</Link>
-            <Link href="/signup" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline px-2">Đăng ký</Link>
+            <Link href="/login" className="rounded-md border border-border px-3 py-1.5 text-[13px] font-semibold text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">Đăng nhập</Link>
+            <Link href="/signup" className="rounded-md bg-gold-action px-3 py-1.5 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.02]">Đăng ký</Link>
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>
       </nav>
+      </div>
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
         {/* Hero */}
