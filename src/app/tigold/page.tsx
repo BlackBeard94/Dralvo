@@ -106,11 +106,11 @@ export default function TiGoldPage() {
 
       {/* Nav */}
       <nav className={cn("fixed top-0 inset-x-0 z-50 transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}>
-        <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center justify-between">
-          <BrandLink />
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">{t.navHome}</Link>
-            <Link href="/#pricing" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">{lc.nav.pricing}</Link>
+        <div className="max-w-[1180px] mx-auto px-6 h-16 flex items-center">
+          <BrandLink wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary" />
+          <div className="flex items-center gap-3 ml-auto whitespace-nowrap">
+            <Link href="/" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">Trang chủ</Link>
+            <Link href="/#pricing" className="text-[13px] text-text-muted hover:text-gold transition-colors no-underline">Bảng giá</Link>
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
