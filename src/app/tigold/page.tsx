@@ -145,9 +145,9 @@ export default function TiGoldPage() {
             <Reveal delay={200}>
               <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
                 <span className="text-gold">M1</span><span>·</span>
-                <span>3.5Y backtest</span><span>·</span>
-                <span>100% ticks</span><span>·</span>
-                <span>21,005 trades</span>
+                <span>6mo real-tick</span><span>·</span>
+                <span>GTC · 100% ticks</span><span>·</span>
+                <span>1,105 trades</span>
               </div>
             </Reveal>
           </div>

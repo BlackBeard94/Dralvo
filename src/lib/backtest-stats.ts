@@ -129,38 +129,49 @@ export const GOLD_SCALP: EaProduct = {
 };
 
 /* -------------------------------------------------------------------------- */
-/*  TiGold — adaptive XAUUSD engine (free with Dralvo IB)                      */
-/*  Source: MT5 Strategy Tester · XAUUSD M1 · 01/2023–06/2026 · 100% ticks     */
+/*  TiGold — momentum scalping engine for XAUUSD (free with Dralvo IB)         */
+/*  Source: GTC MT5 Strategy Tester · XAUUSD M1 · 01/2026–06/2026 · real ticks  */
+/*  Sample capital 10K, monthly-reset model (max DD ≤ 30%). Recommended config */
+/*  (DailyTarget 6%, fixed lot 0.08). 6 months green, return scale-invariant.  */
 /* -------------------------------------------------------------------------- */
 export const TIGOLD: EaProduct = {
   id: "tigold",
   name: "Dralvo TiGold",
-  version: "v2.0",
+  version: "v3.0",
   accent: "emerald",
   symbol: "XAUUSD",
   timeframe: "M1",
   direction: "both",
-  period: "3.5Y",
+  period: "6M",
   dataQuality: "100%",
-  recommendedRisk: "0.10 lot",
+  recommendedRisk: "0.08 lot",
   headline: [
-    { value: "+73,387%", tone: "good" },
-    { value: "1.20" },
-    { value: "63.7%" },
-    { value: "22.2%", tone: "bad" },
+    { value: "+97.7%", tone: "good" },
+    { value: "1.18" },
+    { value: "76%" },
+    { value: "28.1%", tone: "bad" },
   ],
-  finalBalance: "$100K → $73.5M",
+  finalBalance: "$10K → +$9,768 / 6mo",
   matrixExtraKey: "trades",
   riskMatrix: [
-    { risk: "0.10 lot", ret: "+73,387%", ddEquity: "22.2%", pf: "1.20", extra: "21,005", star: true },
+    { risk: "Conservative", ret: "+81.5%", ddEquity: "26.0%", pf: "~1.1", extra: "—" },
+    { risk: "Recommended", ret: "+97.7%", ddEquity: "28.1%", pf: "1.18", extra: "1,105", star: true },
+    { risk: "Aggressive", ret: "+105.8%", ddEquity: "32.1%", pf: "~1.2", extra: "—" },
   ],
   tradeStats: [
-    { key: "trades", value: "21,005" },
-    { key: "winRate", value: "63.65%" },
-    { key: "avgWin", value: "+$32,448" },
-    { key: "avgLoss", value: "-$47,209" },
-    { key: "rr", value: "0.69 : 1" },
-    { key: "streak", value: "21 / 10" },
+    { key: "trades", value: "1,105" },
+    { key: "winRate", value: "~76%" },
+    { key: "avgWin", value: "~+$76" },
+    { key: "avgLoss", value: "-$205" },
+    { key: "rr", value: "~0.37 : 1" },
+  ],
+  monthly: [
+    { month: "T1", gainPct: 32.2 },
+    { month: "T2", gainPct: 14.5 },
+    { month: "T3", gainPct: 8.6 },
+    { month: "T4", gainPct: 7.1 },
+    { month: "T5", gainPct: 13.5 },
+    { month: "T6", gainPct: 21.9 },
   ],
 };
 
