@@ -22,6 +22,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
+import { grantLicense } from "@/lib/admin/license-grant";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,10 +38,10 @@ const IB_LINKS = {
 };
 
 function signApprovePayload(secret: string, parts: {
-  chat: string; mt5: string; broker: string; action: string; exp: number;
+  chat: string; mt5: string; email: string; broker: string; action: string; exp: number;
 }): string {
   return createHmac("sha256", secret)
-    .update(`lic1.${parts.chat}.${parts.mt5}.${parts.broker}.${parts.action}.${parts.exp}`)
+    .update(`lic2.${parts.chat}.${parts.mt5}.${parts.email}.${parts.broker}.${parts.action}.${parts.exp}`)
     .digest("hex");
 }
 
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams;
   const chat = (q.get("chat") ?? "").trim();
   const mt5 = (q.get("mt5") ?? "").trim();
+  const email = (q.get("email") ?? "").trim().toLowerCase();
   const broker = (q.get("broker") ?? "usd").trim();
   const name = (q.get("name") ?? "").trim().slice(0, 60);
   const action = (q.get("action") ?? "") as Action;
@@ -69,20 +71,21 @@ export async function GET(request: NextRequest) {
 
   // chat must be a real Telegram chat_id (integer). Non-numeric ids come from
   // internal /test calls and must never mint a license.
-  if (!/^-?\d+$/.test(chat) || !/^\d{6,10}$/.test(mt5) || !ACTIONS.includes(action) || !exp || !sig) {
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!/^-?\d+$/.test(chat) || !/^\d{6,10}$/.test(mt5) || !emailOk || !ACTIONS.includes(action) || !exp || !sig) {
     return html("Link không hợp lệ", "Thiếu hoặc sai tham số. Dùng đúng nút trong tin nhắn Telegram.", false);
   }
   if (Date.now() / 1000 > exp) {
     return html("Link đã hết hạn", "Nút duyệt này quá 72 giờ. Nhờ khách xác nhận lại để nhận nút mới.", false);
   }
-  const expected = signApprovePayload(secret, { chat, mt5, broker, action, exp });
+  const expected = signApprovePayload(secret, { chat, mt5, email, broker, action, exp });
   const a = Buffer.from(sig, "utf8");
   const b = Buffer.from(expected, "utf8");
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return html("Chữ ký sai", "Link không được tạo bởi hệ thống Dralvo.", false);
   }
 
-  const who = name ? `${name} (MT5 ${mt5})` : `MT5 ${mt5}`;
+  const who = `${name || "Khách"} (email ${email}, MT5 ${mt5})`;
 
   if (action === "deposit_wait") {
     await sendTelegramMessage(
@@ -102,57 +105,40 @@ export async function GET(request: NextRequest) {
     return html("Đã báo khách kiểm tra lại", `Đã nhắn ${who}: không thấy tài khoản dưới IB, kèm hướng dẫn mở đúng link.`, true);
   }
 
-  // action === "approve" — grant the license (idempotent on mt5_account).
-  const supabase = getSupabaseAdminClient();
-  if (!supabase) return html("Lỗi hệ thống", "Không kết nối được database. Thử lại sau.", false);
-
-  const { data: existing, error: selErr } = await supabase
-    .from("license_keys")
-    .select("key")
-    .eq("mt5_account", mt5)
-    .maybeSingle();
-  if (selErr) {
-    console.error("[license-approve] lookup failed:", selErr.message);
-    return html("Lỗi hệ thống", "Không đọc được license. Thử lại sau.", false);
-  }
-
-  let licenseKey = existing?.key ?? null;
-  if (!licenseKey) {
-    const { data: inserted, error: insErr } = await supabase
-      .from("license_keys")
-      .insert({
-        mt5_account: mt5,
-        plan: "tigold",
-        product: "tigold",
-        max_accounts: 1,
-        is_lifetime: true, // TiGold qua IB: license vĩnh viễn, 1 tài khoản MT5
-      })
-      .select("key")
-      .single();
-    if (insErr) {
-      if (insErr.code === "23505") {
-        const { data: raced } = await supabase
-          .from("license_keys").select("key").eq("mt5_account", mt5).maybeSingle();
-        licenseKey = raced?.key ?? null;
-      }
-      if (!licenseKey) {
-        console.error("[license-approve] insert failed:", insErr.message);
-        return html("Lỗi cấp license", "Không tạo được license. Thử lại sau.", false);
-      }
-    } else {
-      licenseKey = inserted?.key ?? null;
+  // action === "approve" — grant the license INTO the customer's Dralvo account
+  // (looked up by email → user_id), pinned to their verified MT5 account.
+  const grant = await grantLicense({ email, plan: "tigold", product: "tigold", mt5Account: mt5, managedBy: null });
+  if (!grant.ok) {
+    if (grant.error === "user_not_found") {
+      await sendTelegramMessage(
+        chat,
+        `⚠️ <b>Chưa tìm thấy tài khoản Dralvo với email này</b>\n\nĐể nhận license bạn cần <b>tạo tài khoản Dralvo trước</b> tại ${SITE}/signup (dùng ĐÚNG email <code>${email}</code>), rồi nhắn lại mình email đã đăng ký. Mình sẽ cấp license vào tài khoản đó ngay.`,
+      );
+      console.warn(`[AUDIT license-approve] user_not_found email=${email} mt5=${mt5} chat=${chat}`);
+      return html("Email chưa có tài khoản Dralvo", `${who} — email <b>${email}</b> chưa đăng ký tại dralvo.com. Đã nhắn khách tạo tài khoản rồi gửi lại email. CHƯA cấp license.`, false);
     }
+    console.error(`[license-approve] grant failed: ${grant.error}`);
+    // e.g. mt5 already bound to another account (unique index) → tell admin.
+    return html("Lỗi cấp license", `${who}\nKhông cấp được (${grant.error}). Nếu MT5 đã gắn license khác, kiểm tra lại; hoặc thử lại sau.`, false);
   }
-  if (!licenseKey) return html("Lỗi cấp license", "Không tạo được license. Thử lại sau.", false);
+
+  // Fetch the granted key (mt5_account is unique) to DM the customer.
+  const supabase = getSupabaseAdminClient();
+  let licenseKey: string | null = null;
+  if (supabase) {
+    const { data } = await supabase
+      .from("license_keys").select("key").eq("mt5_account", mt5).eq("product", "tigold").maybeSingle();
+    licenseKey = data?.key ?? null;
+  }
 
   const sent = await sendTelegramMessage(
     chat,
-    `🎉 <b>License TiGold của bạn đã được kích hoạt!</b>\n\n🔑 License key: <code>${licenseKey}</code>\n🖥 Tài khoản MT5: <code>${mt5}</code> (license gắn với đúng tài khoản này)\n\n📥 <b>Tải về:</b>\n• EA: ${SITE}/downloads/tigold/Dralvo%20TiGold.ex5\n• Preset: ${SITE}/downloads/tigold/Dralvo%20tigold%20v1.set\n• Hướng dẫn cài đặt: ${SITE}/downloads/tigold/Huong_dan_su_dung.html\n\n⚙️ Cài EA vào MT5 → nhập license key khi EA yêu cầu → chạy trên XAUUSD M1 theo hướng dẫn.\n\n❓ Cần hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm kết quả tương lai — luôn quản lý rủi ro.</i>`,
+    `🎉 <b>License TiGold đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n👤 Tài khoản Dralvo: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n${licenseKey ? `🔑 License key: <code>${licenseKey}</code>\n` : ""}\n📥 Đăng nhập <b>${SITE}/dashboard</b> để xem license + tải EA, hoặc tải trực tiếp:\n• EA: ${SITE}/downloads/tigold/Dralvo%20TiGold.ex5\n• Preset: ${SITE}/downloads/tigold/Dralvo%20tigold%20v1.set\n• Hướng dẫn: ${SITE}/downloads/tigold/Huong_dan_su_dung.html\n\n⚙️ Cài EA vào MT5 → nhập license key → chạy XAUUSD M1.\n❓ Hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
   );
-  console.warn(`[AUDIT license-approve] APPROVED mt5=${mt5} chat=${chat} key=${licenseKey.slice(0, 8)}… dm_sent=${sent}`);
+  console.warn(`[AUDIT license-approve] APPROVED email=${email} mt5=${mt5} chat=${chat} key=${(licenseKey ?? "?").slice(0, 8)}… dm_sent=${sent}`);
   return html(
     "Đã cấp license ✅",
-    `${who} — license TiGold vĩnh viễn (1 tài khoản) đã tạo${sent ? " và đã nhắn key + link tải cho khách qua @dralvo_bot." : ", NHƯNG nhắn khách thất bại — kiểm tra log."}`,
+    `${who}\nLicense TiGold vĩnh viễn đã cấp vào tài khoản Dralvo, gắn MT5 ${mt5}${sent ? " và đã nhắn khách qua @dralvo_bot." : " — NHƯNG nhắn khách thất bại, kiểm tra log."}`,
     true,
   );
 }

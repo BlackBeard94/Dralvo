@@ -35,6 +35,9 @@ export type GrantInput = {
   allProducts?: boolean;
   maxAccounts?: number;
   managedBy?: string | null;
+  /** Bind the license to a specific MT5 account. Only applied to the `tigold`
+   *  product (free IB license = 1 account); VIP products stay unbound. */
+  mt5Account?: string | null;
 };
 
 export type GrantResult =
@@ -58,6 +61,7 @@ export async function grantLicense(input: GrantInput): Promise<GrantResult> {
       : [];
   if (targets.length === 0) return { ok: false, error: "invalid_product", status: 400 };
 
+  const boundMt5 = typeof input.mt5Account === "string" && input.mt5Account.trim() ? input.mt5Account.trim() : null;
   const rows = targets.map((p) => ({
     user_id: user.id,
     product: p,
@@ -65,7 +69,8 @@ export async function grantLicense(input: GrantInput): Promise<GrantResult> {
     managed_by,
     expires_at: null,
     is_lifetime: true,
-    mt5_account: null,
+    // Only the free tigold IB license is pinned to one MT5 account.
+    mt5_account: p === "tigold" ? boundMt5 : null,
     max_accounts:
       typeof input.maxAccounts === "number" && input.maxAccounts >= 1 ? input.maxAccounts : DEFAULT_MAX[p],
   }));
