@@ -1,5 +1,11 @@
 # Dralvo Architecture
 
+> ⚠️ **TRẠNG THÁI (2026-07-01):** hạ tầng runtime (Next.js + Supabase + Stripe + Telegram) vẫn đúng. Nhưng các phần mô tả **bề mặt V1** — `alerts`/`alert_notifications`/`alert_trigger_state`, thesis monitors, "Alert And Notification Flow", tier **Pro** — đã **gỡ khỏi sản phẩm V2**. Hiện hành:
+> - Gói: **Free + VIP** (`Unlimited`), bỏ "Pro". Thông báo = chuông + hộp thư + thông báo hệ thống + ticker (KHÔNG còn alert rules; `/dashboard/alerts` redirect).
+> - Lõi: **EA** (goldmaster/goldscalp/tigold), license **per-EA** (`license_keys.product`) + anti-share (`license_devices` + `max_accounts`, validate qua `/api/license/validate`).
+> - **Affiliate** (`affiliates`/`affiliate_commissions`/`affiliate_payouts`): đăng ký, hoa hồng, **rút tiền** (VN bank/USDT, chi trả thủ công).
+> - Nguồn sự thật sản phẩm: [`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md) · trạng thái kỹ thuật: [`HANDOFF.md`](./HANDOFF.md).
+
 ## Runtime Shape
 
 Dralvo uses a Next.js fullstack architecture:
@@ -78,9 +84,13 @@ Core tables:
   that were revised after ingestion.
 - `thesis_snapshots`: one persisted thesis payload per thesis date, including
   state, methodology version, and generation timestamp.
-- `alerts`: user-owned alert rules.
+- `alerts` *(V1, đã gỡ)*: user-owned alert rules.
 - `alert_notifications`: in-app notification history.
-- `alert_trigger_state`: dedupe and previous-observed-value state for alert evaluation.
+- `alert_trigger_state` *(V1, đã gỡ)*: dedupe and previous-observed-value state for alert evaluation.
+- `license_keys` *(V2)*: per-EA license (`product`, `plan`, `expires_at`, `is_lifetime`, `max_accounts`, `mt5_account`).
+- `license_devices` *(V2)*: MT5 accounts bound to a key (anti-share, cap = `max_accounts`).
+- `affiliates` / `affiliate_commissions` / `affiliate_payouts` *(V2)*: chương trình affiliate + yêu cầu rút tiền.
+- `system_notifications` *(V2)*: thông báo hệ thống admin phát cho user.
 - `subscriptions`: Stripe-backed subscription records.
 - `vietqr_payment_requests`: manual Vietnam payment requests and review state.
 - `ingestion_run_logs`: operational outcomes for ingestion, thesis generation,
@@ -121,9 +131,14 @@ pivot — see the archived V1 plan in
    - `checkout.session.completed`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
-6. Dashboard reads `subscriptions.status` and displays Free, Pro, Trialing, Canceled, or payment issue states.
+6. Dashboard reads `subscriptions.status` and displays Free, **VIP** (`Unlimited`), Trialing, Canceled, or payment issue states. (V2: "Pro" tier removed — `resolvePlan()` in `src/lib/plan.ts` is the source of truth, including per-EA `license_keys` + lifetime comps.)
 
 ## Alert And Notification Flow
+
+> ⚠️ **V1 — đã gỡ.** Toàn bộ luồng alert rules / thesis monitors bên dưới không
+> còn trong V2. Thông báo hiện tại = chuông + hộp thư (`/dashboard/notifications`)
+> + thông báo hệ thống (admin phát) + ticker, qua `src/lib/system-notifications.ts`
+> và `/api/user/notifications/*`. `/dashboard/alerts` redirect về `/dashboard`.
 
 1. Pro user creates thesis monitors or numeric evidence alert rules through
    `/api/alerts`.

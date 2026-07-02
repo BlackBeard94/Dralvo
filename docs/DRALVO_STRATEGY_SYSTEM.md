@@ -1,7 +1,7 @@
 # DRALVO STRATEGY SYSTEM — Complete Reference
 
-> ⚠️ **SỐ LIỆU CANONICAL:** dùng bộ số trong [`PRODUCT_PLAN.md §0`](./PRODUCT_PLAN.md)
-> — **PF 1.97 · Win 36.7% · +896% · Max Equity DD 24.78% · 196 lệnh.** Các bảng
+> ⚠️ **SỐ LIỆU CANONICAL:** dùng số trong code [`src/lib/backtest-stats.ts`](../src/lib/backtest-stats.ts).
+> Chiến lược D1 này nay là **GoldMaster v1.08**: +792% · PF 2.40 · Win 39.4% · DD 23.6% · 94 lệnh. Các bảng
 > backtest per-tier / year-by-year dưới đây (win 55-60%, PF 2.1...) là **CŨ/chưa
 > khớp**, sẽ reconcile khi backtest engine (`dralvo-trading/backtest/`) chạy lại.
 > Không dùng số trong doc này cho marketing.

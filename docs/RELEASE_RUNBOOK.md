@@ -1,5 +1,7 @@
 # Dralvo Release Runbook
 
+> ⚠️ **TRẠNG THÁI (2026-07-01):** quy trình release chung vẫn dùng. Các mục liên quan **`/api/alerts/evaluate` + n8n "Dralvo Alert Evaluation Cron" 5-phút** là **V1 (alert rules đã gỡ)** — bỏ qua. Sản phẩm V2: Free + **VIP**, lõi EA, thông báo qua chuông/hộp thư/thông báo hệ thống. Nguồn sự thật: [`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md) · [`HANDOFF.md`](./HANDOFF.md).
+
 ## Pre-Release Checks
 
 Run these locally before production deploy:

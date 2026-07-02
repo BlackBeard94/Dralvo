@@ -27,7 +27,7 @@
 │ [Quản lý thanh toán]                                  │
 ├──────────────────────┬───────────────────────────────┤
 │ EA #1: GoldMaster    │ EA #2: Gold Scalp             │
-│ D1 Swing · Online 🟢 │ M5 Momentum · Online 🟢       │
+│ D1 Swing · Online 🟢 │ M15 Momentum · Online 🟢      │
 │ License: còn 181 ngày│ License: còn 181 ngày         │
 │ [Tải .ex5] [Tải .set]│ [Tải .ex5] [Tải .set]        │
 │ MT5: #50123456       │ MT5: #50777012                │
@@ -42,10 +42,10 @@
 
 | Widget | Nguồn | Trạng thái |
 |---|---|---|
-| License status | Supabase `license_keys` + `/api/license/validate` | 🆕 cần build |
+| License status | Supabase `license_keys` (per-EA) + `/api/license/validate` | ✅ đã build |
 | EA download links | Public `/downloads/` directory | ✅ có sẵn |
-| EA online status | `/api/ea/heartbeat` (EA POST định kỳ) | 🆕 cần build |
-| MT5 accounts | `license_keys.mt5_account` | 🆕 cần build |
+| EA online status | suy ra từ `license_devices.last_seen` (validate cập nhật mỗi lần EA gọi; "online" nếu < 15 phút) | ✅ đã build |
+| MT5 accounts | `license_devices` (per-EA, cap = `max_accounts`; quản lý trong EA card). `license_keys.mt5_account` chỉ dùng cho key IB khóa-1-account khi `max_accounts ≤ 1` | ✅ đã build |
 | Billing | Stripe Customer Portal | ✅ có sẵn |
 
 ## 4. Tier gating

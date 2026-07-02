@@ -20,7 +20,7 @@ Using the same wording everywhere is what teaches an LLM the entity. Reuse this 
 > **Dralvo** builds verified automated gold (XAUUSD) trading robots — MetaTrader 5 Expert
 > Advisors — with a hard stop-loss on every trade and a fully published track record.
 > **No martingale, no grid.** Products: **Dralvo GoldMaster** (D1 swing), **Dralvo GoldScalp**
-> (M5 momentum) and the free **Dralvo TiGold** engine. Start free via the Dralvo IB partnership,
+> (M15 momentum) and the free **Dralvo TiGold** engine. Start free via the Dralvo IB partnership,
 > or unlock everything with **Dralvo Unlimited** from $59/month. Site: https://www.dralvo.com
 
 Short version (for bios / directory blurbs, ≤160 chars):

@@ -1,74 +1,86 @@
 # Dralvo — Plan Sản Phẩm
 
-> **🎯 NGUỒN SỰ THẬT SẢN PHẨM DUY NHẤT.**
-> Cập nhật 2026-06-28 — đồng bộ với landing page hiện tại.
+> **🎯 NGUỒN SỰ THẬT SẢN PHẨM DUY NHẤT (doc).**
+> Cập nhật 2026-06-30 — đồng bộ với landing page hiện tại.
+> ⚠️ Nguồn sự thật **số liệu** là code [`src/lib/backtest-stats.ts`](../src/lib/backtest-stats.ts)
+> (đây là những con số landing page render). Bảng §0 dưới đây đã reconcile với file đó.
 > Chi tiết migration code: [`V2_MIGRATION_MAP.md`](./V2_MIGRATION_MAP.md).
 
 ## Context
 
 Dralvo bán **robot giao dịch vàng XAUUSD tự động** cho MetaTrader 5.
-Sản phẩm chính là EA, website là mặt tiền bán hàng + customer portal.
+Sản phẩm chính là EA, website là mặt tiền bán hàng + customer portal + cổng affiliate/IB.
 
-Moat: pipeline CFTC (`/api/cftc-status`) + backtest verified 2 EA + i18n (vi/en/pt-BR).
+Moat: pipeline CFTC (`/api/cftc-status`) + backtest verified 3 EA + i18n 8 locale (vi/en/pt-BR/zh/hi…).
 
 ---
 
-## 0. Bộ số backtest CHUẨN — 2 EA bán SONG SONG
+## 0. Bộ số backtest CHUẨN — 3 EA
 
-Dralvo bán **hai EA flagship song song**, mỗi EA marketing bằng chính bộ số
-backtest đã kiểm chứng của nó (nguyên tắc "no fake data"). Ngoài ra có **TiGold
-free** để kéo traffic qua IB.
+Dralvo marketing mỗi EA bằng chính bộ số backtest đã kiểm chứng của nó (nguyên tắc
+"no fake data"). 2 EA tính phí (VIP) + **TiGold free** để kéo traffic qua IB GTC.
+Mọi số dưới đây đồng bộ với `src/lib/backtest-stats.ts` (2026-06-30).
 
 ### EA #1 — GoldMaster v1.08 · D1 Swing (LONG only)
-Nguồn: MT5 Strategy Tester · XAUUSD D1 · 2016–2026 (~10,3 năm) · data 98% · deposit $100k.
+Nguồn: MT5 Strategy Tester · XAUUSDm (Exness) · D1 · OHLC 1-min · 07/2018–06/2026 (~8 năm) · 1:500 · basis $10K · ATR trailing.
 
-| Chỉ số | Giá trị THẬT |
+| Chỉ số | Giá trị THẬT (Risk 5% khuyến nghị) |
 |---|---|
-| Net Profit (Risk 5% khuyến nghị) | **+1502%** |
-| Profit Factor | **2.65** |
-| Win rate | **43.3%** (141 lệnh, 100% LONG) |
-| Max DD | **23.8%** equity (Risk 5%) |
-| R:R | **3.33:1** |
+| Net Profit | **+792%** ($10K → $89,203) |
+| Profit Factor | **2.40** |
+| Win rate | **39.4%** (94 lệnh, 100% LONG) |
+| Max DD | **23.6%** equity |
+| R:R | **~3.7:1** · CAGR ~31.5%/năm |
 
-### EA #2 — Gold Scalp · M5 Momentum (Buy & Sell)
-Nguồn: MT5 Strategy Tester · XAUUSDm M5 · 01–06/2026 (~5,5 tháng) · **100% tick thật** · deposit $100k.
+Risk matrix: 1% → +77% (DD 6.2%) · 2% → +181% (DD 10.8%) · 3% → +327% (DD 15.3%) · 5% → +792% (DD 23.6%, khuyến nghị).
 
-| Chỉ số | Giá trị THẬT |
+### EA #2 — GoldScalp v2.0 · M15 Momentum (Buy & Sell)
+Nguồn: MT5 Strategy Tester · XAUUSD · M15 · tick thật 98% · 09/2023–06/2026 (~33 tháng) · basis $10K · re-optimized (genetic + real-tick verify).
+
+| Chỉ số | Giá trị THẬT (Risk 2.0% khuyến nghị) |
 |---|---|
-| Net Profit (Risk 2.5% khuyến nghị) | **+234%** |
-| Profit Factor | **1.56** |
-| Win rate | **64%** (308 lệnh) |
-| Max DD | **12.9%** equity |
-| Lưu ý | chỉ 5,5 tháng — ghi rõ "chưa qua nhiều chu kỳ" |
+| Net Profit | **+139%** ($10K → $23,899) |
+| Profit Factor | **1.89** |
+| Win rate | **~40%** (110 lệnh) |
+| Max DD | **18.8%** equity |
+| Lưu ý | Xanh mỗi năm: 2023 +19.7% · 2024 +11.6% · 2025 +15.7% · 2026 +9.9% |
 
-### EA #3 — TiGold v2.0 · M1 Adaptive (FREE)
-Nguồn: MT5 Strategy Tester · XAUUSD M1 · 01/2023–06/2026 · 100% ticks.
-Miễn phí trọn đời khi mở tài khoản qua đối tác IB Dralvo.
+### EA #3 — TiGold v3.0 · M1 Adaptive (FREE)
+Nguồn: GTC MT5 Strategy Tester · XAUUSD · M1 · tick thật 100% · 01/2026–06/2026 (6 tháng) · basis $10K monthly-reset (max DD ≤30%) · config khuyến nghị DailyTarget 6%, fixed lot 0.08.
+
+| Chỉ số | Giá trị THẬT (config khuyến nghị) |
+|---|---|
+| Net Profit | **+97.7%** ($10K → +$9,768 / 6 tháng) |
+| Profit Factor | **1.18** |
+| Win rate | **~76%** (1,105 lệnh) |
+| Max DD | **28.1%** equity |
+| Lưu ý | Chỉ 6 tháng — ghi rõ "edge mỏng, cần thêm dữ liệu". Miễn phí trọn đời khi mở tài khoản qua đối tác IB GTC của Dralvo. |
 
 ---
 
 ## 1. Mô hình sản phẩm (đã chốt — khớp landing page)
 
 ### FREE · $0
-**TiGold EA** (M1 adaptive) — miễn phí trọn đời khi mở tài khoản qua link IB Dralvo.
-- Tải `.ex5` + `.set` + hướng dẫn sau khi verify MT5 account number
-- License kích hoạt qua Telegram `@dralvo`
+**TiGold EA** (M1 adaptive) — miễn phí trọn đời khi mở tài khoản qua link IB GTC của Dralvo.
+- Tải `.ex5` + `.set` + hướng dẫn sau khi verify MT5 account number (`/tigold`)
+- License kích hoạt qua Telegram [@dralvoea](https://t.me/dralvoea)
 - Công cụ: Risk Manager (`/tools/calculator`) — tính lot, RR, prop firm
 
-### Dralvo Unlimited · $59/mo (hoặc $599/yr −15%)
-**Cả 3 EA**: GoldMaster + Gold Scalp + TiGold.
-- Download đầy đủ `.ex5` + `.set` cho từng EA
-- Hỗ trợ đa tài khoản MT5
-- Thanh toán: Stripe (toàn cầu) + Sepay/VietQR (VN)
+### Dralvo VIP · $59/mo
+Nhãn hiển thị **VIP** (id nội bộ vẫn là `unlimited` trong DB/Stripe).
+**Cả 3 EA**: GoldMaster + GoldScalp + TiGold.
+- Download đầy đủ `.ex5` + `.set` cho từng EA, hỗ trợ đa tài khoản MT5, 1 VPS, ưu tiên hỗ trợ
+- Giá: **$59/tháng** · **$319/6 tháng** (≈$53/mo, −10%) · **$599/năm** (≈$50/mo, −15%)
+- Thanh toán: **Stripe** (toàn cầu). _VietQR/Sepay đã gỡ bỏ 2026-06-29._
 
-| Tính năng | Free | Unlimited |
+| Tính năng | Free | VIP |
 |---|:---:|:---:|
 | TiGold EA | ✅ | ✅ |
 | Risk Manager tool | ✅ | ✅ |
 | GoldMaster EA | — | ✅ |
-| Gold Scalp EA | — | ✅ |
+| GoldScalp EA | — | ✅ |
 | Tải .ex5/.set tất cả EA | — | ✅ |
-| Đa tài khoản MT5 | — | ✅ |
+| Đa tài khoản MT5 + VPS + ưu tiên hỗ trợ | — | ✅ |
 
 ---
 
@@ -90,57 +102,62 @@ Trang web là **mặt tiền bán hàng + customer portal đơn giản**.
 ### Customer portal (cần login)
 | Route | Nội dung | Tier |
 |---|---|---|
-| `/dashboard` | Trang chính: license status, download EA, MT5 accounts | Free/Unl |
-| `/dashboard/settings` | Billing, ngôn ngữ, thông báo | Free/Unl |
+| `/dashboard` | Trang chính: license status, download EA, MT5 accounts | Free/VIP |
+| `/dashboard/kho` | Kho EA — tải `.ex5`/`.set` theo tier | VIP |
+| `/dashboard/settings` | Billing, ngôn ngữ, thông báo | Free/VIP |
+| `/dashboard/chart`, `/drivers`, `/correlation`, `/indicators`, `/replay` | Phân tích thị trường (di sản V1, vẫn còn) | VIP |
+| `/dashboard/alerts` | **Đã gỡ** — redirect về `/dashboard` (thông báo giờ = chuông + hộp thư) | — |
+| `/affiliate`, `/partner/**` | Cổng affiliate/IB + partner | login |
+| `/admin/**` | Bảng điều khiển admin (users, licenses, finance, affiliate, partners, vault…) | admin |
 
-> Dashboard là **customer portal** — nơi khách quản lý license + tải EA.
-> KHÔNG phải "cockpit giao dịch" — không có chart, tín hiệu, CFTC regime.
-> Những thứ đó nằm ở public pages (landing evidence) hoặc Telegram.
+> Dashboard cốt lõi là **customer portal** — nơi khách quản lý license + tải EA.
+> Một số trang phân tích V1 (chart/drivers/correlation…) vẫn còn trong codebase.
 
 ---
 
 ## 3. Cần BUILD gì (ưu tiên)
 
-### Đã có (codebase hiện tại)
-- ✅ Landing page 3-EA + pricing $59/mo
-- ✅ `/tigold` IB flow
+### Đã có (codebase hiện tại — 2026-06-30)
+- ✅ Landing page 3-EA + pricing VIP ($59/mo · $319/6mo · $599/yr)
+- ✅ `/tigold` IB flow (GTC verify → download → license)
 - ✅ `/tools/calculator` Risk Manager
 - ✅ `/compare`, `/track-record`
 - ✅ Auth (Supabase email/password + Google OAuth)
 - ✅ Stripe checkout + webhook
-- ✅ Sepay/VietQR
-- ✅ i18n (vi/en + 6 fallback)
-- ✅ `/api/xauusd`, `/api/cftc-status`, `/api/signal/current`
+- ✅ **License system** (`license_keys` + `/api/license/validate` + cấp qua webhook)
+- ✅ **Customer portal** `/dashboard` + `/dashboard/kho` (kho EA) + `/dashboard/settings`
+- ✅ **Affiliate/IB** (`/affiliate`) + **Partner portal** (`/partner/**`)
+- ✅ **Admin panel** (`/admin/**`: users, licenses, finance, marketing, affiliate, partners, vault…)
+- ✅ i18n 8 locale (vi/en/pt-BR/zh/hi + fallback)
+- ✅ `/api/xauusd`, `/api/cftc-status`, `/api/signal/current`, `/api/ib/verify`
 - ✅ `backtest-stats.ts` — canonical numbers cho 3 EA
+- ✅ Ad tracking (GA4 + Google Ads + Meta Pixel/CAPI + TikTok)
 
 ### Cần build
 | Hạng mục | Mô tả | Ưu tiên |
 |---|---|---|
-| **Customer portal** `/dashboard` | License status + download EA + MT5 account management | #1 |
-| **License system** | Bảng `license_keys` + `/api/license/validate` + Stripe webhook cấp license | #1 |
-| **EA heartbeat** | EA gửi heartbeat về để dashboard hiện online/offline + equity | #2 |
-| **Gỡ V1 dashboard** | Xóa thesis/intelligence/drivers/correlation cũ (xem V2_MIGRATION_MAP.md) | #3 |
+| **EA heartbeat** | EA gửi heartbeat về để dashboard hiện online/offline + equity | #1 |
+| **Telegram bot automation** | License activation + signal push tự động (hiện đang manual qua @dralvoea) | #2 |
+| **Dọn V1 dashboard** | Cân nhắc gỡ chart/drivers/correlation/intelligence cũ (xem V2_MIGRATION_MAP.md) | #3 |
 
 ### Không build (YAGNI)
-- ~~Indicator MT5 free~~ — chưa cần, TiGold đã là magnet free
+- ~~Indicator MT5 free~~ — TiGold đã là magnet free
 - ~~AI content engine / news aggregator~~ — làm sau nếu có resource
-- ~~Telegram bot V2~~ — giữ manual Telegram `@dralvo` như hiện tại
-- ~~FX Backtest Tool công khai~~ — Risk Manager đã cover tool free
-- ~~IB rebate tracking~~ — chưa có tracking system
+- ~~VietQR/Sepay~~ — đã gỡ, chỉ giữ Stripe
 
 ---
 
 ## 4. Lộ trình
 
-**Phase A — Customer Portal (hiện tại):**
-1. License system (`license_keys` + `/api/license/validate`) + Stripe webhook
-2. Dashboard đơn giản: license status + download EA
-3. Gỡ V1 dashboard + preview pages
+**Phase A — Customer Portal + License (✅ XONG):**
+1. ✅ License system (`license_keys` + `/api/license/validate`) + Stripe webhook
+2. ✅ Dashboard: license status + download EA (`/dashboard`, `/dashboard/kho`)
+3. ✅ Affiliate/IB + Partner + Admin panel
 
-**Phase B — Sau khi có khách trả tiền:**
+**Phase B — Sau khi có khách trả tiền (hiện tại):**
 4. EA heartbeat → dashboard live status + equity
-5. Telegram bot automation (license activation, signal push)
-6. Mở rộng nếu có nhu cầu thật
+5. Telegram bot automation (license activation, signal push) — thay manual @dralvoea
+6. Dọn di sản V1 (chart/drivers/correlation) nếu xác nhận không dùng
 
 ---
 
@@ -149,5 +166,5 @@ Trang web là **mặt tiền bán hàng + customer portal đơn giản**.
 - `npm run build && npm run lint` sạch
 - Stripe checkout tạo subscription → webhook cấp license
 - `/api/license/validate`: hợp lệ pass, hết hạn fail
-- Khách Unlimited tải được `.ex5` + `.set` cả 3 EA
+- Khách VIP tải được `.ex5` + `.set` cả 3 EA
 - Dashboard hiển thị đúng license status + download links

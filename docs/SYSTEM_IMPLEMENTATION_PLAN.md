@@ -1,7 +1,9 @@
 # Dralvo System Implementation Plan
 
+> ⚠️ **TRẠNG THÁI (2026-07-01): doc này mô tả sản phẩm V1** (thesis monitors, alert delivery, "Pro plan", multi-driver). **Sản phẩm hiện tại là V2 và đã khác:** Free + **VIP** (bỏ Pro), lõi là **EA** (license per-EA + anti-share `license_devices`/`max_accounts`), thông báo = chuông + hộp thư + thông báo hệ thống (alert rules đã gỡ), affiliate có rút tiền. Nguồn sự thật: [`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md) · [`HANDOFF.md`](./HANDOFF.md). Nội dung dưới giữ làm tham chiếu lịch sử.
+
 Date: 2026-06-13
-Status: Active
+Status: V1 (historical)
 Product source of truth: [`PRODUCT_TRUTH_AND_STRATEGY.md`](./PRODUCT_TRUTH_AND_STRATEGY.md)
 
 ## Objective

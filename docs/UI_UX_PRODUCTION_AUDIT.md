@@ -1,5 +1,12 @@
 # Dralvo UI/UX Production Audit
 
+> ⚠️ **TRẠNG THÁI (2026-07-01): doc này mô tả sản phẩm V1** (SaaS phân tích — "Pro" tier, alert rules / thesis monitors, indicators làm lõi). **Sản phẩm hiện tại là V2 và đã khác:**
+> - Gói chỉ còn **Free + VIP** (bỏ "Pro"; nhãn hiển thị "VIP", tier nội bộ `Unlimited`).
+> - **Alert rules / thesis monitors đã gỡ** — `/dashboard/alerts` redirect `/dashboard`; thông báo giờ = chuông + hộp thư + thông báo hệ thống + ticker.
+> - Lõi sản phẩm = **EA** (goldmaster/goldscalp/tigold), license **per-EA** + chống share (`license_devices` + `max_accounts`).
+> - **Affiliate** có đăng ký + dashboard + **rút tiền** (VN bank / USDT, chi trả thủ công).
+> - Nguồn sự thật hiện hành: [`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md) · [`HANDOFF.md`](./HANDOFF.md) · [`KNOWLEDGE_BASE.md`](./KNOWLEDGE_BASE.md). Nội dung dưới giữ làm tham chiếu lịch sử.
+
 Date: 2026-06-12
 
 Product decisions and capability claims in this audit are subordinate to

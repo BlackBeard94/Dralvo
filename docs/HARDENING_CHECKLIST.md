@@ -1,5 +1,7 @@
 # Dralvo Production Hardening Checklist
 
+> ⚠️ **TRẠNG THÁI (2026-07-01):** phần hạ tầng/bảo mật chung vẫn dùng được, nhưng các mục nhắc **"Pro alert rules / thesis / `/api/alerts/evaluate` / n8n 5-phút"** là **V1 đã gỡ** — bỏ qua. Sản phẩm hiện tại: Free + **VIP**, lõi là **EA** (license per-EA + anti-share `license_devices`/`max_accounts`), affiliate có rút tiền. Nguồn sự thật: [`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md) · [`HANDOFF.md`](./HANDOFF.md).
+
 ## Current Status
 
 - [x] Production deploy on `https://www.dralvo.com`

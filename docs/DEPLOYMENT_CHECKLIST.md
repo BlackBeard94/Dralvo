@@ -1,5 +1,10 @@
 # Deployment Checklist - Dralvo Production
 
+> ⚠️ **TRẠNG THÁI (2026-07-01):** quy trình build/deploy/env chung vẫn dùng. Lỗi thời (V1, bỏ qua):
+> - Các mục **Pro Checkout / kích hoạt "Pro" 30 ngày / `STRIPE_PRO_PRICE_ID` / `VIETQR_PRO_PRICE_VND`**: V2 chỉ bán **VIP** (`STRIPE_PRICE_UNLIMITED_{MONTHLY,SIXMO,YEARLY}`); `STRIPE_PRO_PRICE_ID` chỉ còn ở launch-readiness. VietQR thủ công đã gỡ (xem docs/README).
+> - **`alert_notifications`/`alert_trigger_state`, `/api/alerts/evaluate`, cron 5-phút n8n cho alert**: alert rules V1 đã gỡ — bỏ qua. (`OPS_ALERT_EMAILS`/`OPS_ALERT_TELEGRAM_CHAT_ID` là cảnh báo source-health của ops, vẫn dùng.)
+> - DB V2 cần áp: `license_keys`/`license_devices`/`affiliate_*`/`affiliate_payouts`/`system_notifications` — xem [`HANDOFF.md`](./HANDOFF.md) §4/§6.
+
 ## Pre-Deploy Verification
 
 - [ ] `npm run audit:encoding` passes.
