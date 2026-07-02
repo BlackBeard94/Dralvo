@@ -67,7 +67,9 @@ export async function GET(request: NextRequest) {
   const exp = Number(q.get("exp") ?? 0);
   const sig = (q.get("sig") ?? "").trim();
 
-  if (!chat || !/^\d{6,10}$/.test(mt5) || !ACTIONS.includes(action) || !exp || !sig) {
+  // chat must be a real Telegram chat_id (integer). Non-numeric ids come from
+  // internal /test calls and must never mint a license.
+  if (!/^-?\d+$/.test(chat) || !/^\d{6,10}$/.test(mt5) || !ACTIONS.includes(action) || !exp || !sig) {
     return html("Link không hợp lệ", "Thiếu hoặc sai tham số. Dùng đúng nút trong tin nhắn Telegram.", false);
   }
   if (Date.now() / 1000 > exp) {
