@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     activation: {
       how: "telegram",
       bot: "https://t.me/dralvo_bot?start=tigold",
-      note: "Nhắn bot Telegram của Dralvo để kích hoạt license (miễn phí, cần tài khoản mở qua IB Dralvo và nạp tối thiểu $50 / 5.000 cent).",
+      note: "Nhắn bot Telegram của Dralvo để kích hoạt license (miễn phí, cần tài khoản mở qua IB Dralvo và nạp tối thiểu $100 / 10.000 cent).",
     },
   });
 }

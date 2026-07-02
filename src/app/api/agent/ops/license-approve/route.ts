@@ -3,7 +3,7 @@
  * free-license flow.
  *
  * The VPS support bot walks a customer through opening a GTC account under
- * Dralvo's IB and depositing the minimum ($50 / 5,000 cent). When the customer
+ * Dralvo's IB and depositing the minimum ($100 / 10,000 cent). When the customer
  * confirms, the bot messages the OWNER (via the Hermes Telegram bot) with three
  * URL buttons pointing here. The owner eyeballs the GTC IB portal (GTC has no
  * API) and taps one:
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
   if (action === "deposit_wait") {
     await sendTelegramMessage(
       chat,
-      `⏳ <b>Dralvo đã kiểm tra tài khoản MT5 ${mt5}</b>\n\nHiện chưa thấy đủ mức nạp tối thiểu <b>$50</b> (tài khoản USD) / <b>5.000 cent</b> (tài khoản Cent).\n\nBạn kiểm tra lại giao dịch nạp giúp mình nhé — tiền vào tài khoản xong bạn nhắn lại "đã nạp" là mình báo admin duyệt ngay. 🙏\n\n<i>If you need English support, just reply in English.</i>`,
+      `⏳ <b>Dralvo đã kiểm tra tài khoản MT5 ${mt5}</b>\n\nHiện chưa thấy đủ mức nạp tối thiểu <b>$100</b> (tài khoản USD) / <b>10.000 cent</b> (tài khoản Cent).\n\nBạn kiểm tra lại giao dịch nạp giúp mình nhé — tiền vào tài khoản xong bạn nhắn lại "đã nạp" là mình báo admin duyệt ngay. 🙏\n\n<i>If you need English support, just reply in English.</i>`,
     );
     console.warn(`[AUDIT license-approve] deposit_wait mt5=${mt5} chat=${chat}`);
     return html("Đã báo khách nạp thêm", `Đã nhắn ${who}: chưa đủ mức nạp tối thiểu, kiểm tra lại và xác nhận sau.`, true);

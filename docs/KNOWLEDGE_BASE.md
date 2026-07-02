@@ -13,7 +13,7 @@
 - **Dralvo bán gì?** Robot giao dịch vàng **XAUUSD** tự động (Expert Advisor) cho **MetaTrader 5**.
 - **Có mấy robot?** 3 — **TiGold** (miễn phí), **GoldScalp** và **GoldMaster** (gói VIP).
 - **Giá VIP?** **$59/tháng** · $319/6 tháng · $599/năm. Thanh toán **Stripe**. Hủy bất cứ lúc nào.
-- **TiGold miễn phí thế nào?** Mở tài khoản THẬT qua **đối tác IB GTC** + nạp tối thiểu **$50 / 5.000 cent** → license vĩnh viễn (1 tài khoản MT5). Kích hoạt qua bot **@dralvo_bot** (gõ "license").
+- **TiGold miễn phí thế nào?** Mở tài khoản THẬT qua **đối tác IB GTC** + nạp tối thiểu **$100 / 10.000 cent** → license vĩnh viễn (1 tài khoản MT5). Kích hoạt qua bot **@dralvo_bot** (gõ "license").
 - **Hỗ trợ:** Telegram **[@dralvoea](https://t.me/dralvoea)** · pháp lý/dữ liệu: **legal@dralvo.com** · web **dralvo.com**.
 - **Quy tắc vàng:** KHÔNG bao giờ hứa lợi nhuận. Mọi số là **backtest quá khứ**, không bảo đảm tương lai.
 
@@ -47,7 +47,7 @@ Tất cả: XAUUSD · MetaTrader 5 · không Martingale / không Grid · mỗi l
   (3) news filter — né tin quan trọng (dùng MT5 calendar). Có time filter (mặc định 8h–22h giờ server).
 - **Mô hình:** monthly-reset — mỗi tháng coi như reset về $10K, khóa lời **+6%/ngày** rồi dừng (giữ DD ≤ ~30%).
 - **Ai nên dùng:** người mới, vốn nhỏ, muốn thử EA không tốn phí.
-- **Điều kiện:** tài khoản MT5 **THẬT** mở qua **link IB GTC** của Dralvo + nạp tối thiểu **$50 (USD) / 5.000 cent (Cent)**. Demo không đủ điều kiện license.
+- **Điều kiện:** tài khoản MT5 **THẬT** mở qua **link IB GTC** của Dralvo + nạp tối thiểu **$100 (USD) / 10.000 cent (Cent)**. Demo không đủ điều kiện license.
 - **Backtest (config khuyến nghị — DailyTarget 6%, fixed lot 0.08):**
   - Nguồn: GTC MT5 Strategy Tester · XAUUSD M1 · 01–06/2026 (6 tháng) · **tick thật 100%** · $10K.
   - Net **+97.7%** ($10K → +$9,768/6 tháng) · PF **1.18** · Win **~76%** (1,105 lệnh) · Max DD **28.1%**.
@@ -89,7 +89,7 @@ Tất cả: XAUUSD · MetaTrader 5 · không Martingale / không Grid · mỗi l
 
 | | **Free** | **Dralvo VIP** |
 |---|---|---|
-| Giá | $0 | **$59/tháng** · **$319/6 tháng** (≈$53/mo, −10%) · **$599/năm** (≈$50/mo, −15%) |
+| Giá | $0 | **$59/tháng** · **$319/6 tháng** (≈$53/mo, −10%) · **$599/năm** (≈$100/mo, −15%) |
 | TiGold EA | ✅ | ✅ |
 | GoldScalp EA | — | ✅ |
 | GoldMaster EA | — | ✅ |
@@ -99,7 +99,7 @@ Tất cả: XAUUSD · MetaTrader 5 · không Martingale / không Grid · mỗi l
 | VPS đi kèm | — | ✅ (1 VPS) |
 | Telegram | Community | **VIP** |
 | Truy cập sớm EA mới + ưu tiên hỗ trợ | — | ✅ |
-| Điều kiện | Tài khoản thật qua IB GTC + nạp tối thiểu $50/5.000 cent | Trả phí |
+| Điều kiện | Tài khoản thật qua IB GTC + nạp tối thiểu $100/10.000 cent | Trả phí |
 
 - **Nhãn gói trả phí hiển thị là "VIP"** (id nội bộ trong hệ thống là `unlimited`).
 - **Thanh toán:** **Stripe** (toàn cầu). *VietQR/Sepay đã ngừng từ 2026-06-29 — đừng hứa chuyển khoản VN.*
@@ -115,7 +115,7 @@ Tất cả: XAUUSD · MetaTrader 5 · không Martingale / không Grid · mỗi l
 ### 4.1 Lấy TiGold (Free) — qua IB GTC, trang `/tigold`
 1. **Mở tài khoản GTC** qua link đối tác Dralvo (GTC là broker độc quyền). Chọn loại tài khoản:
    - **USD account** — spread thấp, khối lượng chuẩn (khuyến nghị vốn lớn hơn).
-   - **Cent account** — vốn nhỏ, rủi ro thấp (bắt đầu từ $50 = 5.000 cent, mức nạp tối thiểu để kích hoạt license).
+   - **Cent account** — vốn nhỏ, rủi ro thấp (bắt đầu từ $100 = 10.000 cent, mức nạp tối thiểu để kích hoạt license).
    - Link: `web.mygtc.app/login/register?ref=<mã ref>` (lấy trên trang `/tigold`).
 2. **Xác nhận số tài khoản MT5** vừa mở (nhập vào ô verify ở `/tigold` — chỉ để mở link tải; license cấp qua bot ở bước 4).
 3. **Tải về:** `Dralvo TiGold.ex5` + preset `Dralvo tigold v1.set` + file hướng dẫn (HTML).
@@ -148,7 +148,7 @@ Tất cả: XAUUSD · MetaTrader 5 · không Martingale / không Grid · mỗi l
 ## 6. License — kích hoạt & quy tắc
 
 - **Mỗi license gắn với MỘT số tài khoản MT5.** Không dùng chung nhiều tài khoản trên 1 license.
-- **TiGold (free):** license **vĩnh viễn** — điều kiện: tài khoản THẬT qua IB GTC + nạp tối thiểu **$50 / 5.000 cent**. Kích hoạt qua bot:
+- **TiGold (free):** license **vĩnh viễn** — điều kiện: tài khoản THẬT qua IB GTC + nạp tối thiểu **$100 / 10.000 cent**. Kích hoạt qua bot:
   1. Mở Telegram, nhắn **@dralvo_bot** (hoặc bấm nút trên `/tigold`), gõ **"license"**.
   2. Bot hướng dẫn từng bước: xác nhận tài khoản → hướng dẫn nạp tối thiểu → khách xác nhận "đã nạp".
   3. Admin nhận nút duyệt 1-chạm (check GTC IB portal) → bấm Duyệt.
