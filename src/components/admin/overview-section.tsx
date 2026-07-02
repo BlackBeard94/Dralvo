@@ -23,7 +23,7 @@ interface RecentUser {
 }
 
 interface RecentLicense {
-  user_id: string;
+  user_id: string | null;
   email: string | null;
   product: string;
   plan: string;
@@ -352,7 +352,7 @@ export function OverviewSection() {
             <div className="divide-y divide-border">
               {stats.recentLicenses.map((l, i) => (
                 <div key={`${l.user_id}-${l.product}-${i}`} className="flex items-center justify-between gap-3 py-2">
-                  <span className="text-[12px] text-text-secondary truncate flex-1">{l.email ?? l.user_id.slice(0, 8) + "…"}</span>
+                  <span className="text-[12px] text-text-secondary truncate flex-1">{l.email ?? (l.user_id ? l.user_id.slice(0, 8) + "…" : "—")}</span>
                   <span className="text-[11px] font-medium text-text-primary shrink-0">{PRODUCT_LABEL[l.product] ?? l.product}</span>
                   <span className={`text-[11px] font-medium shrink-0 ${l.plan === "unlimited" ? "text-green" : "text-gold"}`}>{planLabel(l.plan)}</span>
                   <span className="text-[11px] text-text-muted font-mono shrink-0">{fmtDate(l.created_at)}</span>

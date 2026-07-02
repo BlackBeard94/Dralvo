@@ -152,8 +152,8 @@ export async function GET(request: NextRequest) {
     const licenseRows = recentLicenses ?? [];
     const ids = [
       ...profileRows.map((p) => p.id as string),
-      ...licenseRows.map((l) => l.user_id as string),
-    ];
+      ...licenseRows.map((l) => l.user_id as string | null),
+    ].filter((id): id is string => !!id);
     const emails = await batchGetEmails(client, ids);
 
     const totalUsersN = totalUsers ?? 0;
@@ -181,13 +181,16 @@ export async function GET(request: NextRequest) {
         email: emails.get(p.id as string) ?? null,
         created_at: p.created_at as string,
       })) : [],
-      recentLicenses: canUsers ? licenseRows.map((l) => ({
-        user_id: l.user_id as string,
-        email: emails.get(l.user_id as string) ?? null,
-        product: l.product as string,
-        plan: l.plan as string,
-        created_at: l.created_at as string,
-      })) : [],
+      recentLicenses: canUsers ? licenseRows.map((l) => {
+        const uid = (l.user_id as string | null) ?? null;
+        return {
+          user_id: uid,
+          email: uid ? emails.get(uid) ?? null : null,
+          product: l.product as string,
+          plan: l.plan as string,
+          created_at: l.created_at as string,
+        };
+      }) : [],
       // --- revenue stats (finance.view) ---
       stripeActiveSubs: canFinance ? (stripeActiveSubs ?? 0) : null,
       totalStripeRevenue: canFinance ? totalRevenue : null,
