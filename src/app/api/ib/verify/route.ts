@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limit";
 
 // GTC — Dralvo's exclusive IB partner
 const IB_LINKS: Record<string, string> = {
@@ -7,13 +7,31 @@ const IB_LINKS: Record<string, string> = {
   "gtc-cent": "https://web.mygtc.app/login/register?ref=ADWMQMDP",
 };
 
-// Mock: any 6-10 digit account number passes for now.
+const DOWNLOADS = {
+  ex5: "/downloads/tigold/Dralvo TiGold.ex5",
+  set: "/downloads/tigold/Dralvo tigold v1.set",
+  guide: "/downloads/tigold/Huong_dan_su_dung.html",
+};
+
+// GTC has no public API, so account ownership cannot be proven here. This
+// endpoint therefore only shape-validates and hands out the (freely
+// downloadable) files. The LICENSE itself is issued through the Telegram
+// approval flow: customer talks to @dralvo_bot → owner verifies the account +
+// min deposit in the GTC IB portal → one-tap approve → key is granted via
+// /api/agent/ops/license-approve. The EA refuses to trade without that key.
 function isValidAccount(account: string): boolean {
   return /^\d{6,10}$/.test(account);
 }
 
 export async function POST(request: Request) {
-  const { account, broker } = (await request.json()) as {
+  const rateLimit = checkRateLimit({
+    key: rateLimitKey(request, "ib:verify"),
+    limit: 10,
+    windowMs: 60_000,
+  });
+  if (!rateLimit.allowed) return rateLimitResponse(rateLimit.resetAt);
+
+  const { account, broker } = (await request.json().catch(() => ({}))) as {
     account?: string;
     broker?: string;
   };
@@ -40,22 +58,15 @@ export async function POST(request: Request) {
     );
   }
 
-  // ponytail: upsert license key, no auth — mt5_account is the anchor.
-  // user_id filled later when admin links via Telegram.
-  const supabase = getSupabaseAdminClient();
-  const { data: license } = await (supabase!
-    .from("license_keys")
-    .upsert({ mt5_account: account, plan: "tigold" }, { onConflict: "mt5_account" })
-    .select("key")
-    .single());
-
+  // No license key here (see note above) — downloads only, plus a pointer to
+  // the Telegram activation flow.
   return NextResponse.json({
     verified: true,
-    licenseKey: license?.key ?? null,
-    downloads: {
-      ex5: "/downloads/tigold/Dralvo TiGold.ex5",
-      set: "/downloads/tigold/Dralvo tigold v1.set",
-      guide: "/downloads/tigold/Huong_dan_su_dung.html",
+    downloads: DOWNLOADS,
+    activation: {
+      how: "telegram",
+      bot: "https://t.me/dralvo_bot?start=tigold",
+      note: "Nhắn bot Telegram của Dralvo để kích hoạt license (miễn phí, cần tài khoản mở qua IB Dralvo và nạp tối thiểu $50 / 5.000 cent).",
     },
   });
 }

@@ -9,9 +9,9 @@ import {
 
 import { BrandLink } from "@/components/shared/brand";
 import { NavBar } from "@/components/shared/nav-bar";
+import { MainNavActions } from "@/components/shared/site-nav";
+import { mainNavLinks } from "@/components/shared/nav-links";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
 import { TIGOLD } from "@/lib/backtest-stats";
 import { TIGOLD_COPY } from "@/lib/tigold-copy";
@@ -108,10 +108,9 @@ export default function TiGoldPage() {
       {/* Nav */}
       <NavBar
         navClassName={cn("transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}
-        links={[
-          { label: "Trang chủ", href: "/" },
-          { label: "Bảng giá", href: "/#pricing" },
-        ]}
+        containerClassName="max-w-[1180px] mx-auto px-6"
+        links={mainNavLinks(locale, "/tigold")}
+        actions={<MainNavActions locale={locale} />}
       />
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }} className="pt-16">
@@ -329,13 +328,13 @@ export default function TiGoldPage() {
                   <div className="flex-1">
                     <h3 className="font-semibold text-text-primary mb-3">{t.s4.cardHeading}</h3>
                     <ol className="space-y-2 text-[13px] text-text-secondary leading-relaxed">
-                      <li>1. {t.s4.l1} <code className="font-mono text-gold bg-deep/60 px-1.5 py-0.5 rounded text-[11px]">@dralvoea</code></li>
+                      <li>1. {t.s4.l1} <code className="font-mono text-gold bg-deep/60 px-1.5 py-0.5 rounded text-[11px]">@dralvo_bot</code></li>
                       <li dangerouslySetInnerHTML={{ __html: `2. ${t.s4.l2}` }} />
                       <li>3. {t.s4.l3}</li>
                       <li>4. {t.s4.l4}</li>
                     </ol>
                   </div>
-                  <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
+                  <a href="https://t.me/dralvo_bot?start=tigold" target="_blank" rel="noopener noreferrer"
                     className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
                     style={{ background: GOLD_BRIGHT }}>
                     {t.s4.open} <ExternalLink size={15} />
