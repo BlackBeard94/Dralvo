@@ -8,6 +8,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getAffiliateByUserId, generateReferralCode } from "@/lib/affiliate/server";
+import { recordAdminEvent } from "@/lib/admin/events";
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,6 +62,13 @@ export async function POST(request: NextRequest) {
       }
       throw error;
     }
+
+    await recordAdminEvent({
+      type: "affiliate_signup",
+      title: `Affiliate mới: ${user.email ?? user.id.slice(0, 8)}`,
+      message: `Mã ${data.code} — đang chờ duyệt`,
+      metadata: { userId: user.id, affiliateId: data.id, code: data.code },
+    });
 
     return NextResponse.json({
       success: true,

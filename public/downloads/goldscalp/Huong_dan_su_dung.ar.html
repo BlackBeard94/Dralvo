@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo Gold Scalp — دليل الاستخدام</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:Tahoma,"Segoe UI",-apple-system,Arial,sans-serif;
+    line-height:1.8;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:28px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-right:20px;padding-left:0;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:20px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-left:8px;margin-right:0}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:right;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px;direction:ltr;display:inline-block;unicode-bidi:embed}
+  td code{white-space:nowrap}
+  ol.steps{padding-right:22px;padding-left:0}
+  ol.steps li{margin:6px 0}
+  .callout{border-right:4px solid var(--gold);border-left:none;background:#fffdf5;padding:12px 16px;border-radius:8px 0 0 8px;margin:16px 0}
+  .callout.warn{border-right-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-right-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0;direction:ltr;text-align:left}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .dash .a{color:#ebb446}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:22px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLD&nbsp;SCALP</span>
+    <h1>دليل الاستخدام</h1>
+    <p>روبوت سكالبينغ/تداول يومي لزوج XAUUSD على منصة MetaTrader 5 — يكتشف نظام السوق، 3 أنواع من الإعدادات، هرمية "أموال البيت" (house money) وتريلينغ للسلة.</p>
+    <div class="ver">الإصدار 2.00 · الملف: Dralvo_Gold_Scalp.ex5 · الإطار الزمني الموصى به M15</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>الفهرس</b>
+    <ol>
+      <li><a href="#caidat">التثبيت</a></li>
+      <li><a href="#license">تفعيل الترخيص</a></li>
+      <li><a href="#logic">آلية عمل الروبوت</a></li>
+      <li><a href="#thamso">جدول المعاملات</a></li>
+      <li><a href="#dashboard">لوحة المعلومات على الرسم البياني</a></li>
+      <li><a href="#set">ملفات .set الموصى بها</a></li>
+      <li><a href="#hieusuat">أداء الاختبار الخلفي (Backtest)</a></li>
+      <li><a href="#suco">استكشاف الأخطاء وإصلاحها</a></li>
+      <li><a href="#ruiro">تحذير المخاطر</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>التثبيت</h2>
+    <ol class="steps">
+      <li>أغلق MetaTrader 5 (إذا كان مفتوحاً).</li>
+      <li>افتح مجلد البيانات: <b>File → Open Data Folder</b>.</li>
+      <li>انسخ <code>Dralvo_Gold_Scalp.ex5</code> إلى <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(أو انسخ ملف <code>.mq5</code> ثم اضغط <b>Compile (F7)</b>.)</span></li>
+      <li>أعد فتح MT5 → <b>Navigator → Expert Advisors</b>، انقر بزر الفأرة الأيمن على <b>Refresh</b>.</li>
+      <li>افتح رسماً بيانياً لـ <b>XAUUSD</b>، الإطار الزمني <b>M15</b>، واسحب <b>Dralvo Gold Scalp</b> إلى الرسم البياني.</li>
+      <li>علامة التبويب <b>Common</b>: فعّل <b>Allow Algo Trading</b>. علامة التبويب <b>Inputs</b>: أدخل <b>مفتاح الترخيص</b> + <b>رقم حساب MT5</b> (القسم 2)، وحمّل ملف <code>.set</code>.</li>
+      <li>اضغط <b>OK</b> ← فعّل <b>Algo Trading</b> من شريط الأدوات (يتحول للون الأخضر).</li>
+    </ol>
+    <div class="callout">عند التشغيل الصحيح، تظهر <b>لوحة Gold Scalp</b> في الزاوية العلوية من الرسم البياني (انظر القسم 5).</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>تفعيل الترخيص — إلزامي في الحساب التجريبي/الحقيقي</h2>
+    <p>يحتوي الروبوت على <b>بوابة ترخيص</b>: عند تشغيله على رسم بياني حقيقي، يتصل بخادم Dralvo للتحقق من المفتاح. <b>بدون هذه الخطوة لن يعمل الروبوت</b> وستظهر رسالة <code>Contact telegram: @edgardinh86</code>.</p>
+    <div class="callout">في <b>Strategy Tester (الاختبار الخلفي)</b> يتم <b>تجاوز</b> بوابة الترخيص — يعمل الاختبار الخلفي دائماً دون الحاجة لمفتاح.</div>
+
+    <h3>الخطوة 1 — احصل على مفتاح الترخيص الخاص بك</h3>
+    <p>تعتمد طريقة الحصول على المفتاح على باقتك:</p>
+    <table>
+      <tr><th>الباقة</th><th>مكان الحصول على مفتاح الترخيص</th></tr>
+      <tr><td><b>VIP</b></td><td>سجّل الدخول إلى <b>لوحة التحكم على <code>https://www.dralvo.com</code></b> ← <b>License / Key</b> ← أنشئ مفتاحاً لكل حساب MT5.</td></tr>
+      <tr><td><b>مجاني (Free)</b></td><td>تواصل عبر <b>تيليجرام <code>@edgardinh86</code></b> للحصول على <b>مفتاح الترخيص</b>.</td></tr>
+    </table>
+    <ul>
+      <li>في أي باقة، يكون المفتاح <b>مرتبطاً برقم حساب MT5 محدد</b> — يجب تقديم/تسجيل الرقم الصحيح.</li>
+      <li>اطّلع على رقم حسابك من: <b>Navigator</b>، أو <b>Tools → Options → Server</b>، أو عنوان نافذة MT5 (6–10 أرقام).</li>
+    </ul>
+    <p>🔹 <b>باقة VIP — نفاد سلوتات الحساب:</b> تحصل كل باقة VIP على عدد محدد من السلوتات. عند <b>استخدام كل (الحد الأقصى)</b> الحسابات ورغبتك في <b>إضافة حساب جديد</b>، <b>تواصل مع المسؤول</b> للحصول على المزيد.</p>
+
+    <h3>الخطوة 2 — إضافة الرابط للقائمة البيضاء (WebRequest) ⚠️ الخطوة الأكثر نسياناً</h3>
+    <ol class="steps">
+      <li>افتح <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>انتقل إلى علامة التبويب <b>Expert Advisors</b>.</li>
+      <li>فعّل <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>اكتب بالضبط: <code>https://www.dralvo.com</code></li>
+      <li>اضغط <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">إذا <b>تخطيت</b> هذه الخطوة، سيظهر خطأ ولن يعمل الروبوت حتى مع المفتاح الصحيح (يحظر MT5 الاتصال). هذا هو <b>السبب الأول</b>.</div>
+
+    <h3>الخطوة 3 — أدخل المفتاح في Inputs</h3>
+    <table>
+      <tr><th>المعامل</th><th>القيمة المطلوبة</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>مفتاح الترخيص (VIP: من لوحة التحكم <code>dralvo.com</code>؛ مجاني: مستلم من <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>رقم حساب MT5 الخاص بك (6–10 أرقام)، مطابق للمفتاح.</td></tr>
+    </table>
+
+    <h3>أدخلت المفتاح ولا يزال لا يعمل؟ تحقق بالترتيب</h3>
+    <table>
+      <tr><th>#</th><th>التحقق</th></tr>
+      <tr><td>1</td><td>هل أضفت <code>https://www.dralvo.com</code> إلى القائمة البيضاء؟ (الخطوة 2 — السبب الأول)</td></tr>
+      <tr><td>2</td><td>هل ملأت <b>كلا</b> الحقلين <code>InpLicenseKey</code> و <code>InpMT5Account</code>؟</td></tr>
+      <tr><td>3</td><td>هل رقم الحساب <b>مطابق</b> للمفتاح؟</td></tr>
+      <tr><td>4</td><td>هل لديك اتصال بالإنترنت؟</td></tr>
+      <tr><td>5</td><td>احذف الروبوت من الرسم البياني ثم أعد سحبه بعد ضبط Options.</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>كيف يعمل هذا الروبوت</h2>
+    <p><b>الخطوة 1 — اكتشاف نظام السوق (Regime):</b> يستخدم ADX + EMA + انحياز الإطار الزمني الأكبر (HTF) لتصنيف السوق إلى <b>عرضي / اتجاه صعودي / اتجاه هبوطي / انتقالي</b>.</p>
+    <p><b>الخطوة 2 — اختيار إعداد الدخول:</b></p>
+    <table>
+      <tr><th>الإعداد</th><th>متى</th><th>الافتراضي</th></tr>
+      <tr><td><b>أ. اختراق + إعادة اختبار</b></td><td>اختراق حقيقي لمستوى ثم عودة لإعادة اختباره ← تداول استمرارية مع الاتجاه.</td><td>مفعّل</td></tr>
+      <tr><td><b>ب. اختراق زائف + استعادة</b></td><td>اختراق زائف يُغلق مجدداً داخل النطاق ← تداول الانعكاس.</td><td>مفعّل</td></tr>
+      <tr><td><b>ج. تلاشي النطاق (Range Fade)</b></td><td>تلاشي طرفَي النطاق عندما يكون السوق عرضياً.</td><td>معطّل</td></tr>
+    </table>
+    <p><b>الخطوة 3 — هرمية "أموال البيت":</b> <b>يضيف للمركز</b> فقط عندما تكون السلة الحالية بالفعل عند <b>نقطة التعادل/آمنة</b> (بدون مخاطرة)، بحجم <b>متناقص</b>، باستخدام <b>وقف خسارة واحد للسلة</b> يتبع البنية — لا يترك أبداً سلة رابحة تعود إلى الخسارة.</p>
+    <div class="callout">تعرض لوحة المعلومات <b>نظام السوق</b>، <b>انحياز HTF</b>، <b>ADX</b>، و<b>Status</b> التي توضح ما إذا كان الروبوت يفحص / ينتظر إعادة اختبار / يحتفظ بسلة / متوقف مؤقتاً.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>جدول المعاملات (المجموعات الرئيسية)</h2>
+
+    <h3>نظام السوق</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>ADX_Period</code></td><td>14</td><td>فترة ADX.</td></tr>
+      <tr><td><code>ADX_RangeBelow</code></td><td>20</td><td>ADX &lt; العتبة ← عرضي.</td></tr>
+      <tr><td><code>ADX_TrendAbove</code></td><td>25</td><td>ADX &gt; العتبة ← اتجاهي (بين الاثنين = انتقالي).</td></tr>
+      <tr><td><code>EMA_Fast / EMA_Slow</code></td><td>21 / 50</td><td>EMA سريع/بطيء (البنية والانحياز).</td></tr>
+      <tr><td><code>HTF_Timeframe</code></td><td>H1</td><td>الإطار الزمني الأكبر للانحياز.</td></tr>
+      <tr><td><code>Require_HTF_Align</code></td><td>true</td><td>التداول فقط مع انحياز الإطار الزمني الأكبر.</td></tr>
+    </table>
+
+    <h3>إعدادات الدخول</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>Use_BreakoutRetest</code></td><td>true</td><td>تفعيل الإعداد أ (اختراق + إعادة اختبار).</td></tr>
+      <tr><td><code>Use_FakeoutReclaim</code></td><td>true</td><td>تفعيل الإعداد ب (انعكاس الاختراق الزائف).</td></tr>
+      <tr><td><code>Use_RangeFade</code></td><td>false</td><td>تفعيل الإعداد ج (تلاشي الأطراف عند التداول العرضي).</td></tr>
+      <tr><td><code>Min_RR</code></td><td>1.5</td><td>الحد الأدنى لنسبة R:R للدخول.</td></tr>
+      <tr><td><code>SL_Buffer_ATR</code></td><td>0.4</td><td>مسافة وقف الخسارة من نقطة البنية ×ATR.</td></tr>
+      <tr><td><code>Min_Bars_Between</code></td><td>1</td><td>الحد الأدنى من الشموع بين دخولين أساسيين.</td></tr>
+    </table>
+
+    <h3>الهرمية (إضافات أموال البيت)</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>Use_Pyramid</code></td><td>true</td><td>تفعيل الإضافات.</td></tr>
+      <tr><td><code>Max_Adds</code></td><td>3</td><td>الحد الأقصى للإضافات (إجمالي المراكز = Max_Adds + 1).</td></tr>
+      <tr><td><code>Add_Lot_Factor</code></td><td>0.6</td><td>معامل حجم اللوت لكل إضافة (&lt;1 = متناقص، موصى به).</td></tr>
+      <tr><td><code>Add_Trigger_ATR</code></td><td>1.0</td><td>الإضافة فقط عندما تكون السلة رابحة بـ ≥ ×ATR.</td></tr>
+      <tr><td><code>Lock_Buffer_ATR</code></td><td>0.15</td><td>يجب أن يكون وقف خسارة السلة ≥ نقطة التعادل + ×ATR للسماح بالإضافة (بدون مخاطرة).</td></tr>
+      <tr><td><code>Pyramid_BasketTrail</code></td><td>true</td><td>بعد الإضافة: إلغاء هدف الربح الثابت، استخدام تريلينغ السلة.</td></tr>
+    </table>
+
+    <h3>وقف خسارة السلة / التريلينغ</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>Trail_ATR_Mult</code></td><td>2.0</td><td>تريلينغ بمقدار ×ATR.</td></tr>
+      <tr><td><code>Trail_By_Structure</code></td><td>true</td><td>تريلينغ حسب أحدث تأرجح (swing).</td></tr>
+      <tr><td><code>Exit_On_StructBreak</code></td><td>true</td><td>إغلاق السلة بالكامل عند كسر البنية.</td></tr>
+    </table>
+
+    <h3>إدارة رأس المال</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>Use_Risk_Percent</code></td><td>true</td><td>حساب حجم اللوت حسب % المخاطرة (للدخول الأساسي).</td></tr>
+      <tr><td><code>Risk_Percent</code></td><td>0.5</td><td>% المخاطرة للدخول الأول.</td></tr>
+      <tr><td><code>Fixed_Lot</code></td><td>0.01</td><td>حجم لوت ثابت إذا كانت نسبة المخاطرة معطلة.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>99020202</td><td>معرّف صفقات الروبوت.</td></tr>
+    </table>
+
+    <h3>الترخيص</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(فارغ)</td><td>مفتاح الترخيص (القسم 2). إلزامي للحساب التجريبي/الحقيقي.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(فارغ)</td><td>رقم حساب MT5 المطابق للمفتاح (6–10 أرقام).</td></tr>
+    </table>
+
+    <h3>حماية الحساب</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>MaxSpread_Points</code></td><td>300</td><td>الحد الأقصى للفارق السعري المسموح للدخول (نقاط).</td></tr>
+      <tr><td><code>Slippage_Points</code></td><td>20</td><td>الحد الأقصى للانزلاق السعري عند التنفيذ (نقاط).</td></tr>
+      <tr><td><code>Max_Trades_Per_Day</code></td><td>30</td><td>الحد الأقصى لعدد الصفقات يومياً.</td></tr>
+      <tr><td><code>Daily_Max_Loss_Percent</code></td><td>3.0</td><td>خسارة ≥ % من حقوق الملكية في بداية اليوم ← توقف لبقية اليوم.</td></tr>
+    </table>
+
+    <h3>فلتر التوقيت (وقت الخادم)</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>Use_Session_Filter</code></td><td>true</td><td>تفعيل قيود ساعات التداول.</td></tr>
+      <tr><td><code>Session_Start_Hour</code></td><td>7</td><td>ساعة البداية (~لندن).</td></tr>
+      <tr><td><code>Session_End_Hour</code></td><td>23</td><td>ساعة النهاية (~إغلاق نيويورك).</td></tr>
+      <tr><td><code>Avoid_Rollover</code></td><td>true</td><td>تجنب لحظة التمديد (rollover) (تغيير اليوم).</td></tr>
+      <tr><td><code>Rollover_Buffer_Min</code></td><td>5</td><td>الدقائق التي تُتجنب حول التمديد.</td></tr>
+    </table>
+
+    <h3>العرض</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>Show_Dashboard</code></td><td>true</td><td>إظهار لوحة المعلومات على الرسم البياني.</td></tr>
+      <tr><td><code>Verbose_Log</code></td><td>false</td><td>سجل مفصّل (فعّله فقط عند تصحيح الأخطاء).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>لوحة المعلومات على الرسم البياني</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLD SCALP</span><span>XAUUSD M15</span></div>
+      <div class="rows">
+        <span class="l">Regime</span><span class="g">UPTREND</span>
+        <span class="l">HTF Bias</span><span class="w">UP (H1)</span>
+        <span class="l">ADX</span><span class="w">27.4</span>
+        <span class="l">Status</span><span class="g">HOLDING BASKET</span>
+        <span class="l">Basket</span><span class="g">LONG 2 trades 0.03l</span>
+        <span class="l">Basket P/L</span><span class="g">+38.20 [safe]</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>السطر</th><th>المعنى</th></tr>
+      <tr><td><b>Regime</b></td><td>عرضي / اتجاه صعودي / اتجاه هبوطي / انتقالي.</td></tr>
+      <tr><td><b>HTF Bias</b></td><td>انحياز الإطار الزمني الأكبر (صعودي / هبوطي / محايد).</td></tr>
+      <tr><td><b>ADX</b></td><td>قيمة ADX الحالية.</td></tr>
+      <tr><td><b>Balance / Equity</b></td><td>الرصيد، صافي حقوق الملكية.</td></tr>
+      <tr><td><b>Spread</b></td><td>الفارق السعري الحالي (أحمر إذا تجاوز <code>MaxSpread_Points</code>).</td></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">SCANNING</span> / <span class="pill p-amber">WAITING RETEST ↑↓</span> / <span class="pill p-green">HOLDING BASKET</span> / <span class="pill p-red">PAUSED</span> (حد يومي · فارق سعري مرتفع · خارج الجلسة).</td></tr>
+      <tr><td><b>Basket</b></td><td>الاتجاه + عدد الصفقات + إجمالي حجم لوت سلة الهرمية (— إذا كانت فارغة).</td></tr>
+      <tr><td><b>Basket P/L</b></td><td>ربح/خسارة السلة + علامة <code>[safe]</code> (بدون مخاطرة) أو <code>[at risk]</code>.</td></tr>
+      <tr><td><b>Today</b></td><td>صفقات اليوم + ربح/خسارة اليوم.</td></tr>
+      <tr><td><b>Max DD</b></td><td>أكبر سحب لحقوق الملكية (%).</td></tr>
+    </table>
+    <div class="callout">تظهر لوحة المعلومات فقط على <b>رسم بياني حقيقي</b> أو <b>اختبار خلفي بوضع Visual</b>؛ يخفيها الاختبار الخلفي العادي عادةً لزيادة السرعة.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>ملفات .set الموصى بها</h2>
+    <p>4 مستويات حسب المخاطرة (المجلد <code>setfiles/</code>):</p>
+    <table>
+      <tr><th>الملف</th><th>مستوى المخاطرة</th><th>أقصى سحب</th><th>مناسب لـ</th></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_SAFE.set</code></td><td>آمن (1.0%)</td><td>~10%</td><td>الحفاظ على رأس المال / المبتدئين.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_BALANCED.set</code></td><td>متوازن (1.5%)</td><td>~14%</td><td>منحنى رأس مال سلس، سحب منخفض.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_AGGRESSIVE.set</code></td><td>عدواني (2.0%)</td><td>~19%</td><td><b>موصى به</b> — أفضل توازن ربح/مخاطرة (+139%).</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_MAX.set</code></td><td>أقصى (2.5%)</td><td>~29%</td><td>أقصى ربح، سحب قريب من سقف الـ 30%.</td></tr>
+    </table>
+    <p>جميعها مُحسّنة لزوج <b>XAUUSD M15</b>. للتحميل: علامة التبويب <b>Inputs → Load</b> ← اختر الملف. لحفظ إعداداتك الخاصة: <b>Save</b>.</p>
+    <div class="callout">💡 <b>آلية العمل:</b> يحسب الروبوت حجم اللوت حسب <b>% المخاطرة</b> (<code>Use_Risk_Percent=true</code>)، لذا فهو <b>يتكيف تلقائياً مع رصيدك</b> — الملفات الأربعة أعلاه تعمل مع <b>أي حجم حساب</b>، وتبقى نسبة العائد كما هي سواء بـ 1,000 أو 100,000 دولار.</div>
+
+    <h3>ملفات إعدادات حسب حجم الحساب (اختياري)</h3>
+    <p>إذا كنت تفضّل <b>اختياراً سريعاً حسب الرصيد</b> أو تفضّل <b>حجم لوت ثابت</b> بدلاً من النسبة المئوية، استخدم مجموعة ملفات <code>&lt;المستوى&gt;_&lt;الحجم&gt;.set</code> (24 ملفاً = 4 مستويات × 6 أحجام). يحتفظ كل ملف بـ <code>Use_Risk_Percent=true</code> (يعمل تماماً مثل ملف المستوى الأساسي)، لكنه يحتوي مسبقاً على <b><code>Fixed_Lot</code> مُعدّ مسبقاً</b> لذلك الحجم كخيار احتياطي — إذا بدّلت إلى <code>Use_Risk_Percent=false</code>، سيعمل الروبوت بحجم اللوت الثابت الصحيح دون حساب يدوي.</p>
+    <table>
+      <tr><th>رأس المال (دولار)</th><th>SAFE</th><th>BALANCED</th><th>AGGRESSIVE</th><th>MAX</th></tr>
+      <tr><td>1,000</td><td>0.01</td><td>0.02</td><td>0.02</td><td>0.03</td></tr>
+      <tr><td>5,000</td><td>0.05</td><td>0.08</td><td>0.10</td><td>0.13</td></tr>
+      <tr><td>10,000</td><td>0.10</td><td>0.15</td><td>0.20</td><td>0.25</td></tr>
+      <tr><td>20,000</td><td>0.20</td><td>0.30</td><td>0.40</td><td>0.50</td></tr>
+      <tr><td>50,000</td><td>0.50</td><td>0.75</td><td>1.00</td><td>1.25</td></tr>
+      <tr><td>100,000</td><td>1.00</td><td>1.50</td><td>2.00</td><td>2.50</td></tr>
+    </table>
+    <p>مثال: رأس مال 10,000 دولار، مستوى عدواني ← حمّل <code>Dralvo_Gold_Scalp_AGGRESSIVE_10k.set</code> (مخاطرة 2.0%، Fixed_Lot احتياطي 0.20).</p>
+    <div class="callout">⚠️ <code>Fixed_Lot</code> هو <b>احتياطي</b> فقط — بشكل افتراضي يظل الروبوت يحسب حسب % المخاطرة. أرقام الاختبار الخلفي المُتحقق منها هي بوضع <b>% المخاطرة</b>.</div>
+    <div class="callout"><code>InpLicenseKey</code>/<code>InpMT5Account</code> خاصان بكل مستخدم و<b>لا</b> يُحفظان في ملفات <code>.set</code> المشتركة — أدخلهما يدوياً على كل جهاز.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>أداء الاختبار الخلفي (تم التحقق منه)</h2>
+    <p>الأرقام مبنية على <b>بيانات تيك حقيقية لزوج XAUUSD من GTC (جودة 98%)</b>، نموذج <i>Every tick based on real ticks</i>، رأس مال <b>10,000 دولار</b>، الفترة <b>سبتمبر 2023 → يونيو 2026 (~2.8 سنة)</b>. تم <b>إعادة تحسين</b> المعاملات بخوارزمية جينية (4,342 دورة) ثم التحقق منها بتيكات حقيقية.</p>
+
+    <h3>الربح حسب السنة (SAFE · مخاطرة 1%) — إيجابي طوال السنوات الأربع</h3>
+    <table>
+      <tr><th>السنة</th><th style="text-align:right">الربح</th></tr>
+      <tr><td>2023 (سبتمبر–ديسمبر)</td><td style="text-align:right;color:var(--green)">+1,966</td></tr>
+      <tr><td>2024</td><td style="text-align:right;color:var(--green)">+1,164</td></tr>
+      <tr><td>2025</td><td style="text-align:right;color:var(--green)">+1,565</td></tr>
+      <tr><td>2026 (يناير–يونيو)</td><td style="text-align:right;color:var(--green)">+992</td></tr>
+    </table>
+    <div class="callout">ملحوظ: كانت سنتا <b>2024 و2025</b> (تداول عرضي كثيف للذهب) مربحتين كلتاهما — أمر أصلحته النسخة الجديدة المُحسّنة مقارنة بالنسخة السابقة.</div>
+
+    <h3>حسب مستوى المخاطرة (10,000 دولار · ~2.8 سنة)</h3>
+    <table>
+      <tr><th>المستوى</th><th style="text-align:right">المخاطرة</th><th style="text-align:right">صافي الربح</th><th style="text-align:right">النمو</th><th style="text-align:right">PF</th><th style="text-align:right">أقصى سحب</th><th style="text-align:right">الصفقات</th></tr>
+      <tr><td><b>SAFE</b></td><td style="text-align:right">1.0%</td><td style="text-align:right;color:var(--green)">+5,686.94</td><td style="text-align:right">+56.9%</td><td style="text-align:right">1.90</td><td style="text-align:right">9.7%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>BALANCED</b></td><td style="text-align:right">1.5%</td><td style="text-align:right;color:var(--green)">+9,550.00</td><td style="text-align:right">+95.5%</td><td style="text-align:right"><b>1.91</b></td><td style="text-align:right">14.3%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>AGGRESSIVE ★</b></td><td style="text-align:right">2.0%</td><td style="text-align:right;color:var(--green)">+13,899.00</td><td style="text-align:right">+139.0%</td><td style="text-align:right">1.89</td><td style="text-align:right">18.8%</td><td style="text-align:right">111</td></tr>
+      <tr><td><b>MAX</b></td><td style="text-align:right">2.5%</td><td style="text-align:right;color:var(--green)">+15,830.55</td><td style="text-align:right">+158.3%</td><td style="text-align:right">1.80</td><td style="text-align:right">28.6%</td><td style="text-align:right">109</td></tr>
+    </table>
+    <p><b>قراءة سريعة:</b> يبقى معامل الربح مستقراً عند <b>~1.9</b> (أعلى بكثير من ~1.2 السابق)، ويزداد السحب خطياً مع المخاطرة، و<b>تبقى جميع المستويات تحت سقف الـ 30%</b>. المستوى الموصى به <b>AGGRESSIVE (2.0%)</b>: +139% بسحب لا يزال أقل من 20%.</p>
+    <div class="callout">✅ تم التحقق في 30-06-2026 باستخدام MT5 Strategy Tester على تيكات حقيقية من GTC (جودة 98%). تأكيد مماثل ببيانات Exness (2024–2026) (تبلغ جودة Exness 70% فقط، لذا فسنواتها الأولى أقل موثوقية).</div>
+    <div class="callout warn">⚠️ الاختبار الخلفي <b>لا يضمن</b> المستقبل. هذا نظام سكالبينغ يتطلب <b>وسيطاً ذا فارق سعري منخفض</b>؛ الفارق السعري/العمولة/الانزلاق تؤثر مباشرة على النتيجة ← قم أولاً باختبار استشرافي على حساب تجريبي. الأطر الزمنية الأخرى المُختبرة (M5/M1/H1) كانت دائماً <b>أضعف من M15</b>.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>استكشاف الأخطاء وإصلاحها</h2>
+    <table>
+      <tr><th>العرض</th><th>السبب / الحل</th></tr>
+      <tr><td>يعرض الروبوت <b>"Contact telegram: @edgardinh86"</b></td><td>خطأ ترخيص: (1) لم تُضف <code>https://www.dralvo.com</code> إلى القائمة البيضاء (القسم 2). (2) المفتاح + الحساب غير مكتملين. (3) الحساب غير مطابق. (4) لا يوجد اتصال بالإنترنت.</td></tr>
+      <tr><td>الروبوت لا يفتح صفقات</td><td>(1) Algo Trading غير مفعّل. (2) الفارق السعري &gt; <code>MaxSpread_Points</code> (لوحة المعلومات باللون الأحمر). (3) خارج ساعات الجلسة. (4) بلغ <code>Daily_Max_Loss_Percent</code> أو <code>Max_Trades_Per_Day</code>. (5) شروط الإعداد لم تتحقق بعد (انظر Status).</td></tr>
+      <tr><td>عدد قليل جداً من الصفقات</td><td>وقت طويل في نظام <b>انتقالي (TRANSITION)</b>؛ فكّر بتفعيل <code>Use_RangeFade</code> أو <code>Require_HTF_Align=false</code> (أكثر خطورة).</td></tr>
+      <tr><td>إضافات كثيرة جداً / مخاطرة مرتفعة</td><td>قلّل <code>Max_Adds</code>، خفّض <code>Add_Lot_Factor</code>، ارفع <code>Lock_Buffer_ATR</code>.</td></tr>
+      <tr><td>حجم اللوت كبير/صغير جداً</td><td>تحقق من <code>Use_Risk_Percent</code> / <code>Risk_Percent</code> (أو <code>Fixed_Lot</code>).</td></tr>
+      <tr><td>لا توجد لوحة معلومات</td><td><code>Show_Dashboard=true</code> والتشغيل على رسم بياني حقيقي/visual.</td></tr>
+    </table>
+    <p style="color:var(--mut)">راجع التفاصيل في علامتي التبويب <b>Toolbox → Experts</b> و<b>Journal</b> (فعّل <code>Verbose_Log=true</code> لفحص أعمق).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>تحذير المخاطر</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-right:18px;padding-left:0">
+        <li>التداول بالهامش ينطوي على مخاطر عالية. <b>لا يوجد إعداد يضمن الربح.</b></li>
+        <li>شغّل دائماً حساباً <b>تجريبياً / اختباراً استشرافياً</b> لفترة كافية قبل استخدام أموال حقيقية.</li>
+        <li>تزيد الهرمية من الربح والمخاطرة معاً عند سوء الإعداد — افهم <code>Max_Adds</code>، <code>Add_Lot_Factor</code> قبل زيادتهما.</li>
+        <li>ملفات <code>.set</code> المرفقة هي نقطة انطلاق؛ يجب ضبطها حسب وسيطك والفارق السعري والتقلبات الحقيقية.</li>
+        <li>تداول فقط برأس المال الذي يمكنك تحمّل خسارته.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo Gold Scalp © Dralvo — دليل الاستخدام v2.00</footer>
+
+</div>
+</body>
+</html>

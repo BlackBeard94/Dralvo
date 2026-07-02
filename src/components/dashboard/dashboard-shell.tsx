@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, Bell } from "lucide-react";
+import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
-import { MarketHeader } from "@/components/dashboard/market-header";
+import { NotificationTicker } from "@/components/dashboard/notification-ticker";
+import { NotificationsBell } from "@/components/dashboard/notifications-bell";
+import { NotificationsProvider } from "@/components/dashboard/notifications-provider";
 import { ProductAnalyticsTracker } from "@/components/dashboard/product-analytics-tracker";
 import { AffiliateConversionTracker } from "@/components/affiliate/affiliate-conversion-tracker";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
@@ -24,17 +26,32 @@ export interface DashboardShellProps {
   planTier?: string;
   planStatus?: string;
   isAdmin?: boolean;
+  isPartner?: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
 /*  Helpers                                                                   */
 /* -------------------------------------------------------------------------- */
 
-function formatUTCTime(date: Date): string {
-  const hh = String(date.getUTCHours()).padStart(2, "0");
-  const mm = String(date.getUTCMinutes()).padStart(2, "0");
-  const ss = String(date.getUTCSeconds()).padStart(2, "0");
+// Local clock — uses the visitor's own device timezone (Vietnam → GMT+7,
+// US → EST/PDT, etc.).
+function formatLocalTime(date: Date): string {
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  const ss = String(date.getSeconds()).padStart(2, "0");
   return `${hh}:${mm}:${ss}`;
+}
+
+// Short timezone label for the visitor's locale, e.g. "GMT+7" or "EST".
+function localTimezoneLabel(): string {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZoneName: "short" }).formatToParts(
+      new Date(),
+    );
+    return parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+  } catch {
+    return "";
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -47,10 +64,12 @@ export function DashboardShell({
   planTier = "Free",
   planStatus = "free",
   isAdmin = false,
+  isPartner = false,
 }: DashboardShellProps) {
   const pathname = usePathname();
   const { locale } = useLocale();
   const navCopy = DASHBOARD_COPY[locale].nav;
+  const c = DASHBOARD_COPY[locale].dashboardShellExtra;
   const pageTitle = pathname.startsWith("/dashboard/drivers")
     ? navCopy.drivers
     : pathname.startsWith("/dashboard/alerts")
@@ -67,11 +86,14 @@ export function DashboardShell({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  /* ---- clock ---- */
+  /* ---- clock (visitor's local timezone) ---- */
   const [now, setNow] = useState(() => new Date());
-  const timeString = formatUTCTime(now);
+  const timeString = formatLocalTime(now);
+  // Resolve the timezone label after mount to avoid an SSR/client mismatch.
+  const [tzLabel, setTzLabel] = useState("");
 
   useEffect(() => {
+    setTzLabel(localTimezoneLabel());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
@@ -95,6 +117,7 @@ export function DashboardShell({
   }, []);
 
   return (
+    <NotificationsProvider>
     <div className="flex h-dvh bg-deep">
       <ProductAnalyticsTracker />
       <AffiliateConversionTracker />
@@ -104,6 +127,7 @@ export function DashboardShell({
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed((prev) => !prev)}
           isAdmin={isAdmin}
+          isPartner={isPartner}
           userEmail={userEmail}
           planTier={planTier}
           planStatus={planStatus}
@@ -122,7 +146,7 @@ export function DashboardShell({
           />
           {/* Drawer */}
           <div className="relative z-50 h-full w-60 animate-slide-in-left">
-            <SidebarNav collapsed={false} onToggle={closeMobileSidebar} isAdmin={isAdmin} userEmail={userEmail} planTier={planTier} planStatus={planStatus} />
+            <SidebarNav collapsed={false} onToggle={closeMobileSidebar} isAdmin={isAdmin} isPartner={isPartner} userEmail={userEmail} planTier={planTier} planStatus={planStatus} />
           </div>
         </div>
       )}
@@ -170,29 +194,43 @@ export function DashboardShell({
               </span>
             </div>
 
-            {/* UTC clock */}
+            {/* Local clock — visitor's own timezone */}
             <time
               className="hidden sm:block text-xs font-mono text-text-secondary tabular-nums select-none"
               dateTime={now.toISOString()}
               suppressHydrationWarning
             >
-              {timeString} UTC
+              {timeString}
+              {tzLabel ? ` ${tzLabel}` : ""}
             </time>
 
             <LanguageSwitcher className="h-8 min-w-12" />
             <ThemeToggle className="h-8 w-8" />
 
             {/* ── Notifications bell ── */}
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-gold/5 transition-colors cursor-pointer">
-              <Bell size={16} />
-            </button>
+            <NotificationsBell />
           </div>
         </header>
 
+        {/* ── System / status ticker — flush under the header, full width ── */}
+        <NotificationTicker
+          tone={planTier !== "Free" ? "vip" : "free"}
+          items={
+            planTier !== "Free"
+              ? [
+                  c.vipTickerAccess,
+                  c.vipTickerLicense,
+                ]
+              : [
+                  c.freeTickerIb,
+                  c.freeTickerUpgrade,
+                ]
+          }
+          action={planTier !== "Free" ? undefined : { label: c.upgradeVipAction, href: "/pricing" }}
+        />
+
         {/* ── Content ── */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-4">
-          {/* ponytail: hide Twelve Data card on admin pages */}
-          {!pathname.startsWith("/dashboard/admin") && <MarketHeader />}
           {children}
         </main>
       </div>
@@ -212,5 +250,6 @@ export function DashboardShell({
         }
       `}</style>
     </div>
+    </NotificationsProvider>
   );
 }

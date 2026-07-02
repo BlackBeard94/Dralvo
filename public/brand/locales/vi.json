@@ -1,0 +1,35 @@
+{
+  "dir": "ltr",
+  "label": "Tiếng Việt",
+  "fontUI": "Inter, 'Segoe UI', Arial, sans-serif",
+  "fontDisp": "'Playfair Display', Georgia, serif",
+  "tagline": "DRILL INTO GOLD · NO FAKE DATA",
+  "site": "dralvo.com",
+  "disclaimer": "Backtest quá khứ — không bảo đảm kết quả tương lai. Giao dịch có rủi ro mất vốn.",
+  "cta": { "free": "Nhận TiGold miễn phí", "try": "Dùng thử", "start": "Bắt đầu", "vip": "Nâng cấp VIP" },
+  "img": {
+    "ig":   { "h": ["Robot giao dịch vàng", "XAUUSD tự động"], "stats": "Net +139% · PF 1.89 · Max DD 18.8% · 33 tháng" },
+    "story":{ "h": ["Vàng, nhưng", "có kỷ luật"], "sub": "EA XAUUSD cho MetaTrader 5" },
+    "cover":{ "h": "Drill into gold.", "sub": "Robot giao dịch vàng XAUUSD · MT5 · No Fake Data" },
+    "yt":   { "h": ["BACKTEST", "KHÔNG PHÉT"], "sub": "Net +139% · Max DD 18.8%" },
+    "quote":{ "a": "“Đừng nhìn win rate,", "b": "hãy nhìn kỳ vọng toán học.”", "attr": "R:R × win rate — Dralvo" },
+    "ads": {
+      "leaderboard": { "h": "Robot vàng XAUUSD", "s": "No fake data · MT5" },
+      "rectangle":   { "h": "Drill into gold", "s": "EA XAUUSD cho MT5" },
+      "skyscraper":  { "h": "Vàng|có kỷ luật", "s": "MT5 · No fake data" },
+      "mobile":      { "h": "Robot vàng", "s": "XAUUSD · No fake data" }
+    },
+    "emailTag": "DRILL INTO GOLD · NO FAKE DATA"
+  },
+  "web": {
+    "navRobots": "Robots", "navWhy": "No Fake Data", "navPricing": "Bảng giá", "navStart": "Bắt đầu",
+    "heroEyebrow": "Drill into gold · No fake data",
+    "heroH": ["Robot giao dịch", "vàng XAUUSD", "tự động"],
+    "heroSub": "EA cho MetaTrader 5, minh bạch bằng chính bộ backtest đã kiểm chứng — công khai cả drawdown và tháng thua.",
+    "ctaFree": "Nhận TiGold miễn phí", "ctaBacktest": "Xem backtest",
+    "secProdEyebrow": "Sản phẩm", "secProdTitle": "3 robot, 1 triết lý",
+    "whyEyebrow": "Vì sao khác biệt", "whyTitle": "“No Fake Data”",
+    "whyLede": "Đa số nhóm EA khoe “lãi 100%/tháng” rồi lặng lẽ xoá khi cháy tài khoản. Dralvo đi ngược: mỗi robot công khai đúng bộ số backtest — kèm cả drawdown và tháng thua.",
+    "pricingEyebrow": "Bảng giá VIP", "pricingTitle": "Mở khoá toàn bộ robot"
+  }
+}

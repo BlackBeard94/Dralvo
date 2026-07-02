@@ -3,37 +3,51 @@
  * ponytail: single isAdmin() check + can() permission guard, replaces the
  * two duplicate isAdmin() functions in /api/admin/affiliate/* routes.
  */
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import type { AdminUser, AdminPermissions, AdminPermissionAction } from "./types";
 
-// Cached admin user to avoid double query (layout + page)
-let _cachedAdmin: AdminUser | null | undefined = undefined;
-
-function cacheKey(userId: string) {
-  return `__admin_${userId}`;
-}
-
-/** Check if current logged-in user is an admin. Returns admin row if so. */
-export async function getAdmin(): Promise<AdminUser | null> {
+/**
+ * Resolve the current logged-in user's admin row (or null).
+ * Wrapped in React `cache()` so it de-dupes within ONE request (layout + page)
+ * but is NEVER cached across requests — permission changes take effect on the
+ * next navigation/refresh (no stale globalThis cache, no server restart needed).
+ */
+export const getAdmin = cache(async (): Promise<AdminUser | null> => {
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll() { return cookieStore.getAll(); }, setAll() { } } },
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll(); },
+        // Persist a refreshed session when auth.getUser() rotates the token.
+        // The proxy skips getUser() for self-guarded API routes (perf), so this
+        // is what keeps admin sessions alive during long polling. Wrapped in
+        // try/catch: cookies() is read-only in Server Components (only writable
+        // in Route Handlers / Server Actions) → silently ignore there.
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          } catch { /* Server Component context — refresh handled on the next page load */ }
+        },
+      },
+    },
   );
 
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) return null;
 
-  // ponytail: per-request cache — layout + page may both call getAdmin()
-  const key = cacheKey(user.id);
-  if ((globalThis as any)[key] !== undefined) return (globalThis as any)[key];
-
-  // ponytail: env var fallback — if AFFILIATE_ADMIN_IDS has this user, they're super_admin
-  // even without DB table. Same pattern the affiliate admin routes use.
-  const envIds = (process.env.AFFILIATE_ADMIN_IDS ?? "").split(",").filter(Boolean);
+  // env var fallback — a user id listed here is treated as super_admin even
+  // without an admin_users row. Prefer the clearly-named SUPER_ADMIN_IDS;
+  // AFFILIATE_ADMIN_IDS is kept only for backward compat (its name is
+  // misleading — it grants FULL super_admin, not just affiliate scope).
+  const envIds = [
+    ...(process.env.SUPER_ADMIN_IDS ?? "").split(","),
+    ...(process.env.AFFILIATE_ADMIN_IDS ?? "").split(","),
+  ].map((s) => s.trim()).filter(Boolean);
   const envFallback = envIds.includes(user.id);
 
   const adminClient = getSupabaseAdminClient();
@@ -45,28 +59,21 @@ export async function getAdmin(): Promise<AdminUser | null> {
       .select("*")
       .eq("user_id", user.id)
       .limit(1);
-
     if (dbError) {
       console.error("[getAdmin] service_role query failed:", dbError.message, dbError.code);
     } else if (data && data.length > 0) {
-      const admin = data[0] as AdminUser;
-      (globalThis as any)[key] = admin;
-      return admin;
+      return data[0] as AdminUser;
     }
   }
 
   // DB path 2: authenticated user (needs RLS policy on admin_users)
-  // ponytail: fallback for when service_role key misconfigured but RLS policy exists
   const { data: authData, error: authErr } = await supabase
     .from("admin_users")
     .select("*")
     .eq("user_id", user.id)
     .limit(1);
-
   if (!authErr && authData && authData.length > 0) {
-    const admin = authData[0] as AdminUser;
-    (globalThis as any)[key] = admin;
-    return admin;
+    return authData[0] as AdminUser;
   }
 
   // Env var fallback
@@ -77,8 +84,9 @@ export async function getAdmin(): Promise<AdminUser | null> {
       role: "super_admin",
       permissions: {
         users: { view: true, edit: true },
+        license: { manage: true },
         finance: { view: true },
-        vps: { manage: true },
+        marketing: { view: true },
         affiliate: { manage: true },
         admins: { manage: true },
       },
@@ -86,13 +94,11 @@ export async function getAdmin(): Promise<AdminUser | null> {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    (globalThis as any)[key] = synthetic;
     return synthetic;
   }
 
-  (globalThis as any)[key] = null;
   return null;
-}
+});
 
 /** Quick boolean: is the current user an admin? */
 export async function isAdmin(): Promise<boolean> {
@@ -128,9 +134,11 @@ export async function listSubAdmins(): Promise<AdminUser[]> {
 }
 
 /**
- * ponytail: fetch emails for many user IDs in ONE call.
- * Supabase auth.admin doesn't support batch getUserById, so we list all
- * users and index by ID. Callers that only need a few IDs pay one round-trip.
+ * Fetch emails for many user IDs in ONE targeted query.
+ * Reads `profiles.email` (kept in sync on signup) filtered by the exact ids —
+ * an indexed `.in("id", …)` lookup. Much faster than auth.admin.listUsers()
+ * (which is a slow GoTrue round-trip capped at 100 users) and it scales past
+ * 100. Any id without a profile row resolves to null.
  */
 async function batchGetEmails(
   adminClient: ReturnType<typeof getSupabaseAdminClient>,
@@ -140,14 +148,10 @@ async function batchGetEmails(
   if (!adminClient || userIds.length === 0) return map;
 
   const unique = [...new Set(userIds)];
-  // ponytail: listUsers is the only bulk-read; max 100 per page, iterate if needed
-  const { data } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 100 });
-  const allUsers = data?.users ?? [];
-
-  for (const uid of unique) {
-    const found = allUsers.find((u) => u.id === uid);
-    map.set(uid, found?.email ?? null);
-  }
+  const { data } = await adminClient.from("profiles").select("id, email").in("id", unique);
+  for (const row of data ?? []) map.set(row.id as string, (row.email as string | null) ?? null);
+  // Guarantee every requested id is present (null if it has no profile row).
+  for (const uid of unique) if (!map.has(uid)) map.set(uid, null);
   return map;
 }
 

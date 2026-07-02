@@ -1,56 +1,37 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft, ShieldCheck, TrendingUp } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
-import { BrandLink } from "@/components/shared/brand";
 import { NavBar } from "@/components/shared/nav-bar";
+import { MainNavActions } from "@/components/shared/site-nav";
+import { mainNavLinks } from "@/components/shared/nav-links";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { DRALVO_BACKTEST } from "@/lib/backtest-stats";
+import { GOLDMASTER } from "@/lib/backtest-stats";
 import { TRACK_RECORD_COPY } from "@/lib/i18n";
 import { useLocale } from "@/hooks/use-locale";
 import { cn } from "@/lib/utils";
 
-const usd = (n: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(n);
+/* Metrics come from the canonical GoldMaster backtest (same figure as the
+   landing) — the recommended 5%-risk configuration. Labels kept in English. */
+const gm = GOLDMASTER;
+const gmStat = (k: string) => gm.tradeStats.find((s) => s.key === k)?.value ?? "—";
+const gmStar = gm.riskMatrix.find((r) => r.star);
+const gmFinal = gm.finalBalance.split("→").pop()?.trim() ?? gm.finalBalance;
 
-/** Trading metric labels are kept in English (universal in trading UIs). */
 const METRICS: { label: string; value: string; tone?: "good" | "bad" }[] = [
-  { label: "Starting balance", value: usd(DRALVO_BACKTEST.initialDeposit) },
-  { label: "Net profit", value: `+${usd(DRALVO_BACKTEST.netProfit)}`, tone: "good" },
-  { label: "Total return", value: `+${DRALVO_BACKTEST.netProfitPct}%`, tone: "good" },
-  { label: "Profit factor", value: DRALVO_BACKTEST.profitFactor.toFixed(2) },
-  {
-    label: "Win rate",
-    value: `${(DRALVO_BACKTEST.winRate * 100).toFixed(1)}%`,
-  },
-  {
-    label: "Trades",
-    value: `${DRALVO_BACKTEST.totalTrades} (${DRALVO_BACKTEST.wins}W / ${DRALVO_BACKTEST.losses}L)`,
-  },
-  { label: "Avg win", value: `+${usd(DRALVO_BACKTEST.avgWin)}`, tone: "good" },
-  { label: "Avg loss", value: `-${usd(DRALVO_BACKTEST.avgLoss)}`, tone: "bad" },
-  { label: "Reward : Risk", value: `${DRALVO_BACKTEST.rewardRisk} : 1` },
-  {
-    label: "Max drawdown (equity)",
-    value: `${DRALVO_BACKTEST.maxEquityDrawdownPct}%`,
-    tone: "bad",
-  },
-  {
-    label: "Max losing streak",
-    value: `${DRALVO_BACKTEST.maxConsecutiveLosses}`,
-    tone: "bad",
-  },
-  { label: "Sharpe / Recovery", value: `${DRALVO_BACKTEST.sharpeRatio} / ${DRALVO_BACKTEST.recoveryFactor}` },
+  { label: "Starting balance", value: "$10,000" },
+  { label: "Final balance", value: gmFinal, tone: "good" },
+  { label: "Total return", value: gm.headline[0].value, tone: "good" },
+  { label: "CAGR", value: gmStar?.extra ?? "—", tone: "good" },
+  { label: "Profit factor", value: gm.headline[1].value },
+  { label: "Win rate", value: gmStat("winRate") },
+  { label: "Trades", value: gmStat("trades") },
+  { label: "Reward : Risk", value: gmStat("rr") },
+  { label: "Avg win", value: gmStat("avgWin"), tone: "good" },
+  { label: "Avg loss", value: gmStat("avgLoss"), tone: "bad" },
+  { label: "Max drawdown (equity)", value: gmStar?.ddEquity ?? gm.headline[3].value, tone: "bad" },
+  { label: "Recommended risk", value: gm.recommendedRisk },
 ];
-
-const MYFXBOOK_URL = process.env.NEXT_PUBLIC_MYFXBOOK_EMBED_URL;
 
 export default function TrackRecordPage() {
   const { locale } = useLocale();
@@ -60,8 +41,9 @@ export default function TrackRecordPage() {
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
       <NavBar
         navClassName="fixed top-0 left-0 right-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border"
-        containerClassName="max-w-[1100px] mx-auto px-6"
-        links={[{ label: t.back, href: "/" }]}
+        containerClassName="max-w-[1180px] mx-auto px-6"
+        links={mainNavLinks(locale, "/track-record")}
+        actions={<MainNavActions locale={locale} />}
       />
 
 
@@ -91,8 +73,8 @@ export default function TrackRecordPage() {
         <section className="relative py-12 px-6 bg-surface">
           <div className="max-w-[1000px] mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-semibold mb-2">{t.backtestHeading}</h2>
-              <p className="text-text-muted text-sm font-mono">{t.backtestNote}</p>
+              <h2 className="text-2xl sm:text-3xl font-semibold mb-2">{gm.name} — 8-year backtest</h2>
+              <p className="text-text-muted text-sm font-mono">XAUUSD · {gm.timeframe} · 2018–2026 · $10K basis · @ {gm.recommendedRisk} risk</p>
             </div>
             <div className="grid grid-cols-1  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {METRICS.map((m) => (
@@ -119,7 +101,7 @@ export default function TrackRecordPage() {
               ))}
             </div>
             <p className="text-[11px] mt-5 text-center text-text-muted">
-              {DRALVO_BACKTEST.source} · {DRALVO_BACKTEST.strategy}
+              MT5 Strategy Tester · {gm.name} {gm.version} · {t.backtestCaption}
             </p>
           </div>
         </section>
@@ -144,34 +126,6 @@ export default function TrackRecordPage() {
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
-
-        {/* Live track record (Myfxbook) */}
-        <section className="relative py-16 px-6 bg-surface">
-          <div className="max-w-[900px] mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-semibold mb-2 inline-flex items-center gap-2 justify-center">
-                <TrendingUp size={22} className="text-gold" />
-                {t.liveHeading}
-              </h2>
-            </div>
-            {MYFXBOOK_URL ? (
-              <div className="rounded-xl border border-border overflow-hidden bg-card">
-                <iframe
-                  src={MYFXBOOK_URL}
-                  title="Myfxbook track record"
-                  className="w-full h-[520px]"
-                  loading="lazy"
-                />
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed border-border bg-card p-10 text-center">
-                <p className="text-text-secondary text-sm leading-relaxed max-w-[520px] mx-auto">
-                  {t.liveSoon}
-                </p>
-              </div>
-            )}
           </div>
         </section>
 

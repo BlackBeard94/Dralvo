@@ -6,10 +6,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import { getAffiliateByUserId, getAffiliateStats } from "@/lib/affiliate/server";
+import { getAffiliateByUserId, getAffiliateStats, getOpenPayout } from "@/lib/affiliate/server";
+import { getAffiliateSettings } from "@/lib/affiliate/settings";
 import type { AffiliateCommission } from "@/lib/affiliate/types";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -28,7 +29,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Not an affiliate" }, { status: 404 });
     }
 
-    const stats = await getAffiliateStats(affiliate.id);
+    const [stats, openPayout, settings] = await Promise.all([
+      getAffiliateStats(affiliate.id),
+      getOpenPayout(affiliate.id),
+      getAffiliateSettings(),
+    ]);
 
     // Also fetch recent commissions
     const adminClient = getSupabaseAdminClient();
@@ -53,7 +58,9 @@ export async function GET(request: NextRequest) {
       },
       stats,
       commissions,
-      referralUrl: `https://www.dralvo.com?ref=${affiliate.code}`,
+      openPayout,
+      minPayout: settings.min_payout,
+      referralUrl: `${(process.env.NEXT_PUBLIC_SITE_URL || "https://www.dralvo.com").replace(/\/$/, "")}/?ref=${affiliate.code}`,
     });
   } catch (error) {
     console.error("[Affiliate Stats]", error);

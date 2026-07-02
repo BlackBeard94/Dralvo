@@ -7,7 +7,7 @@ import {
   extractNumericValue,
   needsPreviousValue,
 } from "./evaluate";
-import type { Alert, AlertCondition } from "@/types/alerts";
+import type { AlertCondition } from "@/types/alerts";
 import type { IndicatorSnapshot } from "@/data/indicators";
 import type { GoldThesis } from "@/lib/intelligence/gold-thesis";
 

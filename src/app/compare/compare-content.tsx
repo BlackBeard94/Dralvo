@@ -44,7 +44,8 @@ export function CompareContent() {
           <p className="text-text-secondary mt-5 max-w-[680px] leading-relaxed">{t.intro}</p>
         </header>
 
-        <section className="overflow-x-auto rounded-xl border border-border bg-card">
+        {/* Desktop / tablet: side-by-side comparison table */}
+        <section className="hidden sm:block overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full text-[13.5px] min-w-[640px]">
             <thead>
               <tr className="text-left">
@@ -68,6 +69,33 @@ export function CompareContent() {
             </tbody>
           </table>
         </section>
+
+        {/* Mobile: the 3-column table can't fit a phone width, so stack each
+            dimension as a card — keeps the Dralvo column (the differentiator)
+            fully visible instead of hidden behind a horizontal scroll. */}
+        <div className="sm:hidden space-y-3">
+          {t.rows.map((r) => (
+            <div key={r.dim} className="rounded-xl border border-border bg-card p-4">
+              <div className="text-[11px] uppercase tracking-[0.05em] text-text-muted font-medium mb-3">{r.dim}</div>
+              <div className="space-y-3 text-[13.5px]">
+                <div className="flex items-start gap-2.5">
+                  <X size={16} className="shrink-0 mt-0.5 text-red" />
+                  <div>
+                    <div className="mb-0.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.05em] text-red/80"><AlertTriangle size={11} /> {t.th.grid}</div>
+                    <div className="text-text-secondary">{r.grid}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5 border-t border-border pt-3">
+                  <Check size={16} className="shrink-0 mt-0.5 text-green" />
+                  <div>
+                    <div className="mb-0.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.05em] text-gold-bright"><ShieldCheck size={11} /> {t.th.dralvo}</div>
+                    <div className="text-text-primary">{r.dralvo}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <section className="mt-12">
           <h2 className="text-2xl font-normal tracking-[-0.01em] mb-4" style={{ fontFamily: SERIF }}>{t.whyTitle}</h2>

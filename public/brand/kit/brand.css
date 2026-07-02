@@ -1,0 +1,157 @@
+/* ============================================================================
+   DRALVO — Brand Design System (single source of truth for the brand kit)
+   Phases 2 (Color) · 3 (Typography) · 5 (Components)
+   Gold-on-dark, luxe gold trading identity.
+   ========================================================================== */
+
+/* Fonts aligned to the production app (globals.css + layout.tsx): Geist = UI/sans,
+   DM Serif Display = luxe display, JetBrains Mono = data. (App dropped Playfair.) */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---- Gold ramp (brand primary) ---- */
+  --gold-50:  #FDF3D3;
+  --gold-100: #FDE9A8;
+  --gold-200: #FCD535;   /* bright / highlight */
+  --gold-300: #F0C24A;
+  --gold-400: #F0B90B;   /* PRIMARY */
+  --gold-500: #C99A08;
+  --gold-600: #B8860B;
+  --gold-700: #8B6914;
+  --gold-800: #7A5C0C;
+  --gold-900: #4D3A06;
+  --gold-metal: linear-gradient(160deg,#FDE9A8 0%,#F0C24A 30%,#B8860B 52%,#F0C24A 72%,#7A5C0C 100%);
+  --gold-sheen: linear-gradient(180deg,#FCD535 0%,#F0B90B 55%,#B8860B 100%);
+
+  /* ---- Neutrals (dark, default) ---- */
+  --deep:    #0B0E11;   /* page */
+  --coin:    #15181E;   /* deep raised */
+  --surface: #181A20;
+  --card:    #1E2329;
+  --border:  #2B3139;
+  --border-2:#3A424D;
+  --text:    #EAECEF;
+  --text-2:  #A7B0BC;
+  --text-3:  #848E9C;
+  --text-4:  #5E6673;
+
+  /* ---- Semantic (trading) ---- */
+  --long:  #0ECB81;   --long-bg:  rgba(14,203,129,.12);
+  --short: #F6465D;   --short-bg: rgba(246,70,93,.12);
+  --info:  #3B9CF0;   --warn: #F0B90B;
+
+  /* ---- Effects ---- */
+  --ring: rgba(240,185,11,.55);
+  --glow: 0 0 24px rgba(240,185,11,.18);
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-2: 0 10px 30px -12px rgba(0,0,0,.6);
+  --shadow-3: 0 24px 60px -20px rgba(0,0,0,.7);
+
+  /* ---- Type ---- */
+  --font-display: 'DM Serif Display', Georgia, serif;   /* luxe headings (single weight) */
+  --font-ui: 'Geist', 'Inter', system-ui, sans-serif;   /* UI / body */
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;/* numbers / data */
+
+  /* ---- Scale / layout ---- */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 22px; --r-full: 999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px; --sp-8:48px; --sp-10:64px;
+  --maxw: 1200px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  margin: 0; background: var(--deep); color: var(--text);
+  font-family: var(--font-ui); font-size: 16px; line-height: 1.65;
+}
+
+/* ---- Typography scale ---- */
+.display { font-family: var(--font-display); font-weight: 400; line-height: 1.05; letter-spacing: -.01em; }
+h1, .h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(38px,6vw,68px); line-height:1.06; margin:0 0 .3em; }
+h2, .h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(28px,4vw,42px); line-height:1.12; margin:0 0 .4em; }
+h3, .h3 { font-family: var(--font-ui); font-weight: 700; font-size: 22px; margin:0 0 .4em; }
+h4, .h4 { font-family: var(--font-ui); font-weight: 600; font-size: 17px; margin:0 0 .4em; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-400); }
+.lede { font-size: clamp(17px,2vw,20px); color: var(--text-2); line-height:1.7; }
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--text-3); }
+.gold-text { background: var(--gold-sheen); -webkit-background-clip: text; background-clip: text; color: transparent; }
+a { color: var(--gold-300); text-decoration: none; }
+
+/* ---- Layout helpers ---- */
+.container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+.grid { display: grid; gap: 20px; }
+.row { display: flex; gap: 16px; align-items: center; }
+.between { justify-content: space-between; }
+.wrap { flex-wrap: wrap; }
+.stack > * + * { margin-top: var(--sp-4); }
+.section { padding: clamp(48px,8vw,96px) 0; }
+hr.rule { border:0; height:1px; background:linear-gradient(90deg,transparent,var(--border-2),transparent); margin: var(--sp-6) 0; }
+
+/* ---- Buttons ---- */
+.btn {
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  font-family: var(--font-ui); font-weight:600; font-size:15px;
+  padding:12px 22px; border-radius: var(--r-sm); border:1px solid transparent;
+  transition: transform .12s ease, box-shadow .2s ease, background .2s ease; text-decoration:none;
+}
+.btn:active { transform: translateY(1px); }
+.btn-gold { background: var(--gold-sheen); color:#3d2f00; box-shadow: var(--glow); }
+.btn-gold:hover { box-shadow: 0 0 30px rgba(240,185,11,.35); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--border-2); }
+.btn-ghost:hover { background: var(--surface); border-color: var(--gold-700); }
+.btn-lg { padding:15px 28px; font-size:16px; }
+
+/* ---- Card ---- */
+.card {
+  background: linear-gradient(180deg,var(--card),var(--surface));
+  border:1px solid var(--border); border-radius: var(--r-lg);
+  padding: 24px; box-shadow: var(--shadow-2);
+}
+.card-gold { border-color: var(--gold-700); box-shadow: var(--shadow-2), inset 0 1px 0 rgba(253,233,168,.06); }
+.card:hover { border-color: var(--border-2); }
+
+/* ---- Badge / pill ---- */
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; font-weight:600;
+  letter-spacing:.06em; padding:5px 11px; border-radius: var(--r-full); border:1px solid var(--border-2); color: var(--text-2); }
+.badge-gold { color: var(--gold-200); border-color: var(--gold-700); background: rgba(240,185,11,.08); }
+.badge-long { color: var(--long); border-color: transparent; background: var(--long-bg); }
+.badge-short{ color: var(--short); border-color: transparent; background: var(--short-bg); }
+.badge-live::before { content:''; width:6px; height:6px; border-radius:50%; background: var(--gold-200); box-shadow:0 0 0 0 rgba(240,185,11,.6); animation: pulse 2s infinite; }
+
+/* ---- Input ---- */
+.input, .select, .textarea {
+  width:100%; background: var(--coin); border:1px solid var(--border); color: var(--text);
+  border-radius: var(--r-sm); padding:11px 14px; font-family: var(--font-ui); font-size:15px; outline:none;
+  transition: border .15s ease, box-shadow .15s ease;
+}
+.input:focus, .select:focus, .textarea:focus { border-color: var(--gold-600); box-shadow: 0 0 0 3px rgba(240,185,11,.15); }
+.label { display:block; font-size:13px; color: var(--text-3); margin-bottom:6px; font-weight:500; }
+
+/* ---- Stat / KPI ---- */
+.kpi { background: var(--surface); border:1px solid var(--border); border-radius: var(--r-md); padding:18px 20px; }
+.kpi .k-label { font-size:12px; color: var(--text-3); text-transform:uppercase; letter-spacing:.08em; }
+.kpi .k-value { font-family: var(--font-mono); font-weight:600; font-size:26px; margin-top:4px; }
+
+/* ---- Table ---- */
+.tbl { width:100%; border-collapse:collapse; font-size:14px; }
+.tbl th { text-align:left; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); padding:10px 12px; border-bottom:1px solid var(--border); }
+.tbl td { padding:12px; border-bottom:1px solid var(--border); font-family:var(--font-mono); }
+.tbl tr:hover td { background: rgba(255,255,255,.02); }
+.num-pos { color: var(--long); } .num-neg { color: var(--short); }
+
+/* ---- Swatch (guideline) ---- */
+.sw { height:96px; border-radius:12px; display:flex; align-items:flex-end; padding:10px 12px; font-family:var(--font-mono); font-size:11px; }
+
+/* ---- Animations ---- */
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(240,185,11,.5)} 70%{box-shadow:0 0 0 7px rgba(240,185,11,0)} 100%{box-shadow:0 0 0 0 rgba(240,185,11,0)} }
+@keyframes fadeUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:none} }
+@keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+@keyframes sheen { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+.reveal { animation: fadeUp .7s cubic-bezier(.22,.61,.36,1) both; }
+.sheen-line { height:1px; background:linear-gradient(90deg,transparent,var(--gold-400),var(--gold-200),var(--gold-400),transparent); background-size:200% 100%; animation: shimmer 4s ease-in-out infinite; }
+
+/* ---- Utilities ---- */
+.center { text-align:center; }
+.tag-noise::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:.02;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }

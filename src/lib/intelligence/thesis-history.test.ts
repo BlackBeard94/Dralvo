@@ -45,6 +45,19 @@ function thesis(
       title: "Relationship",
       summary: "Relationship summary",
     },
+    tradeSimulation: {
+      action: "stand_aside",
+      bias: "neutral",
+      confidence: "low",
+      priceBasis: null,
+      entryZone: null,
+      stopLoss: null,
+      takeProfit: null,
+      invalidation: null,
+      title: "Stand aside",
+      summary: "No simulated trade",
+      rationale: [],
+    },
     changeConditions: [],
   };
 }

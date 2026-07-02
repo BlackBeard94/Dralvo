@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo TiGold — Panduan Penggunaan</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);
+    padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;
+    border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;
+    padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;
+    padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;
+    padding:8px 12px;display:flex;justify-content:space-between;font-size:14px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;
+    padding-top:18px;border-top:1px solid var(--line)}
+
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{
+    body{background:#fff}
+    .toc{break-inside:avoid}
+    h2{break-after:avoid}
+    table{break-inside:auto}
+    .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    th,.dash,.badge,.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;TiGOLD</span>
+    <h1>Panduan Penggunaan</h1>
+    <p>EA trading otomatis untuk XAUUSD / BTCUSD di MetaTrader 5 — satu posisi tunggal, trailing stop adaptif, 3 lapis proteksi modal.</p>
+    <div class="ver">Versi 2.00 · File: Dralvo TiGold.ex5</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Daftar Isi</b>
+    <ol>
+      <li><a href="#caidat">Instalasi</a></li>
+      <li><a href="#points">Memahami "points"</a></li>
+      <li><a href="#thamso">Tabel Parameter</a></li>
+      <li><a href="#dashboard">Dashboard di Chart</a></li>
+      <li><a href="#set">File .set yang Disarankan</a></li>
+      <li><a href="#suco">Pemecahan Masalah</a></li>
+      <li><a href="#ruiro">Peringatan Risiko</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Instalasi</h2>
+    <ol class="steps">
+      <li>Tutup MetaTrader 5 (jika sedang terbuka).</li>
+      <li>Buka folder data: <b>File → Open Data Folder</b>.</li>
+      <li>Salin <code>Dralvo TiGold.ex5</code> ke <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Atau salin file <code>.mq5</code>, buka MetaEditor lalu klik <b>Compile (F7)</b>.)</span></li>
+      <li>Buka kembali MT5 → <b>Navigator → Expert Advisors</b>, klik kanan lalu <b>Refresh</b> jika belum muncul.</li>
+      <li>Seret <b>Dralvo TiGold</b> ke chart <b>XAUUSD</b> atau <b>BTCUSD</b> (disarankan M1/M5).</li>
+      <li>Tab <b>Common</b>: centang <b>Allow Algo Trading</b>. Tab <b>Inputs</b>: klik <b>Load</b> lalu pilih file <code>.set</code> yang sesuai.</li>
+      <li>Klik <b>OK</b>, lalu aktifkan tombol <b>Algo Trading</b> di toolbar (menyala hijau).</li>
+    </ol>
+    <div class="callout">Jika berjalan dengan benar, <b>panel Dralvo TiGold</b> akan muncul di sudut kiri atas chart (lihat bagian 4).</div>
+  </section>
+
+  <section id="points">
+    <h2><span class="n">2.</span>Memahami "points" — baca sebelum menyesuaikan</h2>
+    <p>Sebagian besar parameter diukur dalam <b>points</b>, dan nilai point <b>berbeda tergantung broker</b>:</p>
+    <table>
+      <tr><th>Simbol</th><th>Digit</th><th>1 point</th><th>Konversi</th></tr>
+      <tr><td>Emas 3 digit (mis. XAUUSDm)</td><td>3</td><td>0.001</td><td>1.00 harga = 1000 points</td></tr>
+      <tr><td>Emas 2 digit (mis. XAUUSD)</td><td>2</td><td>0.01</td><td>1.00 harga = 100 points</td></tr>
+      <tr><td>BTC 2 digit (mis. BTCUSDm)</td><td>2</td><td>0.01</td><td>1 USD = 100 points</td></tr>
+    </table>
+    <div class="callout warn"><b>Jumlah points yang sama memberikan hasil berbeda antar broker.</b> Selalu gunakan file <code>.set</code> yang sesuai dengan broker/simbol Anda, atau konversi sendiri. Saat startup, EA mencetak <code>digits</code> dan <code>point</code> simbol ke <b>Journal</b>.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">3.</span>Tabel Parameter</h2>
+
+    <h3>Umum</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpSymbol</code></td><td>(kosong)</td><td>Simbol trading. Kosong = gunakan simbol chart.</td></tr>
+      <tr><td><code>InpMagic</code></td><td>20260626</td><td>Identifier order. Gunakan angka berbeda per EA/simbol agar tidak konflik.</td></tr>
+      <tr><td><code>InpSlippage</code></td><td>30</td><td>Slippage maksimum saat eksekusi (points).</td></tr>
+      <tr><td><code>InpMaxSpread</code></td><td>350</td><td>Spread maksimum yang diizinkan untuk entry (points). Lebih lebar → dilewati. 0 = nonaktif.</td></tr>
+    </table>
+
+    <h3>Mesin Entry</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpEntrySensitivity</code></td><td>0</td><td>Sensitivitas deteksi sinyal (points). 0 = otomatis.</td></tr>
+      <tr><td><code>InpEntryFilter</code></td><td>3</td><td>Langkah konfirmasi sebelum entry. Lebih tinggi = lebih selektif, lebih sedikit transaksi.</td></tr>
+      <tr><td><code>InpReentryDelay</code></td><td>0</td><td>Waktu tunggu minimum antara dua transaksi (detik).</td></tr>
+    </table>
+
+    <h3>Filter Tren</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpUseTrendFilter</code></td><td>true</td><td>Hanya entry saat tren cukup kuat searah sinyal.</td></tr>
+      <tr><td><code>InpTrendPeriod</code></td><td>3</td><td>Jumlah candle M1 yang digunakan untuk mengukur tren.</td></tr>
+      <tr><td><code>InpTrendStrength</code></td><td>300</td><td>Ambang tren (points). Lebih besar = memerlukan tren lebih kuat.</td></tr>
+    </table>
+
+    <h3>Filter Waktu</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpUseTimeFilter</code></td><td>true</td><td>Aktifkan batasan jam trading.</td></tr>
+      <tr><td><code>InpStartHour</code></td><td>8</td><td>Jam mulai diizinkan entry (waktu server, 0–23).</td></tr>
+      <tr><td><code>InpEndHour</code></td><td>22</td><td>Jam akhir. Start = End → tanpa batasan.</td></tr>
+    </table>
+
+    <h3>Proteksi — proteksi modal</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpMaxLossStreak</code></td><td>0</td><td>Berapa kekalahan beruntun yang memicu jeda. 0 = nonaktif.</td></tr>
+      <tr><td><code>InpPauseMinutes</code></td><td>60</td><td>Durasi jeda setelah dipicu (menit).</td></tr>
+      <tr><td><code>InpDailyStopPercent</code></td><td>0</td><td>Kerugian melebihi % ekuitas awal hari → jeda untuk sisa hari (otomatis lanjut esok hari). 0 = nonaktif.</td></tr>
+    </table>
+
+    <h3>Filter Berita — hanya LIVE</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpUseNewsFilter</code></td><td>true</td><td>Berhenti entry di sekitar jam berita (dari Kalender Ekonomi MT5).</td></tr>
+      <tr><td><code>InpNewsMinsBefore</code></td><td>15</td><td>Menit jeda sebelum berita.</td></tr>
+      <tr><td><code>InpNewsMinsAfter</code></td><td>15</td><td>Menit jeda setelah berita.</td></tr>
+      <tr><td><code>InpNewsImpact</code></td><td>High only</td><td>Tingkat dampak yang dihindari: hanya High, atau High + Medium.</td></tr>
+      <tr><td><code>InpNewsCurrencies</code></td><td>USD</td><td>Mata uang yang dipantau (dipisah koma, mis. USD,EUR). Kosong = semua.</td></tr>
+    </table>
+    <div class="callout warn">Filter berita <b>tidak berfungsi di Strategy Tester</b> (tester tidak memiliki kalender). Hanya berlaku saat demo/live.</div>
+
+    <h3>Exit / Trailing</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpStopLoss</code></td><td>2500</td><td>Stop loss awal (points).</td></tr>
+      <tr><td><code>InpTrailStart</code></td><td>500</td><td>Profit minimum untuk mulai menggeser SL (points).</td></tr>
+      <tr><td><code>InpTrailDistance</code></td><td>1000</td><td>Jarak SL mengikuti harga (points).</td></tr>
+      <tr><td><code>InpTrailStep</code></td><td>50</td><td>Langkah minimum setiap kali SL digeser (points).</td></tr>
+    </table>
+
+    <h3>Manajemen Modal</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpLotMode</code></td><td>Fixed lot</td><td>Mode perhitungan lot: Fixed (tetap) atau Auto (berdasarkan modal).</td></tr>
+      <tr><td><code>InpFixedLot</code></td><td>0.10</td><td>[Fixed] Volume tetap.</td></tr>
+      <tr><td><code>InpEquityBasis</code></td><td>Balance</td><td>[Auto] Basis modal: Balance / Equity / Margin bebas.</td></tr>
+      <tr><td><code>InpCapitalPerLot</code></td><td>1000</td><td>[Auto] Setiap sejumlah modal ini...</td></tr>
+      <tr><td><code>InpLotPerStep</code></td><td>0.10</td><td>[Auto] ...gunakan sejumlah lot ini.</td></tr>
+      <tr><td><code>InpMaxLot</code></td><td>0</td><td>Batas atas lot untuk keamanan. 0 = hanya batasan broker.</td></tr>
+    </table>
+    <div class="callout"><b>Rumus lot otomatis:</b> <code>lot = InpLotPerStep × (modal / InpCapitalPerLot)</code>.<br>
+    Default: setiap 1000 modal → 0.10 lot ⇒ modal 5000 = 0.50 lot, modal 10000 = 1.00 lot. Lot naik seiring modal dan turun seiring modal.</div>
+
+    <h3>Tampilan</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpShowPanel</code></td><td>true</td><td>Tampilkan panel informasi di chart.</td></tr>
+      <tr><td><code>InpDebugLog</code></td><td>false</td><td>Log detail (aktifkan hanya untuk debugging).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">4.</span>Dashboard di Chart</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO TiGOLD</span><span>XAUUSD</span></div>
+      <div class="rows">
+        <span class="l">Status</span><span class="g">RUNNING</span>
+        <span class="l">Equity</span><span class="w">10,248.50</span>
+        <span class="l">Today P/L</span><span class="g">+248.50</span>
+        <span class="l">Spread</span><span class="w">28 pts</span>
+        <span class="l">Trades</span><span class="w">W18&nbsp;&nbsp;L13&nbsp;&nbsp;T31&nbsp;&nbsp;(58%)</span>
+        <span class="l">Position</span><span class="g">BUY 0.10&nbsp;&nbsp;+12.40</span>
+        <span class="l">Protection</span><span class="l">Active</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Baris</th><th>Arti</th></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">RUNNING</span> / <span class="pill p-amber">PAUSED · NEWS</span> / <span class="pill p-red">DAILY STOP</span></td></tr>
+      <tr><td><b>Equity</b></td><td>Ekuitas bersih saat ini.</td></tr>
+      <tr><td><b>Today P/L</b></td><td>Untung/rugi hari ini (hijau/merah).</td></tr>
+      <tr><td><b>Spread</b></td><td>Spread saat ini (points).</td></tr>
+      <tr><td><b>Trades</b></td><td>W menang · L kalah · T total · (% win rate) sejak EA dimulai.</td></tr>
+      <tr><td><b>Position</b></td><td>Posisi terbuka (arah, lot, P/L) atau Flat.</td></tr>
+      <tr><td><b>Protection</b></td><td>Active / Loss streak / Pause / News window / Daily limit.</td></tr>
+    </table>
+    <div class="callout">Panel hanya muncul pada <b>chart nyata</b> atau <b>backtest mode Visual</b>; backtest normal/optimisasi biasanya menyembunyikannya demi kecepatan.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">5.</span>File .set yang Disarankan</h2>
+    <table>
+      <tr><th>File</th><th>Untuk</th></tr>
+      <tr><td><code>Dralvo TiGold.set</code></td><td>XAUUSD (broker 3 digit)</td></tr>
+      <tr><td><code>Dralvo TiGold BTC.set</code></td><td>BTCUSD (2 digit)</td></tr>
+    </table>
+    <p>Memuat: tab <b>Inputs → Load</b> → pilih file. Menyimpan konfigurasi sendiri: <b>Save</b>.</p>
+    <div class="callout warn">Jika broker emas Anda menggunakan <b>2 digit</b>, <b>bagi 10</b> parameter points pada set emas: <code>InpStopLoss</code> 2500→250, <code>InpTrendStrength</code> 300→30, <code>InpTrailDistance</code> 1000→100, <code>InpMaxSpread</code> 300→30, <code>InpTrailStart</code> 500→50, <code>InpTrailStep</code> 50→5.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">6.</span>Pemecahan Masalah</h2>
+    <table>
+      <tr><th>Gejala</th><th>Penyebab / solusi</th></tr>
+      <tr><td>EA tidak melakukan transaksi</td><td>(1) Algo Trading belum aktif. (2) <code>InpMaxSpread</code> lebih kecil dari spread broker → naikkan. (3) Di luar jam Filter Waktu. (4) Sedang dijeda (lihat baris Protection). (5) <code>InpTrendStrength</code> terlalu besar untuk rentang simbol.</td></tr>
+      <tr><td>Transaksi terlalu banyak / berisik</td><td>Naikkan <code>InpEntryFilter</code> dan/atau <code>InpTrendStrength</code>.</td></tr>
+      <tr><td>Lot terlalu besar/kecil</td><td>Periksa <code>InpLotMode</code>, <code>InpFixedLot</code> atau rumus lot otomatis.</td></tr>
+      <tr><td>SL/profit tidak sesuai harapan</td><td>Parameter dalam points — periksa <code>digits</code> simbol (bagian 2).</td></tr>
+      <tr><td>Dashboard tidak muncul</td><td><code>InpShowPanel=true</code> dan berjalan di chart nyata/visual.</td></tr>
+      <tr><td>Filter berita tidak memblokir</td><td>Filter berita hanya berfungsi saat live dan memerlukan broker dengan Kalender Ekonomi; tidak berlaku di Strategy Tester.</td></tr>
+    </table>
+    <p style="color:var(--mut)">Lihat detail di tab <b>Toolbox → Experts</b> dan <b>Journal</b>.</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">7.</span>Peringatan Risiko</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Trading margin berisiko tinggi. <b>Tidak ada konfigurasi yang menjamin profit.</b></li>
+        <li>Selalu jalankan <b>demo / forward test</b> cukup lama sebelum menggunakan uang sungguhan.</li>
+        <li>File <code>.set</code> yang disertakan adalah titik awal; sesuaikan dengan broker, spread, dan volatilitas nyata Anda.</li>
+        <li>Hasil backtest tidak menjamin hasil masa depan; spread/slippage nyata dapat berbeda.</li>
+        <li>Hanya gunakan modal yang siap Anda relakan jika hilang.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo TiGold © Dralvo — Panduan Penggunaan v2.00</footer>
+
+</div>
+</body>
+</html>

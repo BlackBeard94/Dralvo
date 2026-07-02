@@ -2,15 +2,19 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Check } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
+import { InstallAppButton } from "@/components/shared/install-app-button";
+import { SocialLinks } from "@/components/shared/social-links";
 import { NavBar } from "@/components/shared/nav-bar";
+import { MainNavActions } from "@/components/shared/site-nav";
+import { mainNavLinks } from "@/components/shared/nav-links";
+import { COMMON_COPY } from "@/lib/common-copy";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
 import { LANDING_COPY } from "@/lib/landing-copy";
+import { trackInitiateCheckout } from "@/lib/marketing/track";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -84,6 +88,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 export default function PricingPage() {
   const { locale } = useLocale();
   const t = LANDING_COPY[locale];
+  const c = COMMON_COPY[locale];
   const p = t.pricing;
   const [scrolled, setScrolled] = useState(false);
   const [period, setPeriod] = useState<PeriodId>("monthly");
@@ -101,6 +106,7 @@ export default function PricingPage() {
     async () => {
       setCheckoutLoading(true);
       setCheckoutError(null);
+      trackInitiateCheckout(UNLIMITED_PRICING[period].total, "USD");
       try {
         const res = await fetch("/api/stripe/checkout", {
           method: "POST",
@@ -110,14 +116,14 @@ export default function PricingPage() {
         if (res.status === 401) { window.location.href = `/signup?redirect=pricing`; return; }
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.url) { window.location.href = data.url; return; }
-        setCheckoutError(data.error || "Không thể tạo phiên thanh toán. Vui lòng thử lại.");
+        setCheckoutError(data.error || c.errors.checkoutFailed);
       } catch {
-        setCheckoutError("Lỗi kết nối. Vui lòng thử lại.");
+        setCheckoutError(c.errors.connection);
       } finally {
         if (!window.location.href.startsWith("http")) setCheckoutLoading(false);
       }
     },
-    [period],
+    [period, c],
   );
 
   const unlimitedPrice = UNLIMITED_PRICING[period];
@@ -132,15 +138,9 @@ export default function PricingPage() {
       {/* Nav — đồng bộ với landing */}
       <NavBar
         navClassName={cn("transition-all duration-500", scrolled ? "bg-deep/85 backdrop-blur-xl border-b border-border" : "bg-transparent")}
-        links={[
-          { label: t.nav.products, href: "/#products", showFrom: "sm" as const },
-          { label: t.nav.evidence, href: "/#evidence", showFrom: "sm" as const },
-          { label: t.nav.tools, href: "/#fx-tool", showFrom: "md" as const },
-          { label: t.nav.tigold, href: "/tigold", showFrom: "md" as const, className: "font-semibold", style: { color: "#00c98d" } },
-          { label: t.nav.pricing, href: "/pricing", className: "text-gold font-medium" },
-          { label: t.nav.login, href: "/login", showFrom: "md" as const },
-        ]}
-        actions={<Link href="/#pricing" className="rounded-md bg-gold-action px-4 py-2 text-[13px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover hover:scale-[1.03]">{t.nav.cta}</Link>}
+        containerClassName="max-w-[1180px] mx-auto px-6"
+        links={mainNavLinks(locale, "/pricing")}
+        actions={<MainNavActions locale={locale} />}
       />
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -193,6 +193,7 @@ export default function PricingPage() {
                     periodLabel={!isFree ? p.periods[period] : undefined}
                     perMonthLabel={p.perMonth}
                     cta={tier.cta}
+                    redirecting={c.actions.redirecting}
                     popular={popular}
                     popularLabel={p.popular}
                     loading={!isFree && checkoutLoading}
@@ -239,7 +240,7 @@ export default function PricingPage() {
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <button type="button" onClick={checkout} disabled={checkoutLoading}
                 className="px-8 py-3.5 rounded-md text-[15px] font-semibold bg-gold-bright text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03] disabled:opacity-50">
-                {checkoutLoading ? "Đang chuyển..." : t.finalCta.primaryCta}
+                {checkoutLoading ? c.actions.redirecting : t.finalCta.primaryCta}
               </button>
               <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
                 className="px-8 py-3.5 rounded-md text-[15px] font-semibold border border-border text-text-primary no-underline transition-all duration-200 hover:border-gold/30 hover:text-gold">
@@ -258,6 +259,10 @@ export default function PricingPage() {
             <div>
               <BrandLink logoSize={32} wordmarkClassName="text-lg" />
               <p className="text-sm text-text-muted leading-relaxed max-w-[240px] mt-4">{t.footer.tagline}</p>
+              <div className="mt-4 flex flex-nowrap items-center gap-3">
+                <InstallAppButton locale={locale} compact />
+                <SocialLinks />
+              </div>
             </div>
             <div>
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.product}</div>
@@ -299,11 +304,11 @@ export default function PricingPage() {
 /* -------------------------------------------------------------------------- */
 /*  PricingCard                                                                */
 /* -------------------------------------------------------------------------- */
-function PricingCard({ name, tagline, features, price, perMo, off, periodLabel, perMonthLabel, cta, popular = false, popularLabel, loading = false, onCta }: {
+function PricingCard({ name, tagline, features, price, perMo, off, periodLabel, perMonthLabel, cta, redirecting, popular = false, popularLabel, loading = false, onCta }: {
   name: string; tagline: string; features: string[];
   price: number; perMo?: number; off?: number;
   periodLabel?: string; perMonthLabel: string;
-  cta: string; popular?: boolean; popularLabel: string;
+  cta: string; redirecting: string; popular?: boolean; popularLabel: string;
   loading?: boolean; onCta: () => void;
 }) {
   const { ref, visible } = useScrollReveal(0.1);
@@ -334,7 +339,7 @@ function PricingCard({ name, tagline, features, price, perMo, off, periodLabel, 
       <button type="button" onClick={onCta} disabled={loading}
         className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50",
           popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>
-        {loading ? "Đang chuyển..." : cta}
+        {loading ? redirecting : cta}
       </button>
     </div>
   );

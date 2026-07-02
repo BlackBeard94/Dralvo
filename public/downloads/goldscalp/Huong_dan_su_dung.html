@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo Gold Scalp — Hướng dẫn sử dụng</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .dash .a{color:#ebb446}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLD&nbsp;SCALP</span>
+    <h1>Hướng dẫn sử dụng</h1>
+    <p>EA scalping/intraday cho XAUUSD trên MetaTrader 5 — nhận diện trạng thái thị trường, 3 kiểu setup, nhồi lệnh "tiền nhà" &amp; trailing rổ.</p>
+    <div class="ver">Phiên bản 2.00 · File: Dralvo_Gold_Scalp.ex5 · Khung khuyến nghị M15</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Mục lục</b>
+    <ol>
+      <li><a href="#caidat">Cài đặt</a></li>
+      <li><a href="#license">Kích hoạt License</a></li>
+      <li><a href="#logic">EA giao dịch thế nào</a></li>
+      <li><a href="#thamso">Bảng tham số</a></li>
+      <li><a href="#dashboard">Bảng thông tin (Dashboard)</a></li>
+      <li><a href="#set">File .set khuyến nghị</a></li>
+      <li><a href="#hieusuat">Hiệu suất backtest</a></li>
+      <li><a href="#suco">Khắc phục sự cố</a></li>
+      <li><a href="#ruiro">Khuyến cáo rủi ro</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Cài đặt</h2>
+    <ol class="steps">
+      <li>Đóng MetaTrader 5 (nếu đang mở).</li>
+      <li>Mở thư mục dữ liệu: <b>File → Open Data Folder</b>.</li>
+      <li>Chép <code>Dralvo_Gold_Scalp.ex5</code> vào <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Hoặc chép <code>.mq5</code> rồi <b>Compile (F7)</b>.)</span></li>
+      <li>Mở lại MT5 → <b>Navigator → Expert Advisors</b>, chuột phải <b>Refresh</b>.</li>
+      <li>Mở chart <b>XAUUSD</b>, khung <b>M15</b>, kéo <b>Dralvo Gold Scalp</b> vào chart.</li>
+      <li>Tab <b>Common</b>: tick <b>Allow Algo Trading</b>. Tab <b>Inputs</b>: điền <b>License key</b> + <b>MT5 Account</b> (mục 2), nạp <code>.set</code>.</li>
+      <li>Bấm <b>OK</b> → bật <b>Algo Trading</b> trên thanh công cụ (sáng xanh).</li>
+    </ol>
+    <div class="callout">Chạy đúng thì góc trái chart hiện <b>bảng Gold Scalp</b> (xem mục 5).</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>Kích hoạt License — BẮT BUỘC khi chạy demo/live</h2>
+    <p>EA có <b>cổng bản quyền</b>: khi gắn vào chart thật, nó gọi máy chủ Dralvo để kiểm tra key. <b>Thiếu bước này EA sẽ KHÔNG chạy</b> và hiện cảnh báo <code>Liên hệ telegram : @edgardinh86</code>.</p>
+    <div class="callout">Trong <b>Strategy Tester (backtest)</b> cổng license được <b>bỏ qua</b> — backtest luôn chạy mà không cần key.</div>
+
+    <h3>Bước 1 — Lấy License key</h3>
+    <p>Cách lấy key tuỳ theo gói bạn dùng:</p>
+    <table>
+      <tr><th>Gói</th><th>Lấy License key ở đâu</th></tr>
+      <tr><td><b>VIP</b></td><td>Đăng nhập <b>Dashboard tại <code>https://www.dralvo.com</code></b> → mục <b>License / Key</b> → tự lấy key cho từng tài khoản MT5.</td></tr>
+      <tr><td><b>Free</b></td><td>Liên hệ <b>Telegram <code>@edgardinh86</code></b> để nhận <b>License key</b>.</td></tr>
+    </table>
+    <ul>
+      <li>Dù gói nào, key đều <b>gắn với đúng số tài khoản MT5</b> — phải cung cấp/đăng ký đúng số tài khoản.</li>
+      <li>Xem số tài khoản: <b>Navigator</b>, hoặc <b>Tools → Options → Server</b>, hoặc tiêu đề cửa sổ MT5 (6–10 chữ số).</li>
+    </ul>
+    <p>🔹 <b>Gói VIP — hết slot tài khoản:</b> mỗi tài khoản VIP được cấp sẵn một số lượng slot. Khi đã <b>dùng hết (max) số tài khoản</b> mà muốn <b>thêm tài khoản mới</b>, hãy <b>liên hệ admin</b> để được cấp thêm.</p>
+
+    <h3>Bước 2 — Whitelist WebRequest ⚠️ Hay quên nhất</h3>
+    <ol class="steps">
+      <li>Vào <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>Mở tab <b>Expert Advisors</b>.</li>
+      <li>Tick ô <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>Gõ chính xác: <code>https://www.dralvo.com</code></li>
+      <li>Bấm <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">Nếu <b>không</b> làm bước này, dù key đúng EA vẫn báo lỗi và không chạy (kết nối bị MT5 chặn). Đây là <b>nguyên nhân số 1</b>.</div>
+
+    <h3>Bước 3 — Điền key vào Inputs</h3>
+    <table>
+      <tr><th>Tham số</th><th>Điền gì</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>License key (VIP: lấy ở dashboard <code>dralvo.com</code>; Free: nhận từ <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>Số tài khoản MT5 của bạn (6–10 chữ số), khớp với key.</td></tr>
+    </table>
+
+    <h3>Điền key rồi vẫn không chạy? Kiểm tra theo thứ tự</h3>
+    <table>
+      <tr><th>#</th><th>Kiểm tra</th></tr>
+      <tr><td>1</td><td>Đã whitelist <code>https://www.dralvo.com</code> chưa? (Bước 2 — lý do số 1)</td></tr>
+      <tr><td>2</td><td>Điền <b>đủ cả hai</b> ô <code>InpLicenseKey</code> và <code>InpMT5Account</code>?</td></tr>
+      <tr><td>3</td><td>Số tài khoản <b>khớp</b> với key?</td></tr>
+      <tr><td>4</td><td>Có kết nối internet?</td></tr>
+      <tr><td>5</td><td>Gỡ EA ra khỏi chart rồi kéo vào lại sau khi chỉnh xong Options.</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>EA này giao dịch thế nào</h2>
+    <p><b>Bước 1 — Nhận diện trạng thái (Regime):</b> dùng ADX + EMA + bias khung lớn (HTF) để phân loại <b>ĐI NGANG / XU HƯỚNG TĂNG / XU HƯỚNG GIẢM / CHUYỂN TIẾP</b>.</p>
+    <p><b>Bước 2 — Chọn setup vào lệnh:</b></p>
+    <table>
+      <tr><th>Setup</th><th>Khi nào</th><th>Mặc định</th></tr>
+      <tr><td><b>A. Breakout + Retest</b></td><td>Phá biên thật rồi hồi về retest → đánh tiếp diễn thuận xu hướng.</td><td>Bật</td></tr>
+      <tr><td><b>B. Fakeout + Reclaim</b></td><td>Phá vỡ giả, đóng lại trong range → đánh đảo chiều.</td><td>Bật</td></tr>
+      <tr><td><b>C. Range Fade</b></td><td>Fade 2 biên khi thị trường đi ngang.</td><td>Tắt</td></tr>
+    </table>
+    <p><b>Bước 3 — Pyramiding "tiền nhà":</b> chỉ <b>nhồi thêm lệnh</b> khi rổ hiện tại đã về <b>breakeven/an toàn</b> (risk-free), khối lượng <b>giảm dần</b>, dùng <b>một SL rổ chung</b> trail theo cấu trúc — không bao giờ để rổ đang lời quay về âm.</p>
+    <div class="callout">Dashboard hiển thị <b>Trạng thái</b> (regime), <b>Bias HTF</b>, <b>ADX</b>, và <b>Status</b> cho biết EA đang quét / chờ retest / giữ rổ / tạm dừng.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>Bảng tham số (nhóm chính)</h2>
+
+    <h3>Trạng thái thị trường (Regime)</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>ADX_Period</code></td><td>14</td><td>Chu kỳ ADX.</td></tr>
+      <tr><td><code>ADX_RangeBelow</code></td><td>20</td><td>ADX &lt; ngưỡng → đi ngang.</td></tr>
+      <tr><td><code>ADX_TrendAbove</code></td><td>25</td><td>ADX &gt; ngưỡng → có xu hướng (giữa 2 mức = chuyển tiếp).</td></tr>
+      <tr><td><code>EMA_Fast / EMA_Slow</code></td><td>21 / 50</td><td>EMA nhanh/chậm (cấu trúc &amp; thiên hướng).</td></tr>
+      <tr><td><code>HTF_Timeframe</code></td><td>H1</td><td>Khung lớn lấy bias.</td></tr>
+      <tr><td><code>Require_HTF_Align</code></td><td>true</td><td>Chỉ đánh thuận bias khung lớn.</td></tr>
+    </table>
+
+    <h3>Setup vào lệnh</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>Use_BreakoutRetest</code></td><td>true</td><td>Bật setup A (breakout + retest).</td></tr>
+      <tr><td><code>Use_FakeoutReclaim</code></td><td>true</td><td>Bật setup B (đảo chiều phá vỡ giả).</td></tr>
+      <tr><td><code>Use_RangeFade</code></td><td>false</td><td>Bật setup C (fade biên khi đi ngang).</td></tr>
+      <tr><td><code>Min_RR</code></td><td>1.5</td><td>R:R tối thiểu mới vào lệnh.</td></tr>
+      <tr><td><code>SL_Buffer_ATR</code></td><td>0.4</td><td>SL cách điểm cấu trúc ×ATR.</td></tr>
+      <tr><td><code>Min_Bars_Between</code></td><td>1</td><td>Tối thiểu N nến giữa 2 lần mở kèo gốc.</td></tr>
+    </table>
+
+    <h3>Pyramiding (nhồi lệnh tiền nhà)</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>Use_Pyramid</code></td><td>true</td><td>Bật nhồi lệnh.</td></tr>
+      <tr><td><code>Max_Adds</code></td><td>3</td><td>Số lần nhồi tối đa (tổng vị thế = Max_Adds + 1).</td></tr>
+      <tr><td><code>Add_Lot_Factor</code></td><td>0.6</td><td>Hệ số lot mỗi lần nhồi (&lt;1 = giảm dần, khuyến nghị).</td></tr>
+      <tr><td><code>Add_Trigger_ATR</code></td><td>1.0</td><td>Chỉ nhồi khi rổ đã lời ≥ ×ATR.</td></tr>
+      <tr><td><code>Lock_Buffer_ATR</code></td><td>0.15</td><td>SL rổ phải ≥ hòa vốn + ×ATR mới cho nhồi (risk-free).</td></tr>
+      <tr><td><code>Pyramid_BasketTrail</code></td><td>true</td><td>Khi đã nhồi: bỏ TP cứng, dùng trailing rổ.</td></tr>
+    </table>
+
+    <h3>SL rổ / Trailing</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>Trail_ATR_Mult</code></td><td>2.0</td><td>Trailing theo ×ATR.</td></tr>
+      <tr><td><code>Trail_By_Structure</code></td><td>true</td><td>Trail theo swing gần nhất.</td></tr>
+      <tr><td><code>Exit_On_StructBreak</code></td><td>true</td><td>Đóng cả rổ khi gãy cấu trúc.</td></tr>
+    </table>
+
+    <h3>Quản lý vốn</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>Use_Risk_Percent</code></td><td>true</td><td>Tính lot theo % rủi ro (cho lệnh gốc).</td></tr>
+      <tr><td><code>Risk_Percent</code></td><td>0.5</td><td>% rủi ro cho lệnh đầu.</td></tr>
+      <tr><td><code>Fixed_Lot</code></td><td>0.01</td><td>Lot cố định nếu tắt risk %.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>99020202</td><td>Mã định danh lệnh của EA.</td></tr>
+    </table>
+
+    <h3>License</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(trống)</td><td>License key (mục 2). Bắt buộc khi chạy demo/live.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(trống)</td><td>Số tài khoản MT5 khớp với key (6–10 chữ số).</td></tr>
+    </table>
+
+    <h3>Bảo vệ tài khoản</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>MaxSpread_Points</code></td><td>300</td><td>Spread tối đa cho phép vào lệnh (points).</td></tr>
+      <tr><td><code>Slippage_Points</code></td><td>20</td><td>Trượt giá tối đa khi khớp (points).</td></tr>
+      <tr><td><code>Max_Trades_Per_Day</code></td><td>30</td><td>Số lệnh tối đa mỗi ngày.</td></tr>
+      <tr><td><code>Daily_Max_Loss_Percent</code></td><td>3.0</td><td>Lỗ ≥ % vốn đầu ngày → tạm dừng hết ngày.</td></tr>
+    </table>
+
+    <h3>Lọc giờ (server time)</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>Use_Session_Filter</code></td><td>true</td><td>Bật giới hạn giờ giao dịch.</td></tr>
+      <tr><td><code>Session_Start_Hour</code></td><td>7</td><td>Giờ bắt đầu (~London).</td></tr>
+      <tr><td><code>Session_End_Hour</code></td><td>23</td><td>Giờ kết thúc (~kết NY).</td></tr>
+      <tr><td><code>Avoid_Rollover</code></td><td>true</td><td>Né thời điểm rollover (đổi ngày).</td></tr>
+      <tr><td><code>Rollover_Buffer_Min</code></td><td>5</td><td>Số phút né quanh rollover.</td></tr>
+    </table>
+
+    <h3>Hiển thị</h3>
+    <table>
+      <tr><th>Tham số</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+      <tr><td><code>Show_Dashboard</code></td><td>true</td><td>Hiện bảng thông tin trên chart.</td></tr>
+      <tr><td><code>Verbose_Log</code></td><td>false</td><td>Ghi log chi tiết (chỉ bật khi soi lỗi).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>Bảng thông tin trên chart</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLD SCALP</span><span>XAUUSD M15</span></div>
+      <div class="rows">
+        <span class="l">Trạng thái</span><span class="g">XU HƯỚNG TĂNG</span>
+        <span class="l">Bias HTF</span><span class="w">TĂNG (H1)</span>
+        <span class="l">ADX</span><span class="w">27.4</span>
+        <span class="l">Status</span><span class="g">ĐANG GIỮ RỔ</span>
+        <span class="l">Rổ</span><span class="g">LONG 2 lệnh 0.03l</span>
+        <span class="l">Lời rổ</span><span class="g">+38.20 [an toàn]</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Dòng</th><th>Ý nghĩa</th></tr>
+      <tr><td><b>Trạng thái</b></td><td>Regime: ĐI NGANG / XU HƯỚNG TĂNG / XU HƯỚNG GIẢM / CHUYỂN TIẾP.</td></tr>
+      <tr><td><b>Bias HTF</b></td><td>Thiên hướng khung lớn (TĂNG / GIẢM / TRUNG TÍNH).</td></tr>
+      <tr><td><b>ADX</b></td><td>Giá trị ADX hiện tại.</td></tr>
+      <tr><td><b>Balance / Equity</b></td><td>Số dư, vốn ròng.</td></tr>
+      <tr><td><b>Spread</b></td><td>Spread hiện tại (đỏ nếu vượt <code>MaxSpread_Points</code>).</td></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">ĐANG QUÉT</span> / <span class="pill p-amber">CHỜ RETEST ↑↓</span> / <span class="pill p-green">ĐANG GIỮ RỔ</span> / <span class="pill p-red">PAUSED</span> (giới hạn ngày · spread cao · ngoài giờ).</td></tr>
+      <tr><td><b>Rổ</b></td><td>Hướng + số lệnh + tổng lot của rổ pyramid (— nếu trống).</td></tr>
+      <tr><td><b>Lời rổ</b></td><td>P/L rổ + nhãn <code>[an toàn]</code> (risk-free) hoặc <code>[còn rủi ro]</code>.</td></tr>
+      <tr><td><b>Hôm nay</b></td><td>Số lệnh trong ngày + P/L ngày.</td></tr>
+      <tr><td><b>Max DD</b></td><td>Sụt giảm vốn lớn nhất (%).</td></tr>
+    </table>
+    <div class="callout">Dashboard chỉ hiện khi chạy <b>chart thật</b> hoặc <b>backtest Visual mode</b>; backtest thường ẩn cho nhanh.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>File .set khuyến nghị</h2>
+    <p>4 mức theo khẩu vị rủi ro (thư mục <code>setfiles/</code>):</p>
+    <table>
+      <tr><th>File</th><th>Mức rủi ro</th><th>Max DD</th><th>Dùng cho</th></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_SAFE.set</code></td><td>An toàn (1,0%)</td><td>~10%</td><td>Ưu tiên giữ vốn / người mới.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_BALANCED.set</code></td><td>Cân bằng (1,5%)</td><td>~14%</td><td>Đường cong vốn mượt, DD thấp.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_AGGRESSIVE.set</code></td><td>Tăng tốc (2,0%)</td><td>~19%</td><td><b>Khuyến nghị</b> — cân bằng lợi nhuận/rủi ro tốt nhất (+139%).</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_MAX.set</code></td><td>Tối đa (2,5%)</td><td>~29%</td><td>Tối đa lợi nhuận, DD sát trần 30%.</td></tr>
+    </table>
+    <p>Tất cả tối ưu cho <b>XAUUSD M15</b>. Nạp: tab <b>Inputs → Load</b> → chọn file. Lưu cấu hình riêng: <b>Save</b>.</p>
+    <div class="callout">💡 <b>Cách hoạt động:</b> EA tính lot theo <b>% rủi ro</b> (<code>Use_Risk_Percent=true</code>) nên <b>tự co giãn theo số dư</b> — 4 file tier ở trên dùng được cho <b>mọi cỡ vốn</b>, % lợi nhuận giữ nguyên dù 1.000 hay 100.000 USD.</div>
+
+    <h3>Bộ setfile theo mức vốn (tuỳ chọn)</h3>
+    <p>Nếu muốn <b>chọn nhanh theo số dư</b> hoặc thích <b>lot cố định</b> thay vì %, dùng bộ file <code>&lt;TIER&gt;_&lt;vốn&gt;.set</code> (24 file = 4 tier × 6 mức vốn). Mỗi file giữ <code>Use_Risk_Percent=true</code> (chạy y hệt file tier gốc) nhưng đã <b>đặt sẵn <code>Fixed_Lot</code> đúng cho mức vốn đó</b> để dự phòng — nếu đổi <code>Use_Risk_Percent=false</code>, EA chạy đúng lot cố định mà không cần tính tay.</p>
+    <table>
+      <tr><th>Vốn (USD)</th><th>SAFE</th><th>BALANCED</th><th>AGGRESSIVE</th><th>MAX</th></tr>
+      <tr><td>1.000</td><td>0.01</td><td>0.02</td><td>0.02</td><td>0.03</td></tr>
+      <tr><td>5.000</td><td>0.05</td><td>0.08</td><td>0.10</td><td>0.13</td></tr>
+      <tr><td>10.000</td><td>0.10</td><td>0.15</td><td>0.20</td><td>0.25</td></tr>
+      <tr><td>20.000</td><td>0.20</td><td>0.30</td><td>0.40</td><td>0.50</td></tr>
+      <tr><td>50.000</td><td>0.50</td><td>0.75</td><td>1.00</td><td>1.25</td></tr>
+      <tr><td>100.000</td><td>1.00</td><td>1.50</td><td>2.00</td><td>2.50</td></tr>
+    </table>
+    <p>Ví dụ: vốn 10.000 USD, khẩu vị Tăng tốc → nạp <code>Dralvo_Gold_Scalp_AGGRESSIVE_10k.set</code> (Risk 2,0%, Fixed_Lot dự phòng 0.20).</p>
+    <div class="callout">⚠️ <code>Fixed_Lot</code> chỉ là <b>dự phòng</b> — mặc định EA vẫn tính theo % rủi ro. Số liệu backtest đã kiểm chứng là ở chế độ <b>% rủi ro</b>.</div>
+    <div class="callout"><code>InpLicenseKey</code>/<code>InpMT5Account</code> gắn theo người dùng, <b>không</b> lưu trong <code>.set</code> chia sẻ — điền tay trên mỗi máy.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>Hiệu suất backtest (đã kiểm chứng)</h2>
+    <p>Số liệu chạy trên <b>dữ liệu tick thật XAUUSD của GTC (chất lượng 98%)</b>, mô hình <i>Every tick based on real ticks</i>, vốn <b>10.000 USD</b>, giai đoạn <b>09/2023 → 06/2026 (~2,8 năm)</b>. Tham số đã <b>tối ưu lại</b> bằng thuật toán di truyền (4.342 lượt) rồi kiểm chứng real-tick.</p>
+
+    <h3>Lãi theo năm (SAFE · Risk 1%) — DƯƠNG cả 4 năm</h3>
+    <table>
+      <tr><th>Năm</th><th style="text-align:right">Lợi nhuận</th></tr>
+      <tr><td>2023 (09–12)</td><td style="text-align:right;color:var(--green)">+1.966</td></tr>
+      <tr><td>2024</td><td style="text-align:right;color:var(--green)">+1.164</td></tr>
+      <tr><td>2025</td><td style="text-align:right;color:var(--green)">+1.565</td></tr>
+      <tr><td>2026 (01–06)</td><td style="text-align:right;color:var(--green)">+992</td></tr>
+    </table>
+    <div class="callout">Đáng chú ý: <b>2024 và 2025</b> (vàng đi ngang nhiều) đều có lãi — điểm bản tối ưu mới khắc phục so với bản trước.</div>
+
+    <h3>Theo mức rủi ro (10.000 USD · ~2,8 năm)</h3>
+    <table>
+      <tr><th>Profile</th><th style="text-align:right">Risk</th><th style="text-align:right">Lợi nhuận ròng</th><th style="text-align:right">Tăng trưởng</th><th style="text-align:right">PF</th><th style="text-align:right">Max DD</th><th style="text-align:right">Lệnh</th></tr>
+      <tr><td><b>SAFE</b></td><td style="text-align:right">1,0%</td><td style="text-align:right;color:var(--green)">+5.686,94</td><td style="text-align:right">+56,9%</td><td style="text-align:right">1,90</td><td style="text-align:right">9,7%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>BALANCED</b></td><td style="text-align:right">1,5%</td><td style="text-align:right;color:var(--green)">+9.550,00</td><td style="text-align:right">+95,5%</td><td style="text-align:right"><b>1,91</b></td><td style="text-align:right">14,3%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>AGGRESSIVE ★</b></td><td style="text-align:right">2,0%</td><td style="text-align:right;color:var(--green)">+13.899,00</td><td style="text-align:right">+139,0%</td><td style="text-align:right">1,89</td><td style="text-align:right">18,8%</td><td style="text-align:right">111</td></tr>
+      <tr><td><b>MAX</b></td><td style="text-align:right">2,5%</td><td style="text-align:right;color:var(--green)">+15.830,55</td><td style="text-align:right">+158,3%</td><td style="text-align:right">1,80</td><td style="text-align:right">28,6%</td><td style="text-align:right">109</td></tr>
+    </table>
+    <p><b>Đọc nhanh:</b> Profit Factor ổn định <b>~1,9</b> (mạnh hơn hẳn bản cũ ~1,2), DD tăng tuyến tính theo risk, <b>mọi mức dưới trần 30%</b>. Mức <b>AGGRESSIVE (2,0%)</b> khuyến nghị: +139% mà DD vẫn dưới 20%.</p>
+    <div class="callout">✅ Xác minh ngày 2026-06-30 bằng MT5 Strategy Tester real-tick GTC (98% quality). Đối chứng chéo Exness (2024–2026) dương tương đồng (Exness chỉ 70% quality nên các năm đầu kém tin cậy).</div>
+    <div class="callout warn">⚠️ Backtest <b>không đảm bảo</b> tương lai. Là hệ scalping cần <b>broker spread thấp</b>; spread/commission/độ trượt ảnh hưởng trực tiếp → forward-test demo trước. Khung khác (M5/M1/H1) đã test đều <b>kém hơn M15</b>.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>Khắc phục sự cố</h2>
+    <table>
+      <tr><th>Hiện tượng</th><th>Nguyên nhân / xử lý</th></tr>
+      <tr><td>EA báo <b>"Liên hệ telegram : @edgardinh86"</b></td><td>Lỗi license: (1) chưa whitelist <code>https://www.dralvo.com</code> (mục 2). (2) chưa điền đủ key + account. (3) account không khớp. (4) mất internet.</td></tr>
+      <tr><td>EA không vào lệnh</td><td>(1) Chưa bật Algo Trading. (2) Spread &gt; <code>MaxSpread_Points</code> (dashboard đỏ). (3) Ngoài giờ session. (4) Chạm <code>Daily_Max_Loss_Percent</code> hoặc <code>Max_Trades_Per_Day</code>. (5) Chưa đủ điều kiện setup (xem Status).</td></tr>
+      <tr><td>Vào lệnh quá ít</td><td>Thị trường <b>CHUYỂN TIẾP</b> nhiều; cân nhắc bật <code>Use_RangeFade</code> hoặc <code>Require_HTF_Align=false</code> (rủi ro hơn).</td></tr>
+      <tr><td>Nhồi lệnh quá nhiều / rủi ro</td><td>Giảm <code>Max_Adds</code>, hạ <code>Add_Lot_Factor</code>, tăng <code>Lock_Buffer_ATR</code>.</td></tr>
+      <tr><td>Lot quá lớn/nhỏ</td><td>Kiểm tra <code>Use_Risk_Percent</code> / <code>Risk_Percent</code> (hoặc <code>Fixed_Lot</code>).</td></tr>
+      <tr><td>Không thấy dashboard</td><td><code>Show_Dashboard=true</code> và đang chạy chart thật/visual.</td></tr>
+    </table>
+    <p style="color:var(--mut)">Xem chi tiết trong tab <b>Toolbox → Experts</b> và <b>Journal</b> (bật <code>Verbose_Log=true</code> khi cần soi sâu).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>Khuyến cáo rủi ro</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Giao dịch ký quỹ có rủi ro cao. <b>Không có cấu hình nào đảm bảo lợi nhuận.</b></li>
+        <li>Luôn chạy <b>demo / forward test</b> đủ lâu trước khi dùng tiền thật.</li>
+        <li>Pyramiding tăng cả lợi nhuận lẫn rủi ro khi cấu hình sai — hiểu rõ <code>Max_Adds</code>, <code>Add_Lot_Factor</code> trước khi tăng.</li>
+        <li>File <code>.set</code> đi kèm là điểm khởi đầu, cần hiệu chỉnh theo broker, spread và biến động thực tế.</li>
+        <li>Chỉ dùng số vốn bạn chấp nhận mất được.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo Gold Scalp © Dralvo — Hướng dẫn sử dụng v2.00</footer>
+
+</div>
+</body>
+</html>

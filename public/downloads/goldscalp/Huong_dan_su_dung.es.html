@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo Gold Scalp — Guía de Uso</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .dash .a{color:#ebb446}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLD&nbsp;SCALP</span>
+    <h1>Guía de Uso</h1>
+    <p>EA de scalping/intradía para XAUUSD en MetaTrader 5 — detecta el régimen de mercado, 3 tipos de setup, pirámide de "dinero de la casa" y trailing de canasta.</p>
+    <div class="ver">Versión 2.00 · Archivo: Dralvo_Gold_Scalp.ex5 · Timeframe recomendado M15</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Índice</b>
+    <ol>
+      <li><a href="#caidat">Instalación</a></li>
+      <li><a href="#license">Activación de licencia</a></li>
+      <li><a href="#logic">Cómo opera el EA</a></li>
+      <li><a href="#thamso">Tabla de parámetros</a></li>
+      <li><a href="#dashboard">Panel en el gráfico</a></li>
+      <li><a href="#set">Archivos .set recomendados</a></li>
+      <li><a href="#hieusuat">Rendimiento del backtest</a></li>
+      <li><a href="#suco">Solución de problemas</a></li>
+      <li><a href="#ruiro">Aviso de riesgo</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Instalación</h2>
+    <ol class="steps">
+      <li>Cierre MetaTrader 5 (si está abierto).</li>
+      <li>Abra la carpeta de datos: <b>File → Open Data Folder</b>.</li>
+      <li>Copie <code>Dralvo_Gold_Scalp.ex5</code> en <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(O copie el <code>.mq5</code> y pulse <b>Compile (F7)</b>.)</span></li>
+      <li>Vuelva a abrir MT5 → <b>Navigator → Expert Advisors</b>, clic derecho en <b>Refresh</b>.</li>
+      <li>Abra un gráfico de <b>XAUUSD</b>, timeframe <b>M15</b>, y arrastre <b>Dralvo Gold Scalp</b> al gráfico.</li>
+      <li>Pestaña <b>Common</b>: marque <b>Allow Algo Trading</b>. Pestaña <b>Inputs</b>: ingrese su <b>License key</b> + <b>MT5 Account</b> (sección 2), cargue un <code>.set</code>.</li>
+      <li>Pulse <b>OK</b> → active <b>Algo Trading</b> en la barra de herramientas (se enciende en verde).</li>
+    </ol>
+    <div class="callout">Cuando funciona correctamente, el <b>panel Gold Scalp</b> aparece en la esquina superior izquierda del gráfico (vea la sección 5).</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>Activación de licencia — OBLIGATORIA en demo/real</h2>
+    <p>El EA tiene una <b>verificación de licencia</b>: en un gráfico real, llama al servidor de Dralvo para validar la clave. <b>Sin este paso el EA NO funcionará</b> y mostrará el aviso <code>Contact telegram: @edgardinh86</code>.</p>
+    <div class="callout">En el <b>Strategy Tester (backtest)</b> la verificación de licencia se <b>omite</b> — el backtest siempre se ejecuta sin clave.</div>
+
+    <h3>Paso 1 — Obtenga su License key</h3>
+    <p>Cómo obtener la clave depende de su plan:</p>
+    <table>
+      <tr><th>Plan</th><th>Dónde obtener la License key</th></tr>
+      <tr><td><b>VIP</b></td><td>Inicie sesión en el <b>Dashboard en <code>https://www.dralvo.com</code></b> → <b>License / Key</b> → genere una clave para cada cuenta MT5.</td></tr>
+      <tr><td><b>Free</b></td><td>Contacte por <b>Telegram <code>@edgardinh86</code></b> para recibir una <b>License key</b>.</td></tr>
+    </table>
+    <ul>
+      <li>En cualquier plan, la clave está <b>vinculada a un número de cuenta MT5 específico</b> — debe indicar/registrar el número correcto.</li>
+      <li>Vea su número de cuenta en: <b>Navigator</b>, o <b>Tools → Options → Server</b>, o en el título de la ventana de MT5 (6–10 dígitos).</li>
+    </ul>
+    <p>🔹 <b>Plan VIP — sin cupos de cuenta:</b> cada cuenta VIP recibe un número fijo de cupos. Cuando haya <b>usado todos (máx.)</b> y quiera <b>añadir una nueva cuenta</b>, <b>contacte al administrador</b> para obtener más.</p>
+
+    <h3>Paso 2 — Lista blanca de WebRequest ⚠️ El paso más olvidado</h3>
+    <ol class="steps">
+      <li>Abra <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>Vaya a la pestaña <b>Expert Advisors</b>.</li>
+      <li>Marque <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>Escriba exactamente: <code>https://www.dralvo.com</code></li>
+      <li>Pulse <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">Si <b>omite</b> este paso, incluso con la clave correcta el EA dará error y no funcionará (MT5 bloquea la conexión). Este es el <b>motivo #1</b>.</div>
+
+    <h3>Paso 3 — Ingrese la clave en Inputs</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Valor</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>License key (VIP: desde el dashboard <code>dralvo.com</code>; Free: recibida de <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>Su número de cuenta MT5 (6–10 dígitos), coincidente con la clave.</td></tr>
+    </table>
+
+    <h3>¿Ingresó la clave y aún no funciona? Verifique en orden</h3>
+    <table>
+      <tr><th>#</th><th>Verificación</th></tr>
+      <tr><td>1</td><td>¿Ha agregado <code>https://www.dralvo.com</code> a la lista blanca? (Paso 2 — motivo #1)</td></tr>
+      <tr><td>2</td><td>¿Completó <b>ambos</b> campos <code>InpLicenseKey</code> y <code>InpMT5Account</code>?</td></tr>
+      <tr><td>3</td><td>¿El número de cuenta <b>coincide</b> con la clave?</td></tr>
+      <tr><td>4</td><td>¿Tiene conexión a internet?</td></tr>
+      <tr><td>5</td><td>Quite el EA del gráfico y vuelva a arrastrarlo después de ajustar las Options.</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>Cómo opera este EA</h2>
+    <p><b>Paso 1 — Detección de régimen:</b> usa ADX + EMA + sesgo del timeframe superior (HTF) para clasificar <b>LATERAL / TENDENCIA ALCISTA / TENDENCIA BAJISTA / TRANSICIÓN</b>.</p>
+    <p><b>Paso 2 — Elección del setup de entrada:</b></p>
+    <table>
+      <tr><th>Setup</th><th>Cuándo</th><th>Predeterminado</th></tr>
+      <tr><td><b>A. Breakout + Retest</b></td><td>Ruptura real seguida de retorno para reprobar el nivel → opera la continuación a favor de la tendencia.</td><td>Activado</td></tr>
+      <tr><td><b>B. Fakeout + Reclaim</b></td><td>Ruptura falsa que cierra de vuelta dentro del rango → opera la reversión.</td><td>Activado</td></tr>
+      <tr><td><b>C. Range Fade</b></td><td>Fade en ambos bordes cuando el mercado está lateral.</td><td>Desactivado</td></tr>
+    </table>
+    <p><b>Paso 3 — Pirámide de "dinero de la casa":</b> solo <b>agrega a la posición</b> cuando la canasta actual ya está en <b>punto de equilibrio/segura</b> (sin riesgo), con volumen <b>decreciente</b>, usando <b>un único SL de canasta</b> que sigue la estructura — nunca deja que una canasta ganadora vuelva a negativo.</p>
+    <div class="callout">El panel muestra <b>Régimen</b>, <b>Sesgo HTF</b>, <b>ADX</b> y <b>Status</b>, indicando si el EA está escaneando / esperando reprueba / manteniendo canasta / pausado.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>Tabla de parámetros (grupos principales)</h2>
+
+    <h3>Régimen de mercado</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>ADX_Period</code></td><td>14</td><td>Período del ADX.</td></tr>
+      <tr><td><code>ADX_RangeBelow</code></td><td>20</td><td>ADX &lt; umbral → lateral.</td></tr>
+      <tr><td><code>ADX_TrendAbove</code></td><td>25</td><td>ADX &gt; umbral → con tendencia (entre ambos = transición).</td></tr>
+      <tr><td><code>EMA_Fast / EMA_Slow</code></td><td>21 / 50</td><td>EMA rápida/lenta (estructura y sesgo).</td></tr>
+      <tr><td><code>HTF_Timeframe</code></td><td>H1</td><td>Timeframe superior para el sesgo.</td></tr>
+      <tr><td><code>Require_HTF_Align</code></td><td>true</td><td>Solo opera a favor del sesgo del timeframe superior.</td></tr>
+    </table>
+
+    <h3>Setups de entrada</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>Use_BreakoutRetest</code></td><td>true</td><td>Activa el setup A (breakout + retest).</td></tr>
+      <tr><td><code>Use_FakeoutReclaim</code></td><td>true</td><td>Activa el setup B (reversión de ruptura falsa).</td></tr>
+      <tr><td><code>Use_RangeFade</code></td><td>false</td><td>Activa el setup C (fade de bordes en lateral).</td></tr>
+      <tr><td><code>Min_RR</code></td><td>1.5</td><td>R:R mínimo para entrar.</td></tr>
+      <tr><td><code>SL_Buffer_ATR</code></td><td>0.4</td><td>Distancia del SL desde el punto de estructura ×ATR.</td></tr>
+      <tr><td><code>Min_Bars_Between</code></td><td>1</td><td>Mínimo de velas entre dos entradas base.</td></tr>
+    </table>
+
+    <h3>Pirámide (agregados con dinero de la casa)</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>Use_Pyramid</code></td><td>true</td><td>Activa los agregados.</td></tr>
+      <tr><td><code>Max_Adds</code></td><td>3</td><td>Máximo de agregados (posiciones totales = Max_Adds + 1).</td></tr>
+      <tr><td><code>Add_Lot_Factor</code></td><td>0.6</td><td>Factor de lote por agregado (&lt;1 = decreciente, recomendado).</td></tr>
+      <tr><td><code>Add_Trigger_ATR</code></td><td>1.0</td><td>Solo agrega cuando la canasta esté en ganancia ≥ ×ATR.</td></tr>
+      <tr><td><code>Lock_Buffer_ATR</code></td><td>0.15</td><td>El SL de la canasta debe ser ≥ punto de equilibrio + ×ATR para permitir agregar (sin riesgo).</td></tr>
+      <tr><td><code>Pyramid_BasketTrail</code></td><td>true</td><td>Tras agregar: elimina el TP fijo, usa trailing de canasta.</td></tr>
+    </table>
+
+    <h3>SL de canasta / Trailing</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>Trail_ATR_Mult</code></td><td>2.0</td><td>Trailing por ×ATR.</td></tr>
+      <tr><td><code>Trail_By_Structure</code></td><td>true</td><td>Trailing según el swing más reciente.</td></tr>
+      <tr><td><code>Exit_On_StructBreak</code></td><td>true</td><td>Cierra toda la canasta al romperse la estructura.</td></tr>
+    </table>
+
+    <h3>Gestión de capital</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>Use_Risk_Percent</code></td><td>true</td><td>Calcula el lote por % de riesgo (para la entrada base).</td></tr>
+      <tr><td><code>Risk_Percent</code></td><td>0.5</td><td>% de riesgo para la primera entrada.</td></tr>
+      <tr><td><code>Fixed_Lot</code></td><td>0.01</td><td>Lote fijo si el % de riesgo está desactivado.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>99020202</td><td>Identificador de órdenes del EA.</td></tr>
+    </table>
+
+    <h3>Licencia</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(vacío)</td><td>License key (sección 2). Obligatoria para demo/real.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(vacío)</td><td>Número de cuenta MT5 correspondiente a la clave (6–10 dígitos).</td></tr>
+    </table>
+
+    <h3>Protección de cuenta</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>MaxSpread_Points</code></td><td>300</td><td>Spread máximo permitido para entrar (points).</td></tr>
+      <tr><td><code>Slippage_Points</code></td><td>20</td><td>Deslizamiento máximo en la ejecución (points).</td></tr>
+      <tr><td><code>Max_Trades_Per_Day</code></td><td>30</td><td>Máximo de operaciones por día.</td></tr>
+      <tr><td><code>Daily_Max_Loss_Percent</code></td><td>3.0</td><td>Pérdida ≥ % del patrimonio de inicio del día → pausa por el resto del día.</td></tr>
+    </table>
+
+    <h3>Filtro de horario (hora del servidor)</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>Use_Session_Filter</code></td><td>true</td><td>Activa los límites de horario de operación.</td></tr>
+      <tr><td><code>Session_Start_Hour</code></td><td>7</td><td>Hora inicial (~Londres).</td></tr>
+      <tr><td><code>Session_End_Hour</code></td><td>23</td><td>Hora final (~cierre de NY).</td></tr>
+      <tr><td><code>Avoid_Rollover</code></td><td>true</td><td>Evita el momento del rollover (cambio de día).</td></tr>
+      <tr><td><code>Rollover_Buffer_Min</code></td><td>5</td><td>Minutos a evitar alrededor del rollover.</td></tr>
+    </table>
+
+    <h3>Visualización</h3>
+    <table>
+      <tr><th>Parámetro</th><th>Predeterminado</th><th>Significado</th></tr>
+      <tr><td><code>Show_Dashboard</code></td><td>true</td><td>Muestra el panel de información en el gráfico.</td></tr>
+      <tr><td><code>Verbose_Log</code></td><td>false</td><td>Registro detallado (active solo para depuración).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>Panel en el gráfico</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLD SCALP</span><span>XAUUSD M15</span></div>
+      <div class="rows">
+        <span class="l">Régimen</span><span class="g">TENDENCIA ALCISTA</span>
+        <span class="l">Sesgo HTF</span><span class="w">ALCISTA (H1)</span>
+        <span class="l">ADX</span><span class="w">27.4</span>
+        <span class="l">Status</span><span class="g">MANTENIENDO CANASTA</span>
+        <span class="l">Canasta</span><span class="g">LONG 2 órdenes 0.03l</span>
+        <span class="l">P/L canasta</span><span class="g">+38.20 [segura]</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Línea</th><th>Significado</th></tr>
+      <tr><td><b>Régimen</b></td><td>LATERAL / TENDENCIA ALCISTA / TENDENCIA BAJISTA / TRANSICIÓN.</td></tr>
+      <tr><td><b>Sesgo HTF</b></td><td>Sesgo del timeframe superior (ALCISTA / BAJISTA / NEUTRAL).</td></tr>
+      <tr><td><b>ADX</b></td><td>Valor actual del ADX.</td></tr>
+      <tr><td><b>Balance / Equity</b></td><td>Saldo, patrimonio neto.</td></tr>
+      <tr><td><b>Spread</b></td><td>Spread actual (rojo si supera <code>MaxSpread_Points</code>).</td></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">ESCANEANDO</span> / <span class="pill p-amber">ESPERANDO RETEST ↑↓</span> / <span class="pill p-green">MANTENIENDO CANASTA</span> / <span class="pill p-red">PAUSADO</span> (límite diario · spread alto · fuera de horario).</td></tr>
+      <tr><td><b>Canasta</b></td><td>Dirección + número de órdenes + lote total de la canasta piramidal (— si está vacía).</td></tr>
+      <tr><td><b>P/L canasta</b></td><td>P/L de la canasta + etiqueta <code>[segura]</code> (sin riesgo) o <code>[en riesgo]</code>.</td></tr>
+      <tr><td><b>Hoy</b></td><td>Operaciones del día + P/L del día.</td></tr>
+      <tr><td><b>Max DD</b></td><td>Mayor drawdown de patrimonio (%).</td></tr>
+    </table>
+    <div class="callout">El panel solo aparece en un <b>gráfico real</b> o en <b>backtest en modo Visual</b>; el backtest normal suele ocultarlo por velocidad.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>Archivos .set recomendados</h2>
+    <p>4 niveles según el perfil de riesgo (carpeta <code>setfiles/</code>):</p>
+    <table>
+      <tr><th>Archivo</th><th>Nivel de riesgo</th><th>Max DD</th><th>Para</th></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_SAFE.set</code></td><td>Seguro (1.0%)</td><td>~10%</td><td>Preservación de capital / principiantes.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_BALANCED.set</code></td><td>Equilibrado (1.5%)</td><td>~14%</td><td>Curva de capital suave, DD bajo.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_AGGRESSIVE.set</code></td><td>Agresivo (2.0%)</td><td>~19%</td><td><b>Recomendado</b> — mejor equilibrio ganancia/riesgo (+139%).</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_MAX.set</code></td><td>Máximo (2.5%)</td><td>~29%</td><td>Máxima ganancia, DD cerca del límite del 30%.</td></tr>
+    </table>
+    <p>Todos optimizados para <b>XAUUSD M15</b>. Cargar: pestaña <b>Inputs → Load</b> → elija el archivo. Guardar su propia configuración: <b>Save</b>.</p>
+    <div class="callout">💡 <b>Cómo funciona:</b> el EA calcula el lote por <b>% de riesgo</b> (<code>Use_Risk_Percent=true</code>), por lo que <b>se ajusta automáticamente a su saldo</b> — los 4 archivos de perfil anteriores funcionan para <b>cualquier tamaño de cuenta</b>, el % de retorno se mantiene igual con 1,000 o 100,000 USD.</div>
+
+    <h3>Setfiles por tamaño de cuenta (opcional)</h3>
+    <p>Si prefiere una <b>selección rápida por saldo</b> o prefiere un <b>lote fijo</b> en lugar de %, use el conjunto de archivos <code>&lt;PERFIL&gt;_&lt;tamaño&gt;.set</code> (24 archivos = 4 perfiles × 6 tamaños). Cada uno mantiene <code>Use_Risk_Percent=true</code> (funciona exactamente igual que el archivo de perfil base), pero ya tiene un <b><code>Fixed_Lot</code> preconfigurado</b> para ese tamaño como respaldo — si cambia a <code>Use_Risk_Percent=false</code>, el EA usará el lote fijo correcto sin cálculo manual.</p>
+    <table>
+      <tr><th>Capital (USD)</th><th>SAFE</th><th>BALANCED</th><th>AGGRESSIVE</th><th>MAX</th></tr>
+      <tr><td>1,000</td><td>0.01</td><td>0.02</td><td>0.02</td><td>0.03</td></tr>
+      <tr><td>5,000</td><td>0.05</td><td>0.08</td><td>0.10</td><td>0.13</td></tr>
+      <tr><td>10,000</td><td>0.10</td><td>0.15</td><td>0.20</td><td>0.25</td></tr>
+      <tr><td>20,000</td><td>0.20</td><td>0.30</td><td>0.40</td><td>0.50</td></tr>
+      <tr><td>50,000</td><td>0.50</td><td>0.75</td><td>1.00</td><td>1.25</td></tr>
+      <tr><td>100,000</td><td>1.00</td><td>1.50</td><td>2.00</td><td>2.50</td></tr>
+    </table>
+    <p>Ejemplo: capital de 10,000 USD, perfil agresivo → cargue <code>Dralvo_Gold_Scalp_AGGRESSIVE_10k.set</code> (Riesgo 2.0%, Fixed_Lot de respaldo 0.20).</p>
+    <div class="callout">⚠️ <code>Fixed_Lot</code> es solo un <b>respaldo</b> — por defecto el EA sigue calculando por % de riesgo. Las cifras de backtest verificadas son en modo <b>% de riesgo</b>.</div>
+    <div class="callout"><code>InpLicenseKey</code>/<code>InpMT5Account</code> son individuales y <b>no</b> se guardan en archivos <code>.set</code> compartidos — complételos manualmente en cada equipo.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>Rendimiento del backtest (verificado)</h2>
+    <p>Cifras obtenidas con <b>datos reales de tick de XAUUSD de GTC (calidad 98%)</b>, modelo <i>Every tick based on real ticks</i>, capital de <b>10,000 USD</b>, período <b>sep/2023 → jun/2026 (~2.8 años)</b>. Los parámetros fueron <b>reoptimizados</b> con algoritmo genético (4,342 pasadas) y luego verificados con ticks reales.</p>
+
+    <h3>Ganancia por año (SAFE · Riesgo 1%) — POSITIVA los 4 años</h3>
+    <table>
+      <tr><th>Año</th><th style="text-align:right">Ganancia</th></tr>
+      <tr><td>2023 (sep–dic)</td><td style="text-align:right;color:var(--green)">+1,966</td></tr>
+      <tr><td>2024</td><td style="text-align:right;color:var(--green)">+1,164</td></tr>
+      <tr><td>2025</td><td style="text-align:right;color:var(--green)">+1,565</td></tr>
+      <tr><td>2026 (ene–jun)</td><td style="text-align:right;color:var(--green)">+992</td></tr>
+    </table>
+    <div class="callout">Destacado: <b>2024 y 2025</b> (oro con mucho movimiento lateral) fueron ambos rentables — algo que la nueva versión optimizada corrigió respecto a la anterior.</div>
+
+    <h3>Por nivel de riesgo (10,000 USD · ~2.8 años)</h3>
+    <table>
+      <tr><th>Perfil</th><th style="text-align:right">Riesgo</th><th style="text-align:right">Ganancia neta</th><th style="text-align:right">Crecimiento</th><th style="text-align:right">PF</th><th style="text-align:right">Max DD</th><th style="text-align:right">Operaciones</th></tr>
+      <tr><td><b>SAFE</b></td><td style="text-align:right">1.0%</td><td style="text-align:right;color:var(--green)">+5,686.94</td><td style="text-align:right">+56.9%</td><td style="text-align:right">1.90</td><td style="text-align:right">9.7%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>BALANCED</b></td><td style="text-align:right">1.5%</td><td style="text-align:right;color:var(--green)">+9,550.00</td><td style="text-align:right">+95.5%</td><td style="text-align:right"><b>1.91</b></td><td style="text-align:right">14.3%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>AGGRESSIVE ★</b></td><td style="text-align:right">2.0%</td><td style="text-align:right;color:var(--green)">+13,899.00</td><td style="text-align:right">+139.0%</td><td style="text-align:right">1.89</td><td style="text-align:right">18.8%</td><td style="text-align:right">111</td></tr>
+      <tr><td><b>MAX</b></td><td style="text-align:right">2.5%</td><td style="text-align:right;color:var(--green)">+15,830.55</td><td style="text-align:right">+158.3%</td><td style="text-align:right">1.80</td><td style="text-align:right">28.6%</td><td style="text-align:right">109</td></tr>
+    </table>
+    <p><b>Lectura rápida:</b> el Profit Factor se mantiene estable en <b>~1.9</b> (muy superior al antiguo ~1.2), el DD crece de forma lineal con el riesgo, y <b>todos los niveles se mantienen por debajo del límite del 30%</b>. El nivel recomendado <b>AGGRESSIVE (2.0%)</b>: +139% con DD aún por debajo del 20%.</p>
+    <div class="callout">✅ Verificado el 30/06/2026 con el MT5 Strategy Tester en ticks reales de GTC (calidad 98%). Corroborado de forma similar con datos de Exness (2024–2026) (Exness solo tiene 70% de calidad, por lo que sus primeros años son menos confiables).</div>
+    <div class="callout warn">⚠️ Los backtests <b>no garantizan</b> el futuro. Es un sistema de scalping que requiere un <b>bróker con spread bajo</b>; el spread/comisión/deslizamiento afectan directamente el resultado → haga forward-test en demo primero. Otros timeframes (M5/M1/H1) probados siempre <b>rindieron peor que M15</b>.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>Solución de problemas</h2>
+    <table>
+      <tr><th>Síntoma</th><th>Causa / solución</th></tr>
+      <tr><td>El EA muestra <b>"Contact telegram: @edgardinh86"</b></td><td>Error de licencia: (1) URL <code>https://www.dralvo.com</code> no está en la lista blanca (sección 2). (2) clave + cuenta no completadas. (3) la cuenta no coincide. (4) sin internet.</td></tr>
+      <tr><td>El EA no abre operaciones</td><td>(1) Algo Trading desactivado. (2) Spread &gt; <code>MaxSpread_Points</code> (panel en rojo). (3) Fuera del horario de sesión. (4) Alcanzó <code>Daily_Max_Loss_Percent</code> o <code>Max_Trades_Per_Day</code>. (5) Condiciones del setup aún no cumplidas (vea Status).</td></tr>
+      <tr><td>Muy pocas operaciones</td><td>Mucho tiempo en régimen de <b>TRANSICIÓN</b>; considere activar <code>Use_RangeFade</code> o <code>Require_HTF_Align=false</code> (más riesgoso).</td></tr>
+      <tr><td>Demasiados agregados / riesgo elevado</td><td>Reduzca <code>Max_Adds</code>, disminuya <code>Add_Lot_Factor</code>, aumente <code>Lock_Buffer_ATR</code>.</td></tr>
+      <tr><td>Lote demasiado grande/pequeño</td><td>Verifique <code>Use_Risk_Percent</code> / <code>Risk_Percent</code> (o <code>Fixed_Lot</code>).</td></tr>
+      <tr><td>Sin panel</td><td><code>Show_Dashboard=true</code> y ejecutando en gráfico real/visual.</td></tr>
+    </table>
+    <p style="color:var(--mut)">Vea detalles en las pestañas <b>Toolbox → Experts</b> y <b>Journal</b> (active <code>Verbose_Log=true</code> para una inspección más profunda).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>Aviso de riesgo</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Operar con margen implica alto riesgo. <b>Ninguna configuración garantiza ganancias.</b></li>
+        <li>Siempre ejecute un <b>demo / forward test</b> el tiempo suficiente antes de usar dinero real.</li>
+        <li>La pirámide aumenta tanto la ganancia como el riesgo si se configura mal — entienda <code>Max_Adds</code>, <code>Add_Lot_Factor</code> antes de aumentarlos.</li>
+        <li>Los archivos <code>.set</code> incluidos son un punto de partida; ajústelos a su bróker, spread y volatilidad real.</li>
+        <li>Opere solo con el capital que pueda permitirse perder.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo Gold Scalp © Dralvo — Guía de Uso v2.00</footer>
+
+</div>
+</body>
+</html>

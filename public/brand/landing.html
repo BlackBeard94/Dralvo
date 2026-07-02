@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dralvo — XAUUSD gold trading robots</title>
+<link rel="stylesheet" href="kit/brand.css">
+<!-- Arabic fonts (used when locale = ar) -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Tajawal:wght@400;500;700&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+<style>
+  .nav{position:sticky;top:0;z-index:50;background:rgba(11,14,17,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav .container{display:flex;align-items:center;justify-content:space-between;height:66px;gap:12px}
+  .nav .links a{color:var(--text-2);font-size:14px;margin:0 10px}.nav .links a:hover{color:var(--gold-200)}
+  .lang{display:flex;gap:4px;background:var(--coin);border:1px solid var(--border);border-radius:var(--r-full);padding:3px}
+  .lang button{background:none;border:0;color:var(--text-3);font-family:var(--font-mono);font-size:12px;padding:5px 10px;border-radius:var(--r-full);cursor:pointer}
+  .lang button.on{background:var(--gold-sheen);color:#3d2f00;font-weight:600}
+  .hero{position:relative;overflow:hidden;text-align:center;padding:70px 0 56px}
+  .hero::after{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(240,185,11,.10),transparent 60%);z-index:-1}
+  .hero-mark{width:112px;height:112px;border-radius:26px;box-shadow:var(--shadow-3)}
+  .stat-strip{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+  .disc{background:var(--coin);border-top:1px solid var(--border);font-size:13px;color:var(--text-4);padding:24px 0}
+  [dir="rtl"] .lede,[dir="rtl"] p{text-align:inherit}
+</style>
+</head>
+<body class="tag-noise">
+<nav class="nav"><div class="container">
+  <img src="official/dralvo-lockup-gold.png" alt="Dralvo" style="height:32px">
+  <div class="row">
+    <div class="links" style="display:flex">
+      <a data-i="navRobots">Robots</a><a data-i="navWhy">No Fake Data</a><a data-i="navPricing">Pricing</a>
+    </div>
+    <div class="lang" id="lang">
+      <button data-loc="vi" class="on">VI</button><button data-loc="en">EN</button><button data-loc="ar">ع</button><button data-loc="pt">PT</button>
+    </div>
+  </div>
+</div></nav>
+
+<header class="hero container">
+  <img class="hero-mark" src="dralvo-mark-512.png" alt="">
+  <p class="eyebrow" data-i="heroEyebrow" style="margin-top:22px"></p>
+  <h1 id="heroH" style="max-width:16ch;margin-inline:auto"></h1>
+  <p class="lede" id="heroSub" style="max-width:620px;margin:0 auto 26px"></p>
+  <div class="row" style="justify-content:center">
+    <a class="btn btn-gold btn-lg" data-i="ctaFree"></a>
+    <a class="btn btn-ghost btn-lg" data-i="ctaBacktest"></a>
+  </div>
+  <div class="stat-strip">
+    <div class="kpi"><div class="k-label">GoldScalp Net</div><div class="k-value num-pos">+139%</div></div>
+    <div class="kpi"><div class="k-label">Profit factor</div><div class="k-value">1.89</div></div>
+    <div class="kpi"><div class="k-label">Max DD</div><div class="k-value num-neg">18.8%</div></div>
+  </div>
+</header>
+
+<div class="sheen-line"></div>
+
+<section id="robots" class="section container">
+  <p class="eyebrow center" data-i="secProdEyebrow"></p>
+  <h2 class="center" data-i="secProdTitle"></h2>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:30px">
+    <div class="card"><span class="badge badge-gold">FREE</span><h3 style="margin-top:14px">TiGold v3.0</h3><p class="muted">M1 · 3-layer capital protection.</p><a class="btn btn-ghost" data-i="ctaFree" style="margin-top:10px"></a></div>
+    <div class="card card-gold" style="transform:translateY(-8px)"><span class="badge badge-gold">VIP</span><h3 style="margin-top:14px">GoldScalp v2.0</h3><p class="muted">M15 · Net +139% · Max DD 18.8%.</p><a class="btn btn-gold" data-i="cta_vip" style="margin-top:10px"></a></div>
+    <div class="card"><span class="badge">VIP</span><h3 style="margin-top:14px">GoldMaster v1.08</h3><p class="muted">D1 · Win 39% · R:R 3.7:1 · +792% / 8y.</p><a class="btn btn-ghost" data-i="cta_try" style="margin-top:10px"></a></div>
+  </div>
+</section>
+
+<section id="why" class="section" style="background:var(--coin);border-block:1px solid var(--border)">
+  <div class="container grid" style="grid-template-columns:1fr 1fr;align-items:center;gap:48px">
+    <div>
+      <p class="eyebrow" data-i="whyEyebrow"></p>
+      <h2 data-i="whyTitle"></h2>
+      <p class="lede" id="whyLede"></p>
+    </div>
+    <div class="card">
+      <div class="row between"><h4 style="margin:0">GoldScalp · Equity</h4><span class="badge badge-live">LIVE</span></div>
+      <svg viewBox="0 0 480 200" width="100%" height="170" style="margin-top:12px" preserveAspectRatio="none">
+        <defs><linearGradient id="a2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0B90B" stop-opacity=".3"/><stop offset="1" stop-color="#F0B90B" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0 160 L60 150 L120 156 L180 120 L240 132 L300 92 L360 104 L420 60 L480 44 L480 200 L0 200 Z" fill="url(#a2)"/>
+        <path d="M0 160 L60 150 L120 156 L180 120 L240 132 L300 92 L360 104 L420 60 L480 44" fill="none" stroke="#FCD535" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+      <p class="muted mono" id="chartDisc" style="font-size:12px;margin-top:10px"></p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="section container center">
+  <p class="eyebrow" data-i="pricingEyebrow"></p>
+  <h2 data-i="pricingTitle"></h2>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));max-width:720px;margin:30px auto 0">
+    <div class="card"><p class="mono gold-text" style="font-size:34px">$59</p><p class="muted">/mo</p></div>
+    <div class="card card-gold"><span class="badge badge-gold">-10%</span><p class="mono gold-text" style="font-size:34px">$319</p><p class="muted">6 mo</p></div>
+    <div class="card"><p class="mono gold-text" style="font-size:34px">$599</p><p class="muted">/yr</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="disc"><div class="container" id="disc"></div></div>
+</footer>
+
+<script>
+const L = {
+  vi:{dir:"ltr",disclaimer:"⚠️ Dralvo cung cấp công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm kết quả tương lai. Giao dịch có rủi ro mất vốn.",
+    cta:{free:"Nhận TiGold miễn phí",try:"Chi tiết",start:"Bắt đầu",vip:"Đăng ký VIP",backtest:"Xem backtest"},
+    navRobots:"Robots",navWhy:"No Fake Data",navPricing:"Bảng giá",
+    heroEyebrow:"Drill into gold · No fake data",heroH:["Robot giao dịch","vàng XAUUSD","tự động"],
+    heroSub:"EA cho MetaTrader 5, minh bạch bằng chính bộ backtest đã kiểm chứng — công khai cả drawdown và tháng thua.",
+    secProdEyebrow:"Sản phẩm",secProdTitle:"3 robot, 1 triết lý",
+    whyEyebrow:"Vì sao khác biệt",whyTitle:"“No Fake Data”",
+    whyLede:"Đa số nhóm EA khoe “lãi 100%/tháng” rồi lặng lẽ xoá khi cháy tài khoản. Dralvo đi ngược: mỗi robot công khai đúng bộ số backtest — kèm cả drawdown và tháng thua.",
+    pricingEyebrow:"Bảng giá VIP",pricingTitle:"Mở khoá toàn bộ robot",chartDisc:"Backtest quá khứ — không bảo đảm tương lai."},
+  en:{dir:"ltr",disclaimer:"⚠️ Dralvo provides trading tools, not financial advice. Past backtest results do not guarantee future results. Trading involves risk of loss.",
+    cta:{free:"Get TiGold free",try:"Details",start:"Start",vip:"Get VIP",backtest:"See the backtest"},
+    navRobots:"Robots",navWhy:"No Fake Data",navPricing:"Pricing",
+    heroEyebrow:"Drill into gold · No fake data",heroH:["Automated","XAUUSD gold","trading robots"],
+    heroSub:"Expert Advisors for MetaTrader 5, proven by their own verified backtests — drawdown and losing months disclosed.",
+    secProdEyebrow:"Products",secProdTitle:"3 robots, 1 philosophy",
+    whyEyebrow:"Why we're different",whyTitle:"“No Fake Data”",
+    whyLede:"Most EA groups brag about “100%/month” then quietly delete it when accounts blow up. Dralvo does the opposite: every robot publishes its real backtest — drawdown and losing months included.",
+    pricingEyebrow:"VIP pricing",pricingTitle:"Unlock every robot",chartDisc:"Past backtest — not indicative of future results."},
+  ar:{dir:"rtl",disclaimer:"⚠️ تقدّم درالفو أدوات تداول وليست نصيحة مالية. نتائج الباكتست السابقة لا تضمن نتائج مستقبلية. ينطوي التداول على مخاطر الخسارة.",
+    cta:{free:"احصل على TiGold مجانًا",try:"التفاصيل",start:"ابدأ",vip:"اشترك VIP",backtest:"شاهد الباكتست"},
+    navRobots:"الروبوتات",navWhy:"بيانات حقيقية",navPricing:"الأسعار",
+    heroEyebrow:"احترف الذهب · بيانات حقيقية",heroH:["روبوتات تداول","ذهب XAUUSD","آلية"],
+    heroSub:"إكسبيرت أدفايزر لمنصّة MetaTrader 5، مثبتة بنتائج باكتست موثّقة — مع الإفصاح عن التراجع والأشهر الخاسرة.",
+    secProdEyebrow:"المنتجات",secProdTitle:"3 روبوتات، فلسفة واحدة",
+    whyEyebrow:"لماذا نحن مختلفون",whyTitle:"«بيانات حقيقية»",
+    whyLede:"معظم مجموعات الإكسبيرت تتفاخر بـ«100% شهريًا» ثم تحذفها بصمت عند احتراق الحسابات. درالفو تفعل العكس: كل روبوت ينشر باكتسته الحقيقي — بما في ذلك التراجع والأشهر الخاسرة.",
+    pricingEyebrow:"أسعار VIP",pricingTitle:"افتح كل الروبوتات",chartDisc:"باكتست سابق — لا يضمن نتائج مستقبلية.",
+    fontUI:"'Cairo','Tajawal','Segoe UI',sans-serif",fontDisp:"'Aref Ruqaa','Cairo',serif"},
+  pt:{dir:"ltr",disclaimer:"⚠️ A Dralvo fornece ferramentas de trading, não consultoria financeira. Resultados de backtest passados não garantem resultados futuros. Operar envolve risco de perda.",
+    cta:{free:"Baixe o TiGold grátis",try:"Detalhes",start:"Começar",vip:"Assinar VIP",backtest:"Ver o backtest"},
+    navRobots:"Robôs",navWhy:"Dados Reais",navPricing:"Preços",
+    heroEyebrow:"Domine o ouro · Sem dados falsos",heroH:["Robôs de","ouro XAUUSD","automáticos"],
+    heroSub:"Expert Advisors para MetaTrader 5, comprovados pelos próprios backtests verificados — drawdown e meses de perda divulgados.",
+    secProdEyebrow:"Produtos",secProdTitle:"3 robôs, 1 filosofia",
+    whyEyebrow:"Por que somos diferentes",whyTitle:"“Dados Reais”",
+    whyLede:"A maioria dos grupos de EA promete “100%/mês” e apaga tudo quando as contas quebram. A Dralvo faz o oposto: cada robô publica seu backtest real — com drawdown e meses de perda.",
+    pricingEyebrow:"Preços VIP",pricingTitle:"Desbloqueie todos os robôs",chartDisc:"Backtest passado — não indica resultados futuros."}
+};
+function apply(loc){
+  const t=L[loc];
+  document.documentElement.lang=loc; document.documentElement.dir=t.dir;
+  document.documentElement.style.setProperty('--font-ui', t.fontUI||"Inter,'Segoe UI',Arial,sans-serif");
+  document.documentElement.style.setProperty('--font-display', t.fontDisp||"'DM Serif Display',Georgia,serif");
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const k=el.getAttribute('data-i');
+    let v;
+    if(k==='ctaFree') v=t.cta.free;
+    else if(k==='ctaBacktest') v=t.cta.backtest;
+    else if(k.startsWith('cta_')) v=t.cta[k.slice(4)];
+    else v=t[k];
+    if(v!==undefined) el.textContent=v;
+  });
+  document.getElementById('heroH').innerHTML=`${t.heroH[0]}<br><span class="gold-text">${t.heroH[1]}</span><br>${t.heroH[2]}`;
+  document.getElementById('heroSub').textContent=t.heroSub;
+  document.getElementById('whyLede').textContent=t.whyLede;
+  document.getElementById('chartDisc').textContent=t.chartDisc;
+  document.getElementById('disc').textContent=t.disclaimer;
+  document.querySelectorAll('#lang button').forEach(b=>b.classList.toggle('on',b.dataset.loc===loc));
+}
+document.getElementById('lang').addEventListener('click',e=>{if(e.target.dataset.loc)apply(e.target.dataset.loc);});
+apply('vi');
+</script>
+</body>
+</html>

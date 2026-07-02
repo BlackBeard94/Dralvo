@@ -1,11 +1,7 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { ChartPage } from "@/components/dashboard/dashboard-pages";
-
-export const metadata: Metadata = {
-  title: "XAUUSD Chart | Dralvo",
-};
-
+// V1 market-analysis surface — not part of the V2 EA product and not in nav.
+// Redirect so old links/bookmarks don't land on an unlinked page.
 export default function DashboardChartRoute() {
-  return <ChartPage />;
+  redirect("/dashboard");
 }

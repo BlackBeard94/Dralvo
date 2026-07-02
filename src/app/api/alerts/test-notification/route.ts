@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   const tier = await getUserPlanTierByUserId(user.id);
   if (!isPaidTier(tier)) {
     return NextResponse.json(
-      { error: "Test notifications require Dralvo Unlimited." },
+      { error: "Test notifications require Dralvo VIP." },
       { status: 403 },
     );
   }

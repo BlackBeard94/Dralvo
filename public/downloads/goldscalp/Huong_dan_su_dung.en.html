@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo Gold Scalp — User Guide</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .dash .a{color:#ebb446}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLD&nbsp;SCALP</span>
+    <h1>User Guide</h1>
+    <p>Scalping/intraday EA for XAUUSD on MetaTrader 5 — detects market regime, 3 setup types, "house-money" pyramiding &amp; basket trailing.</p>
+    <div class="ver">Version 2.00 · File: Dralvo_Gold_Scalp.ex5 · Recommended timeframe M15</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#caidat">Installation</a></li>
+      <li><a href="#license">License activation</a></li>
+      <li><a href="#logic">How the EA trades</a></li>
+      <li><a href="#thamso">Parameter reference</a></li>
+      <li><a href="#dashboard">On-chart dashboard</a></li>
+      <li><a href="#set">Recommended .set files</a></li>
+      <li><a href="#hieusuat">Backtest performance</a></li>
+      <li><a href="#suco">Troubleshooting</a></li>
+      <li><a href="#ruiro">Risk disclaimer</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Installation</h2>
+    <ol class="steps">
+      <li>Close MetaTrader 5 (if open).</li>
+      <li>Open the data folder: <b>File → Open Data Folder</b>.</li>
+      <li>Copy <code>Dralvo_Gold_Scalp.ex5</code> into <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Or copy the <code>.mq5</code> and <b>Compile (F7)</b>.)</span></li>
+      <li>Reopen MT5 → <b>Navigator → Expert Advisors</b>, right-click <b>Refresh</b>.</li>
+      <li>Open an <b>XAUUSD</b> chart, <b>M15</b> timeframe, and drag <b>Dralvo Gold Scalp</b> onto the chart.</li>
+      <li><b>Common</b> tab: tick <b>Allow Algo Trading</b>. <b>Inputs</b> tab: enter your <b>License key</b> + <b>MT5 Account</b> (section 2), load a <code>.set</code>.</li>
+      <li>Click <b>OK</b> → enable <b>Algo Trading</b> on the toolbar (lights up green).</li>
+    </ol>
+    <div class="callout">When it runs correctly, the <b>Gold Scalp panel</b> appears in the top-left of the chart (see section 5).</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>License activation — REQUIRED for demo/live</h2>
+    <p>The EA has a <b>license gate</b>: on a real chart it calls the Dralvo server to verify the key. <b>Without this step the EA will NOT run</b> and shows the warning <code>Contact telegram: @edgardinh86</code>.</p>
+    <div class="callout">In the <b>Strategy Tester (backtest)</b> the license gate is <b>skipped</b> — backtests always run without a key.</div>
+
+    <h3>Step 1 — Get your License key</h3>
+    <p>How you get the key depends on your plan:</p>
+    <table>
+      <tr><th>Plan</th><th>Where to get the License key</th></tr>
+      <tr><td><b>VIP</b></td><td>Sign in to the <b>Dashboard at <code>https://www.dralvo.com</code></b> → <b>License / Key</b> → generate a key for each MT5 account.</td></tr>
+      <tr><td><b>Free</b></td><td>Contact <b>Telegram <code>@edgardinh86</code></b> to receive a <b>License key</b>.</td></tr>
+    </table>
+    <ul>
+      <li>Whichever plan, the key is <b>bound to a specific MT5 account number</b> — you must provide/register the correct account number.</li>
+      <li>Find your account number: <b>Navigator</b>, or <b>Tools → Options → Server</b>, or the MT5 window title (6–10 digits).</li>
+    </ul>
+    <p>🔹 <b>VIP plan — out of account slots:</b> each VIP account gets a set number of slots. Once you've <b>used all (max) accounts</b> and want to <b>add a new one</b>, <b>contact the admin</b> to be granted more.</p>
+
+    <h3>Step 2 — Whitelist WebRequest ⚠️ Most-forgotten step</h3>
+    <ol class="steps">
+      <li>Open <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>Go to the <b>Expert Advisors</b> tab.</li>
+      <li>Tick <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>Type exactly: <code>https://www.dralvo.com</code></li>
+      <li>Click <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">If you <b>skip</b> this step, even with the correct key the EA errors and won't run (MT5 blocks the connection). This is the <b>#1 reason</b>.</div>
+
+    <h3>Step 3 — Enter the key in Inputs</h3>
+    <table>
+      <tr><th>Parameter</th><th>Value</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>License key (VIP: from the <code>dralvo.com</code> dashboard; Free: from <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>Your MT5 account number (6–10 digits), matching the key.</td></tr>
+    </table>
+
+    <h3>Entered the key but it still won't run? Check in order</h3>
+    <table>
+      <tr><th>#</th><th>Check</th></tr>
+      <tr><td>1</td><td>Have you whitelisted <code>https://www.dralvo.com</code>? (Step 2 — the #1 reason)</td></tr>
+      <tr><td>2</td><td>Filled in <b>both</b> <code>InpLicenseKey</code> and <code>InpMT5Account</code>?</td></tr>
+      <tr><td>3</td><td>Does the account number <b>match</b> the key?</td></tr>
+      <tr><td>4</td><td>Do you have an internet connection?</td></tr>
+      <tr><td>5</td><td>Remove the EA from the chart and drag it back on after changing Options.</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>How this EA trades</h2>
+    <p><b>Step 1 — Regime detection:</b> uses ADX + EMA + higher-timeframe (HTF) bias to classify <b>RANGE / UPTREND / DOWNTREND / TRANSITION</b>.</p>
+    <p><b>Step 2 — Pick an entry setup:</b></p>
+    <table>
+      <tr><th>Setup</th><th>When</th><th>Default</th></tr>
+      <tr><td><b>A. Breakout + Retest</b></td><td>A genuine break of a level then a pullback to retest → trade the continuation with the trend.</td><td>On</td></tr>
+      <tr><td><b>B. Fakeout + Reclaim</b></td><td>A false break that closes back inside the range → trade the reversal.</td><td>On</td></tr>
+      <tr><td><b>C. Range Fade</b></td><td>Fade both edges when the market is ranging.</td><td>Off</td></tr>
+    </table>
+    <p><b>Step 3 — "House-money" pyramiding:</b> it only <b>adds to the position</b> when the current basket is already at <b>breakeven/safe</b> (risk-free), with <b>decreasing</b> volume, using <b>one shared basket SL</b> trailing the structure — it never lets a winning basket turn negative.</p>
+    <div class="callout">The dashboard shows <b>Regime</b>, <b>HTF Bias</b>, <b>ADX</b>, and <b>Status</b> telling you whether the EA is scanning / waiting for a retest / holding a basket / paused.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>Parameter reference (main groups)</h2>
+
+    <h3>Market regime</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>ADX_Period</code></td><td>14</td><td>ADX period.</td></tr>
+      <tr><td><code>ADX_RangeBelow</code></td><td>20</td><td>ADX &lt; threshold → ranging.</td></tr>
+      <tr><td><code>ADX_TrendAbove</code></td><td>25</td><td>ADX &gt; threshold → trending (between the two = transition).</td></tr>
+      <tr><td><code>EMA_Fast / EMA_Slow</code></td><td>21 / 50</td><td>Fast/slow EMA (structure &amp; bias).</td></tr>
+      <tr><td><code>HTF_Timeframe</code></td><td>H1</td><td>Higher timeframe for bias.</td></tr>
+      <tr><td><code>Require_HTF_Align</code></td><td>true</td><td>Only trade with the HTF bias.</td></tr>
+    </table>
+
+    <h3>Entry setups</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>Use_BreakoutRetest</code></td><td>true</td><td>Enable setup A (breakout + retest).</td></tr>
+      <tr><td><code>Use_FakeoutReclaim</code></td><td>true</td><td>Enable setup B (fakeout reversal).</td></tr>
+      <tr><td><code>Use_RangeFade</code></td><td>false</td><td>Enable setup C (fade edges when ranging).</td></tr>
+      <tr><td><code>Min_RR</code></td><td>1.5</td><td>Minimum R:R to enter.</td></tr>
+      <tr><td><code>SL_Buffer_ATR</code></td><td>0.4</td><td>SL distance from the structure point ×ATR.</td></tr>
+      <tr><td><code>Min_Bars_Between</code></td><td>1</td><td>Minimum N candles between two base entries.</td></tr>
+    </table>
+
+    <h3>Pyramiding (house-money adds)</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>Use_Pyramid</code></td><td>true</td><td>Enable adds.</td></tr>
+      <tr><td><code>Max_Adds</code></td><td>3</td><td>Max number of adds (total positions = Max_Adds + 1).</td></tr>
+      <tr><td><code>Add_Lot_Factor</code></td><td>0.6</td><td>Lot factor per add (&lt;1 = decreasing, recommended).</td></tr>
+      <tr><td><code>Add_Trigger_ATR</code></td><td>1.0</td><td>Only add when the basket is up ≥ ×ATR.</td></tr>
+      <tr><td><code>Lock_Buffer_ATR</code></td><td>0.15</td><td>Basket SL must be ≥ breakeven + ×ATR before adding (risk-free).</td></tr>
+      <tr><td><code>Pyramid_BasketTrail</code></td><td>true</td><td>Once added: drop the hard TP, use basket trailing.</td></tr>
+    </table>
+
+    <h3>Basket SL / Trailing</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>Trail_ATR_Mult</code></td><td>2.0</td><td>Trailing by ×ATR.</td></tr>
+      <tr><td><code>Trail_By_Structure</code></td><td>true</td><td>Trail by the most recent swing.</td></tr>
+      <tr><td><code>Exit_On_StructBreak</code></td><td>true</td><td>Close the whole basket on a structure break.</td></tr>
+    </table>
+
+    <h3>Money management</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>Use_Risk_Percent</code></td><td>true</td><td>Size lots by % risk (for the base entry).</td></tr>
+      <tr><td><code>Risk_Percent</code></td><td>0.5</td><td>% risk for the first entry.</td></tr>
+      <tr><td><code>Fixed_Lot</code></td><td>0.01</td><td>Fixed lot if % risk is off.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>99020202</td><td>The EA's order identifier.</td></tr>
+    </table>
+
+    <h3>License</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(empty)</td><td>License key (section 2). Required for demo/live.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(empty)</td><td>MT5 account number matching the key (6–10 digits).</td></tr>
+    </table>
+
+    <h3>Account protection</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>MaxSpread_Points</code></td><td>300</td><td>Max allowed spread to enter (points).</td></tr>
+      <tr><td><code>Slippage_Points</code></td><td>20</td><td>Max slippage on fill (points).</td></tr>
+      <tr><td><code>Max_Trades_Per_Day</code></td><td>30</td><td>Max trades per day.</td></tr>
+      <tr><td><code>Daily_Max_Loss_Percent</code></td><td>3.0</td><td>Loss ≥ % of start-of-day equity → pause for the rest of the day.</td></tr>
+    </table>
+
+    <h3>Session filter (server time)</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>Use_Session_Filter</code></td><td>true</td><td>Enable trading-hours limits.</td></tr>
+      <tr><td><code>Session_Start_Hour</code></td><td>7</td><td>Start hour (~London).</td></tr>
+      <tr><td><code>Session_End_Hour</code></td><td>23</td><td>End hour (~NY close).</td></tr>
+      <tr><td><code>Avoid_Rollover</code></td><td>true</td><td>Avoid the rollover (day change) moment.</td></tr>
+      <tr><td><code>Rollover_Buffer_Min</code></td><td>5</td><td>Minutes to avoid around rollover.</td></tr>
+    </table>
+
+    <h3>Display</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>Show_Dashboard</code></td><td>true</td><td>Show the on-chart info panel.</td></tr>
+      <tr><td><code>Verbose_Log</code></td><td>false</td><td>Detailed logging (only enable for debugging).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>On-chart dashboard</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLD SCALP</span><span>XAUUSD M15</span></div>
+      <div class="rows">
+        <span class="l">Regime</span><span class="g">UPTREND</span>
+        <span class="l">HTF Bias</span><span class="w">UP (H1)</span>
+        <span class="l">ADX</span><span class="w">27.4</span>
+        <span class="l">Status</span><span class="g">HOLDING BASKET</span>
+        <span class="l">Basket</span><span class="g">LONG 2 trades 0.03l</span>
+        <span class="l">Basket P/L</span><span class="g">+38.20 [safe]</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Row</th><th>Meaning</th></tr>
+      <tr><td><b>Regime</b></td><td>RANGE / UPTREND / DOWNTREND / TRANSITION.</td></tr>
+      <tr><td><b>HTF Bias</b></td><td>Higher-timeframe bias (UP / DOWN / NEUTRAL).</td></tr>
+      <tr><td><b>ADX</b></td><td>Current ADX value.</td></tr>
+      <tr><td><b>Balance / Equity</b></td><td>Balance, net equity.</td></tr>
+      <tr><td><b>Spread</b></td><td>Current spread (red if above <code>MaxSpread_Points</code>).</td></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">SCANNING</span> / <span class="pill p-amber">WAITING RETEST ↑↓</span> / <span class="pill p-green">HOLDING BASKET</span> / <span class="pill p-red">PAUSED</span> (daily limit · high spread · off-session).</td></tr>
+      <tr><td><b>Basket</b></td><td>Direction + number of trades + total lot of the pyramid basket (— if empty).</td></tr>
+      <tr><td><b>Basket P/L</b></td><td>Basket P/L + label <code>[safe]</code> (risk-free) or <code>[at risk]</code>.</td></tr>
+      <tr><td><b>Today</b></td><td>Trades today + daily P/L.</td></tr>
+      <tr><td><b>Max DD</b></td><td>Largest equity drawdown (%).</td></tr>
+    </table>
+    <div class="callout">The dashboard only shows on a <b>real chart</b> or a <b>Visual-mode backtest</b>; normal backtests hide it for speed.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>Recommended .set files</h2>
+    <p>4 tiers by risk appetite (folder <code>setfiles/</code>):</p>
+    <table>
+      <tr><th>File</th><th>Risk level</th><th>Max DD</th><th>For</th></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_SAFE.set</code></td><td>Safe (1.0%)</td><td>~10%</td><td>Capital preservation / beginners.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_BALANCED.set</code></td><td>Balanced (1.5%)</td><td>~14%</td><td>Smooth equity curve, low DD.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_AGGRESSIVE.set</code></td><td>Aggressive (2.0%)</td><td>~19%</td><td><b>Recommended</b> — best profit/risk balance (+139%).</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_MAX.set</code></td><td>Max (2.5%)</td><td>~29%</td><td>Max profit, DD near the 30% ceiling.</td></tr>
+    </table>
+    <p>All optimized for <b>XAUUSD M15</b>. Load: <b>Inputs → Load</b> → pick the file. Save your own config: <b>Save</b>.</p>
+    <div class="callout">💡 <b>How it works:</b> the EA sizes lots by <b>% risk</b> (<code>Use_Risk_Percent=true</code>) so it <b>auto-scales to your balance</b> — the 4 tier files above work for <b>any account size</b>, the % return holds whether 1,000 or 100,000 USD.</div>
+
+    <h3>Setfiles by account size (optional)</h3>
+    <p>If you want a <b>quick pick by balance</b> or prefer a <b>fixed lot</b> instead of %, use the <code>&lt;TIER&gt;_&lt;size&gt;.set</code> set (24 files = 4 tiers × 6 sizes). Each keeps <code>Use_Risk_Percent=true</code> (runs exactly like the base tier file) but has a <b>pre-set <code>Fixed_Lot</code> right for that size</b> as a fallback — if you switch <code>Use_Risk_Percent=false</code>, the EA runs the correct fixed lot with no manual math.</p>
+    <table>
+      <tr><th>Capital (USD)</th><th>SAFE</th><th>BALANCED</th><th>AGGRESSIVE</th><th>MAX</th></tr>
+      <tr><td>1,000</td><td>0.01</td><td>0.02</td><td>0.02</td><td>0.03</td></tr>
+      <tr><td>5,000</td><td>0.05</td><td>0.08</td><td>0.10</td><td>0.13</td></tr>
+      <tr><td>10,000</td><td>0.10</td><td>0.15</td><td>0.20</td><td>0.25</td></tr>
+      <tr><td>20,000</td><td>0.20</td><td>0.30</td><td>0.40</td><td>0.50</td></tr>
+      <tr><td>50,000</td><td>0.50</td><td>0.75</td><td>1.00</td><td>1.25</td></tr>
+      <tr><td>100,000</td><td>1.00</td><td>1.50</td><td>2.00</td><td>2.50</td></tr>
+    </table>
+    <p>Example: 10,000 USD capital, aggressive appetite → load <code>Dralvo_Gold_Scalp_AGGRESSIVE_10k.set</code> (Risk 2.0%, fallback Fixed_Lot 0.20).</p>
+    <div class="callout">⚠️ <code>Fixed_Lot</code> is only a <b>fallback</b> — by default the EA still sizes by % risk. The verified backtest figures are in <b>% risk</b> mode.</div>
+    <div class="callout"><code>InpLicenseKey</code>/<code>InpMT5Account</code> are per-user and are <b>not</b> stored in shared <code>.set</code> files — enter them by hand on each machine.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>Backtest performance (verified)</h2>
+    <p>Figures run on <b>GTC real-tick XAUUSD data (98% quality)</b>, <i>Every tick based on real ticks</i> model, capital <b>10,000 USD</b>, period <b>Sep 2023 → Jun 2026 (~2.8 years)</b>. Parameters were <b>re-optimized</b> with a genetic algorithm (4,342 passes) then verified on real ticks.</p>
+
+    <h3>Profit by year (SAFE · Risk 1%) — POSITIVE all 4 years</h3>
+    <table>
+      <tr><th>Year</th><th style="text-align:right">Profit</th></tr>
+      <tr><td>2023 (Sep–Dec)</td><td style="text-align:right;color:var(--green)">+1,966</td></tr>
+      <tr><td>2024</td><td style="text-align:right;color:var(--green)">+1,164</td></tr>
+      <tr><td>2025</td><td style="text-align:right;color:var(--green)">+1,565</td></tr>
+      <tr><td>2026 (Jan–Jun)</td><td style="text-align:right;color:var(--green)">+992</td></tr>
+    </table>
+    <div class="callout">Notably: <b>2024 and 2025</b> (gold ranged a lot) were both profitable — something the new optimized build fixed versus the previous one.</div>
+
+    <h3>By risk level (10,000 USD · ~2.8 years)</h3>
+    <table>
+      <tr><th>Profile</th><th style="text-align:right">Risk</th><th style="text-align:right">Net profit</th><th style="text-align:right">Growth</th><th style="text-align:right">PF</th><th style="text-align:right">Max DD</th><th style="text-align:right">Trades</th></tr>
+      <tr><td><b>SAFE</b></td><td style="text-align:right">1.0%</td><td style="text-align:right;color:var(--green)">+5,686.94</td><td style="text-align:right">+56.9%</td><td style="text-align:right">1.90</td><td style="text-align:right">9.7%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>BALANCED</b></td><td style="text-align:right">1.5%</td><td style="text-align:right;color:var(--green)">+9,550.00</td><td style="text-align:right">+95.5%</td><td style="text-align:right"><b>1.91</b></td><td style="text-align:right">14.3%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>AGGRESSIVE ★</b></td><td style="text-align:right">2.0%</td><td style="text-align:right;color:var(--green)">+13,899.00</td><td style="text-align:right">+139.0%</td><td style="text-align:right">1.89</td><td style="text-align:right">18.8%</td><td style="text-align:right">111</td></tr>
+      <tr><td><b>MAX</b></td><td style="text-align:right">2.5%</td><td style="text-align:right;color:var(--green)">+15,830.55</td><td style="text-align:right">+158.3%</td><td style="text-align:right">1.80</td><td style="text-align:right">28.6%</td><td style="text-align:right">109</td></tr>
+    </table>
+    <p><b>Quick read:</b> Profit Factor is stable at <b>~1.9</b> (much stronger than the old ~1.2), DD grows linearly with risk, and <b>every tier stays below the 30% ceiling</b>. The recommended <b>AGGRESSIVE (2.0%)</b>: +139% with DD still under 20%.</p>
+    <div class="callout">✅ Verified 2026-06-30 with the MT5 Strategy Tester on GTC real ticks (98% quality). Cross-checked against Exness (2024–2026), similarly positive (Exness is only 70% quality, so its early years are less reliable).</div>
+    <div class="callout warn">⚠️ Backtests <b>do not guarantee</b> the future. This is a scalping system that needs a <b>low-spread broker</b>; spread/commission/slippage matter directly → forward-test on demo first. Other timeframes (M5/M1/H1) all tested <b>worse than M15</b>.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>Troubleshooting</h2>
+    <table>
+      <tr><th>Symptom</th><th>Cause / fix</th></tr>
+      <tr><td>EA shows <b>"Contact telegram: @edgardinh86"</b></td><td>License error: (1) URL <code>https://www.dralvo.com</code> not whitelisted (section 2). (2) key + account not both filled. (3) account doesn't match. (4) no internet.</td></tr>
+      <tr><td>EA doesn't take trades</td><td>(1) Algo Trading off. (2) Spread &gt; <code>MaxSpread_Points</code> (dashboard red). (3) Off-session. (4) Hit <code>Daily_Max_Loss_Percent</code> or <code>Max_Trades_Per_Day</code>. (5) Setup conditions not met yet (see Status).</td></tr>
+      <tr><td>Too few trades</td><td>Lots of <b>TRANSITION</b> regime; consider enabling <code>Use_RangeFade</code> or <code>Require_HTF_Align=false</code> (riskier).</td></tr>
+      <tr><td>Too many adds / too risky</td><td>Lower <code>Max_Adds</code>, reduce <code>Add_Lot_Factor</code>, raise <code>Lock_Buffer_ATR</code>.</td></tr>
+      <tr><td>Lot too large/small</td><td>Check <code>Use_Risk_Percent</code> / <code>Risk_Percent</code> (or <code>Fixed_Lot</code>).</td></tr>
+      <tr><td>No dashboard</td><td><code>Show_Dashboard=true</code> and running a real/visual chart.</td></tr>
+    </table>
+    <p style="color:var(--mut)">See details in the <b>Toolbox → Experts</b> and <b>Journal</b> tabs (enable <code>Verbose_Log=true</code> for deeper inspection).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>Risk disclaimer</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Margin trading is high-risk. <b>No configuration guarantees profit.</b></li>
+        <li>Always run a <b>demo / forward test</b> long enough before using real money.</li>
+        <li>Pyramiding increases both profit and risk when misconfigured — understand <code>Max_Adds</code>, <code>Add_Lot_Factor</code> before raising them.</li>
+        <li>The bundled <code>.set</code> files are a starting point; tune them to your broker, spread and real volatility.</li>
+        <li>Only trade money you can afford to lose.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo Gold Scalp © Dralvo — User Guide v2.00</footer>
+
+</div>
+</body>
+</html>

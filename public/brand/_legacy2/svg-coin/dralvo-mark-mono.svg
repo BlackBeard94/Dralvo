@@ -1,0 +1,8 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dralvo">
+  <title>Dralvo</title>
+  <desc>Monochrome Dralvo token mark. Uses currentColor so it inherits the surrounding text color.</desc>
+  <circle cx="32" cy="32" r="28.5" fill="none" stroke="currentColor" stroke-width="2.6"/>
+  <g transform="translate(11.5 11.5) scale(0.64)">
+    <path d="M14 10 H30 A22 22 0 0 1 30 54 H14 Z M22 18 H30 A14 14 0 0 1 30 46 H22 Z" fill="currentColor" fill-rule="evenodd"/>
+  </g>
+</svg>

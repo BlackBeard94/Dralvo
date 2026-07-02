@@ -1,165 +1,178 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import { BrandLink } from "@/components/shared/brand";
-import { NavBar } from "@/components/shared/nav-bar";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { useLocale } from "@/hooks/use-locale";
-import { AFFILIATE_COPY } from "@/lib/affiliate/copy";
+import { ArrowRight, Check, Percent, Clock, Wallet, Repeat } from "lucide-react";
+
+import { SiteNav } from "@/components/shared/site-nav";
+import { SiteFooter } from "@/components/shared/site-footer";
+import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { AffiliateReferralTracker } from "@/components/affiliate/affiliate-referral-tracker";
+import { getServerLocale } from "@/lib/server-locale";
+import { localeDir } from "@/lib/i18n";
+import { AFFILIATE_COPY } from "@/lib/affiliate/copy";
+import { getAffiliateSettings } from "@/lib/affiliate/settings";
+import { substituteAffiliateNumbers } from "@/lib/affiliate/marketing-copy";
 
-const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
+export const revalidate = 120;
 
-function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`relative py-20 px-6 ${className}`}>{children}</section>;
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.dralvo.com";
+const SERIF = "'DM Serif Display', 'Times New Roman', 'Noto Serif', serif";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  const settings = await getAffiliateSettings();
+  const t = substituteAffiliateNumbers(AFFILIATE_COPY[locale], settings);
+  return {
+    title: t.hero.title,
+    description: t.hero.subtitle,
+    alternates: { canonical: `${SITE}/affiliate` },
+    openGraph: {
+      title: `${t.hero.title} | Dralvo`,
+      description: t.hero.subtitle,
+      url: `${SITE}/affiliate`,
+      siteName: "Dralvo",
+      images: ["/brand/dralvo-og.png"],
+    },
+    robots: { index: true, follow: true },
+  };
 }
+
+const ITEM_ICONS = [Percent, Clock, Wallet, Repeat];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium border border-border text-text-muted bg-deep/40">
+    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-deep/40 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-gold">
       {children}
-    </div>
+    </span>
   );
 }
 
-export default function AffiliatePage() {
-  const { locale } = useLocale();
-  const t = AFFILIATE_COPY[locale];
+export default async function AffiliatePage() {
+  const locale = await getServerLocale();
+  const settings = await getAffiliateSettings();
+  const t = substituteAffiliateNumbers(AFFILIATE_COPY[locale], settings);
 
   return (
-    <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
+    <div dir={localeDir(locale)} className="min-h-dvh overflow-x-hidden bg-deep text-text-primary antialiased">
       <AffiliateReferralTracker />
 
-      {/* Nav */}
-      <NavBar
-        containerClassName="max-w-[1100px] mx-auto px-6"
-        links={[
-          { label: "Sản phẩm", href: "/#products" },
-          { label: "Bảng giá", href: "/#pricing" },
-          { label: t.navLabel, href: "/affiliate", className: "text-gold font-medium" },
-        ]}
-        actions={<Link href="/login" className="text-[12px] font-semibold text-text-primary hover:text-gold transition-colors no-underline">Đăng nhập</Link>}
-      />
+      <SiteNav locale={locale} activeHref="/affiliate" />
 
-      <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }} className="max-w-[1100px] mx-auto">
-
+      <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
         {/* Hero */}
-        <Section>
-          <div className="text-center max-w-[720px] mx-auto">
+        <section className="relative overflow-hidden">
+          <GridPattern />
+          <GlowOrb className="w-[620px] h-[620px] -right-40 -top-52 opacity-40" />
+          <div className="relative z-10 mx-auto max-w-[820px] px-6 pt-20 pb-16 text-center">
             <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal tracking-[-0.015em] mt-5 mb-5 text-balance" style={{ fontFamily: SERIF }}>
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-[-0.02em] text-balance" style={{ fontFamily: SERIF }}>
               {t.hero.title}
             </h1>
-            <p className="text-lg text-text-secondary leading-relaxed mb-8 max-w-[560px] mx-auto">{t.hero.subtitle}</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/signup?redirect=/dashboard/affiliate" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-md text-[15px] font-bold bg-gold-bright text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03]">
-                {t.hero.cta}
+            <p className="mx-auto mt-6 max-w-[580px] text-lg leading-relaxed text-text-secondary">{t.hero.subtitle}</p>
+            <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link href="/signup?redirect=/dashboard/affiliate" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold-action px-8 py-3.5 text-[15px] font-bold text-[#060609] no-underline transition-transform hover:scale-[1.03]">
+                {t.hero.cta} <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/login?redirect=/dashboard/affiliate" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-md text-[15px] font-semibold border border-border text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">
+              <Link href="/login?redirect=/dashboard/affiliate" className="inline-flex items-center justify-center rounded-lg border border-border px-8 py-3.5 text-[15px] font-semibold text-text-primary no-underline transition-all hover:border-gold/40 hover:text-gold">
                 {t.hero.loginCta}
               </Link>
             </div>
           </div>
-        </Section>
+        </section>
 
-        {/* Commission stats */}
-        <Section className="bg-surface">
-          <div className="text-center mb-10">
-            <Eyebrow>{t.commission.eyebrow}</Eyebrow>
-            <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3" style={{ fontFamily: SERIF }}>{t.commission.title}</h2>
-            <p className="text-text-secondary max-w-[480px] mx-auto">{t.commission.subtitle}</p>
+        {/* Commission stats — dynamic values from admin settings */}
+        <section className="border-y border-border bg-surface/50">
+          <div className="mx-auto max-w-[1120px] px-6 py-16">
+            <div className="mx-auto mb-10 max-w-[520px] text-center">
+              <Eyebrow>{t.commission.eyebrow}</Eyebrow>
+              <h2 className="mt-4 text-3xl sm:text-4xl tracking-[-0.015em]" style={{ fontFamily: SERIF }}>{t.commission.title}</h2>
+              <p className="mt-3 text-text-secondary">{t.commission.subtitle}</p>
+            </div>
+            <div className="mx-auto grid max-w-[640px] grid-cols-1 gap-4 sm:grid-cols-3">
+              {t.commission.items
+                .map((item, i) => ({ item, Icon: ITEM_ICONS[i] ?? Percent, highlight: i === 0 }))
+                .filter((_, i) => i !== 1) // ẩn "Cookie" khỏi trang công khai
+                .map(({ item, Icon, highlight }) => (
+                  <div key={item.label} className={`rounded-2xl border p-5 text-center ${highlight ? "border-border-gold bg-gold/[0.07]" : "border-border bg-card"}`}>
+                    <Icon className={`mx-auto mb-3 h-5 w-5 ${highlight ? "text-gold-bright" : "text-text-muted"}`} />
+                    <div className={`font-mono text-xl font-bold leading-tight break-words ${highlight ? "text-gold-bright" : "text-text-primary"}`}>{item.value}</div>
+                    <div className="mt-1 text-[11px] text-text-muted">{item.label}</div>
+                  </div>
+                ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1  grid-cols-2 md:grid-cols-4 gap-4 max-w-[720px] mx-auto">
-            {t.commission.items.map((item) => (
-              <div key={item.label} className="rounded-xl border border-border bg-card p-5 text-center">
-                <div className="text-2xl font-bold text-gold-bright font-mono">{item.value}</div>
-                <div className="text-[11px] text-text-muted mt-1">{item.label}</div>
-              </div>
-            ))}
-          </div>
-        </Section>
+        </section>
 
         {/* How it works */}
-        <Section>
-          <div className="text-center mb-10">
+        <section className="mx-auto max-w-[1120px] px-6 py-20">
+          <div className="mb-12 text-center">
             <Eyebrow>{t.how.eyebrow}</Eyebrow>
-            <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5" style={{ fontFamily: SERIF }}>{t.how.title}</h2>
+            <h2 className="mt-4 text-3xl sm:text-4xl tracking-[-0.015em]" style={{ fontFamily: SERIF }}>{t.how.title}</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-[900px] mx-auto">
+          <div className="mx-auto grid max-w-[960px] gap-5 md:grid-cols-3">
             {t.how.steps.map((step, i) => (
-              <div key={step.title} className="rounded-xl border border-border bg-card p-6 text-center relative">
-                <div className="w-10 h-10 rounded-full bg-gold/15 border border-gold/30 flex items-center justify-center mx-auto mb-4">
-                  <span className="font-mono text-gold font-bold">{i + 1}</span>
-                </div>
-                <h3 className="font-semibold text-text-primary mb-2">{step.title}</h3>
-                <p className="text-[13px] text-text-secondary leading-relaxed">{step.body}</p>
+              <div key={step.title} className="relative rounded-2xl border border-border bg-card p-7">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full border border-border-gold bg-gold/10 font-mono text-lg font-bold text-gold">{i + 1}</div>
+                <h3 className="mb-2 text-lg font-semibold text-text-primary">{step.title}</h3>
+                <p className="text-[14px] leading-relaxed text-text-secondary">{step.body}</p>
               </div>
             ))}
           </div>
-        </Section>
+        </section>
 
         {/* Why partner */}
-        <Section className="bg-surface">
-          <div className="text-center mb-10">
-            <Eyebrow>{t.why.eyebrow}</Eyebrow>
-            <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5" style={{ fontFamily: SERIF }}>{t.why.title}</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4 max-w-[800px] mx-auto">
-            {t.why.items.map((item) => (
-              <div key={item.title} className="rounded-xl border border-border bg-card p-5">
-                <h3 className="font-semibold text-text-primary text-sm mb-1.5">{item.title}</h3>
-                <p className="text-[13px] text-text-secondary leading-relaxed">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        {/* FAQ */}
-        <Section>
-          <div className="max-w-[720px] mx-auto">
-            <div className="text-center mb-10">
-              <Eyebrow>{t.faq.eyebrow}</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5" style={{ fontFamily: SERIF }}>{t.faq.title}</h2>
+        <section className="border-y border-border bg-surface/50">
+          <div className="mx-auto max-w-[1120px] px-6 py-20">
+            <div className="mb-12 text-center">
+              <Eyebrow>{t.why.eyebrow}</Eyebrow>
+              <h2 className="mt-4 text-3xl sm:text-4xl tracking-[-0.015em]" style={{ fontFamily: SERIF }}>{t.why.title}</h2>
             </div>
-            <div className="space-y-3">
-              {t.faq.items.map(([q, a]) => (
-                <details key={q} className="border rounded-lg border-border group">
-                  <summary className="px-5 py-4 text-sm font-medium text-text-secondary cursor-pointer hover:text-text-primary transition-colors list-none [&::-webkit-details-marker]:hidden">{q}</summary>
-                  <p className="px-5 pb-4 text-[13px] leading-relaxed text-text-secondary">{a}</p>
-                </details>
+            <div className="mx-auto grid max-w-[860px] gap-4 sm:grid-cols-2">
+              {t.why.items.map((item) => (
+                <div key={item.title} className="flex gap-3 rounded-2xl border border-border bg-card p-5">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green/10 text-green"><Check className="h-3.5 w-3.5" /></span>
+                  <div>
+                    <h3 className="text-[15px] font-semibold text-text-primary">{item.title}</h3>
+                    <p className="mt-1 text-[13.5px] leading-relaxed text-text-secondary">{item.body}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        </Section>
+        </section>
+
+        {/* FAQ */}
+        <section className="mx-auto max-w-[760px] px-6 py-20">
+          <div className="mb-10 text-center">
+            <Eyebrow>{t.faq.eyebrow}</Eyebrow>
+            <h2 className="mt-4 text-3xl sm:text-4xl tracking-[-0.015em]" style={{ fontFamily: SERIF }}>{t.faq.title}</h2>
+          </div>
+          <div className="space-y-3">
+            {t.faq.items.map(([q, a]) => (
+              <details key={q} className="group rounded-xl border border-border bg-card">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-[15px] font-medium text-text-primary [&::-webkit-details-marker]:hidden">
+                  {q}
+                  <span className="text-gold transition-transform group-open:rotate-45">＋</span>
+                </summary>
+                <p className="px-5 pb-4 text-[14px] leading-relaxed text-text-secondary">{a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
 
         {/* CTA */}
-        <Section>
-          <div className="rounded-3xl border border-gold/25 p-10 sm:p-14 text-center max-w-[720px] mx-auto" style={{ background: "linear-gradient(168deg, rgba(212,168,67,0.1), var(--bg-card) 60%)" }}>
+        <section className="mx-auto max-w-[1120px] px-6 pb-24">
+          <div className="mx-auto max-w-[760px] rounded-3xl border border-gold/25 p-10 text-center sm:p-14" style={{ background: "linear-gradient(168deg, rgba(212,168,67,0.12), var(--bg-card) 60%)" }}>
             <Eyebrow>{t.cta.eyebrow}</Eyebrow>
-            <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-4" style={{ fontFamily: SERIF }}>{t.cta.title}</h2>
-            <p className="text-text-secondary mb-7 max-w-[480px] mx-auto">{t.cta.body}</p>
-            <Link href="/signup?redirect=/dashboard/affiliate" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-md text-[15px] font-bold bg-gold-bright text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03]">
-              {t.cta.button}
+            <h2 className="mt-4 text-3xl sm:text-4xl tracking-[-0.015em]" style={{ fontFamily: SERIF }}>{t.cta.title}</h2>
+            <p className="mx-auto mt-3 mb-8 max-w-[480px] text-text-secondary">{t.cta.body}</p>
+            <Link href="/signup?redirect=/dashboard/affiliate" className="inline-flex items-center gap-2 rounded-lg bg-gold-action px-8 py-3.5 text-[15px] font-bold text-[#060609] no-underline transition-transform hover:scale-[1.03]">
+              {t.cta.button} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-        </Section>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-surface/50">
-        <div className="max-w-[1100px] mx-auto px-6 py-10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <BrandLink logoSize={24} wordmarkClassName="text-sm" />
-            <div className="flex flex-wrap items-center gap-4 text-[11px] text-text-muted">
-              <Link href="/privacy" className="hover:text-gold transition-colors no-underline">Privacy</Link>
-              <Link href="/terms" className="hover:text-gold transition-colors no-underline">Terms</Link>
-              <Link href="/disclaimer" className="hover:text-gold transition-colors no-underline">Disclaimer</Link>
-            </div>
-          </div>
-          <p className="text-[11px] text-text-muted text-center mt-6">© 2026 Dralvo Capital.</p>
-        </div>
-      </footer>
+      <SiteFooter locale={locale} />
     </div>
   );
 }

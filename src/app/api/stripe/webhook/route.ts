@@ -4,11 +4,12 @@ import { recordRunLog } from "@/lib/run-logs";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import {
   hasProAccess,
-  periodEndFromPlan,
   subscriptionPeriodEndIso,
   upsertProSubscriptionFromCheckoutSession,
 } from "@/lib/stripe-subscriptions";
-import { createCommission, convertReferral } from "@/lib/affiliate/server";
+import { recordAffiliateCommission } from "@/lib/affiliate/server";
+import { recordPartnerCommission } from "@/lib/partners/commission";
+import { sendPurchaseConversions } from "@/lib/marketing/conversions";
 import type Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
@@ -48,34 +49,108 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Event-level idempotency: Stripe delivers at-least-once, so skip any event id
+  // we've already handled (prevents duplicate emails / marketing conversions /
+  // admin events on redelivery). Best-effort — if the stripe_events table isn't
+  // present yet (migration 20260701130000_release_audit_ddl not applied), we log
+  // once and continue without the guard.
+  const { error: dedupeErr } = await supabase
+    .from("stripe_events")
+    .insert({ event_id: event.id, type: event.type });
+  if (dedupeErr) {
+    if (dedupeErr.code === "23505") {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    if (dedupeErr.code !== "42P01") {
+      console.error("[Stripe Webhook] dedupe insert failed:", dedupeErr.message, dedupeErr.code);
+    }
+  }
+
+  // Reverse a still-pending affiliate commission when its sale is refunded.
+  // Already-paid commissions need a manual clawback (money left the platform),
+  // so we only auto-reverse pending ones and log the rest.
+  const cancelAffiliateCommissionForInvoice = async (invoiceId: string | null) => {
+    if (!invoiceId) return;
+    const { data: comm } = await supabase
+      .from("affiliate_commissions")
+      .select("id, affiliate_id, amount, status")
+      .eq("external_ref", invoiceId)
+      .maybeSingle();
+    if (!comm) return;
+    if (comm.status !== "pending") {
+      console.warn(`[Stripe Webhook] refund for already-${comm.status} commission ${comm.id} — manual clawback needed`);
+      return;
+    }
+    await supabase.from("affiliate_commissions").update({ status: "refunded" }).eq("id", comm.id);
+    // Atomic decrement (race-safe).
+    await supabase.rpc("increment_affiliate_earned", { p_affiliate_id: comm.affiliate_id, p_delta: -Number(comm.amount) });
+  };
+
+  // Symmetric reversal for PARTNER commissions on refund. partner_commissions
+  // only allows status pending|paid (no 'refunded' state), so a still-pending
+  // commission for the refunded invoice is deleted; an already-paid one is left
+  // and logged for manual clawback.
+  const cancelPartnerCommissionForInvoice = async (invoiceId: string | null) => {
+    if (!invoiceId) return;
+    const { data: comm } = await supabase
+      .from("partner_commissions")
+      .select("id, status")
+      .eq("source", "stripe")
+      .eq("external_ref", invoiceId)
+      .maybeSingle();
+    if (!comm) return;
+    if (comm.status !== "pending") {
+      console.warn(`[Stripe Webhook] refund for already-${comm.status} partner commission ${comm.id} — manual clawback needed`);
+      return;
+    }
+    await supabase.from("partner_commissions").delete().eq("id", comm.id);
+  };
+
   try {
     switch (event.type) {
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge;
+        // `invoice` is present on subscription charges at runtime but not in the
+        // Basil SDK type — read defensively; if absent we simply skip.
+        const chargeInvoice = (charge as unknown as {
+          invoice?: string | { id?: string } | null;
+        }).invoice;
+        const invoiceId =
+          typeof chargeInvoice === "string" ? chargeInvoice : (chargeInvoice?.id ?? null);
+        await cancelAffiliateCommissionForInvoice(invoiceId);
+        await cancelPartnerCommissionForInvoice(invoiceId);
+        break;
+      }
+
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         await upsertProSubscriptionFromCheckoutSession(session);
 
-        // ponytail: auto-generate license key for Unlimited buyers.
-        // Rental model — always a concrete expiry, never lifetime.
+        // Subscription + VIP per-EA licenses are provisioned inside
+        // upsertProSubscriptionFromCheckoutSession (shared with the success
+        // redirect), so we only handle attribution side-effects here.
         const userId = session.client_reference_id;
         if (userId) {
-          const { data: sub } = await supabase
-            .from("subscriptions")
-            .select("current_period_end")
-            .eq("user_id", userId)
-            .single();
-          const expiresAt =
-            sub?.current_period_end ??
-            periodEndFromPlan(session.metadata?.period);
-          await supabase.from("license_keys").upsert({
-            user_id: userId,
-            plan: "unlimited",
-            is_lifetime: false,
-            expires_at: expiresAt,
-          }, { onConflict: "user_id" });
+          // Affiliate commission is recorded from invoice.payment_succeeded
+          // (first payment AND renewals) — a single authoritative path keyed on
+          // the invoice id. Recording it here too (keyed on the nullable
+          // session.invoice) risks a duplicate first-payment commission, so we
+          // intentionally do NOT record it in this handler.
 
-          // affiliate: check for referral conversion and create commission
-          await handleAffiliateCommission(supabase, userId, session);
+          // marketing: fire server-side ad conversions (Meta CAPI / GA4 MP /
+          // TikTok Events API). Best-effort — never blocks fulfilment.
+          await handleMarketingConversion(userId, session);
         }
+        break;
+      }
+
+      case "invoice.payment_succeeded": {
+        // Fires on the first charge AND every renewal — the hook for RECURRING
+        // (lifetime) commissions. Both partner and affiliate customers earn
+        // their referrer a commission on every paid invoice.
+        const invoice = event.data.object as Stripe.Invoice;
+        await handlePartnerCommission(supabase, invoice);
+        await handleAffiliateRenewalCommission(supabase, invoice);
         break;
       }
 
@@ -109,9 +184,22 @@ export async function POST(request: NextRequest) {
           .eq("stripe_subscription_id", stripeSubscriptionId)
           .single();
         if (subRow) {
-          await supabase.from("license_keys")
-            .update({ expires_at: currentPeriodEnd })
-            .eq("user_id", subRow.user_id);
+          // Extend the VIP (unlimited) rental keys only while access is actually
+          // paid. On past_due/unpaid/incomplete etc., expire them immediately so
+          // the EA gate (which only checks expires_at) stops the bots — otherwise
+          // a delinquent renewal keeps all EAs running free for a full period.
+          // Never touch lifetime comps (is_lifetime=true) or tigold-free keys.
+          const licenseExpiry = hasProAccess(status)
+            ? currentPeriodEnd
+            : new Date().toISOString();
+          const { error: licErr } = await supabase.from("license_keys")
+            .update({ expires_at: licenseExpiry })
+            .eq("user_id", subRow.user_id)
+            .eq("plan", "unlimited")
+            .eq("is_lifetime", false);
+          if (licErr) {
+            console.error("[Stripe Webhook] Failed to sync license expiry:", licErr);
+          }
         }
         break;
       }
@@ -143,9 +231,16 @@ export async function POST(request: NextRequest) {
           .eq("stripe_subscription_id", stripeSubscriptionId)
           .single();
         if (subRow) {
-          await supabase.from("license_keys")
+          // Revoke only VIP (unlimited) RENTAL keys; keep tigold-free keys and
+          // admin lifetime comps (is_lifetime=true) intact.
+          const { error: delErr } = await supabase.from("license_keys")
             .delete()
-            .eq("user_id", subRow.user_id);
+            .eq("user_id", subRow.user_id)
+            .eq("plan", "unlimited")
+            .eq("is_lifetime", false);
+          if (delErr) {
+            console.error("[Stripe Webhook] Failed to revoke licenses on cancel:", delErr);
+          }
         }
         break;
       }
@@ -187,51 +282,116 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/** Create affiliate commission if customer was referred */
-async function handleAffiliateCommission(
+/**
+ * Create a partner (reseller) commission for a paid invoice — on first charge
+ * and every renewal. Resolves the local user via the subscriptions table, then
+ * defers ownership/rate decisions to recordPartnerCommission (which no-ops for
+ * non-partner customers). Idempotent on the Stripe invoice id.
+ */
+/**
+ * Recurring affiliate commission on every paid invoice (first + renewals).
+ * Resolves the local user from the invoice's Stripe customer, then defers to
+ * recordAffiliateCommission (which no-ops unless the customer was referred by
+ * an active affiliate, and dedupes per invoice id).
+ */
+async function handleAffiliateRenewalCommission(
   supabase: ReturnType<typeof getSupabaseAdminClient>,
-  userId: string,
-  session: Stripe.Checkout.Session,
+  invoice: Stripe.Invoice,
+) {
+  try {
+    if (!supabase) return;
+    const stripeCustomerId =
+      typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id ?? null;
+    if (!stripeCustomerId) return;
+
+    const { data: subRow } = await supabase
+      .from("subscriptions")
+      .select("user_id, stripe_subscription_id")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .limit(1)
+      .single();
+    if (!subRow?.user_id) return;
+
+    const amountPaid = (invoice.amount_paid ?? 0) / 100;
+    if (amountPaid <= 0) return;
+
+    await recordAffiliateCommission({
+      customerUserId: subRow.user_id,
+      saleAmount: amountPaid,
+      currency: (invoice.currency ?? "usd").toUpperCase(),
+      externalRef: invoice.id ?? null,
+      subscriptionId: (subRow.stripe_subscription_id as string) ?? "",
+    });
+  } catch (err) {
+    console.error("[Affiliate Commission] renewal failed:", err);
+  }
+}
+
+async function handlePartnerCommission(
+  supabase: ReturnType<typeof getSupabaseAdminClient>,
+  invoice: Stripe.Invoice,
 ) {
   try {
     if (!supabase) return;
 
-    // Find a converted referral for this customer
-    const { data: referral } = await supabase
-      .from("affiliate_referrals")
-      .select("*")
-      .eq("customer_id", userId)
-      .eq("converted", true)
-      .order("converted_at", { ascending: false })
+    const stripeCustomerId =
+      typeof invoice.customer === "string"
+        ? invoice.customer
+        : invoice.customer?.id ?? null;
+    if (!stripeCustomerId) return;
+
+    // Resolve the local user from the subscriptions table.
+    const { data: subRow } = await supabase
+      .from("subscriptions")
+      .select("user_id")
+      .eq("stripe_customer_id", stripeCustomerId)
       .limit(1)
       .single();
 
-    if (!referral) return;
+    if (!subRow?.user_id) return; // no matching local user — skip
 
-    // Check this customer hasn't already earned a commission for this referral
-    const { data: existing } = await supabase
-      .from("affiliate_commissions")
-      .select("id")
-      .eq("referral_id", referral.id)
-      .limit(1);
+    const amountPaid = (invoice.amount_paid ?? 0) / 100; // cents → dollars
+    if (amountPaid <= 0) return;
 
-    if (existing && existing.length > 0) return; // already commissioned
-
-    const amountTotal = (session.amount_total ?? 0) / 100; // cents → dollars
-    if (amountTotal <= 0) return;
-
-    await createCommission(
-      referral.affiliate_id,
-      referral.id,
-      userId,
-      (typeof session.subscription === "string" ? session.subscription : (session.subscription?.id ?? "")) as string,
-      amountTotal,
-      null,
-      null,
-    );
+    await recordPartnerCommission({
+      customerUserId: subRow.user_id,
+      source: "stripe",
+      saleAmount: amountPaid,
+      currency: (invoice.currency ?? "usd").toUpperCase(),
+      externalRef: invoice.id ?? null,
+    });
   } catch (err) {
-    console.error("[Affiliate Commission] Failed:", err);
-    // Don't fail the webhook — commission is non-critical
+    console.error("[Partner Commission] Failed:", err);
+    // Don't fail the webhook — commission is non-critical.
   }
 }
 
+/**
+ * Fire server-side ad-platform purchase conversions for a completed checkout.
+ * Pulls value/currency/email off the Stripe session and uses the session id as
+ * the conversion event id so the browser pixels de-duplicate. Best-effort —
+ * a tracking failure must not fail the webhook.
+ */
+async function handleMarketingConversion(
+  userId: string,
+  session: Stripe.Checkout.Session,
+) {
+  try {
+    const value = (session.amount_total ?? 0) / 100; // cents → currency units
+    if (value <= 0 || !session.id) return;
+
+    await sendPurchaseConversions({
+      userId,
+      email: session.customer_details?.email ?? session.customer_email ?? null,
+      value,
+      currency: (session.currency ?? "usd").toUpperCase(),
+      orderId: session.id,
+      sourceUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://dralvo.com",
+    });
+  } catch (err) {
+    console.error("[Marketing Conversion] Failed:", err);
+    // Non-critical — never fail the webhook over a tracking call.
+  }
+}
+
+/** Create affiliate commission if customer was referred */

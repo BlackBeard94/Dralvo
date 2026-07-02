@@ -27,7 +27,7 @@ export const PRO_FEATURES = [
 
 export type ProFeature = (typeof PRO_FEATURES)[number];
 
-const LICENSE_SELECT = "plan, expires_at";
+const LICENSE_SELECT = "plan, expires_at, is_lifetime";
 const SUBSCRIPTION_SELECT =
   "plan_tier, status, current_period_end, stripe_subscription_id";
 
@@ -43,10 +43,29 @@ export async function getPlanDetailsByUserId(
   const supabase = getSupabaseAdminClient();
   if (!supabase) return FREE_DETAILS;
 
-  const [{ data: license }, { data: subscription }] = await Promise.all([
-    supabase.from("license_keys").select(LICENSE_SELECT).eq("user_id", userId).maybeSingle(),
+  // A user may hold several per-EA keys. "Unlimited tier" = holding ANY genuinely
+  // valid VIP (plan='unlimited') key. Resolve across all of them instead of
+  // trusting a single DB-ordered row (nullsFirst could pick an invalid
+  // null-expiry row and hide a valid dated key, or vice-versa).
+  const [{ data: licenses }, { data: subscription }] = await Promise.all([
+    supabase
+      .from("license_keys")
+      .select(LICENSE_SELECT)
+      .eq("user_id", userId)
+      .eq("plan", "unlimited"),
     supabase.from("subscriptions").select(SUBSCRIPTION_SELECT).eq("user_id", userId).maybeSingle(),
   ]);
+
+  const now = Date.now();
+  const isValid = (l: { is_lifetime?: boolean | null; expires_at?: string | null }) =>
+    l.is_lifetime === true || (!!l.expires_at && new Date(l.expires_at).getTime() > now);
+  const rows = licenses ?? [];
+  // Prefer a valid key; otherwise hand resolvePlan the latest-expiry row so it
+  // returns Free with accurate info.
+  const license =
+    rows.find(isValid) ??
+    [...rows].sort((a, b) => (b.expires_at ?? "").localeCompare(a.expires_at ?? ""))[0] ??
+    null;
 
   return resolvePlan(license, subscription);
 }

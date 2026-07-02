@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo GoldMaster — User Guide</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLDMASTER</span>
+    <h1>User Guide</h1>
+    <p>Long-term swing EA for XAUUSD on MetaTrader 5 — trades on the D1 timeframe, filters by CFTC + trend + pullback + higher-low, trails by ATR.</p>
+    <div class="ver">Version 1.08 · File: Dralvo_GoldMaster.ex5 · D1 timeframe</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#caidat">Installation</a></li>
+      <li><a href="#license">License activation</a></li>
+      <li><a href="#logic">How the EA trades</a></li>
+      <li><a href="#thamso">Parameter reference</a></li>
+      <li><a href="#dashboard">On-chart dashboard</a></li>
+      <li><a href="#set">.set files &amp; CFTC data</a></li>
+      <li><a href="#hieusuat">Backtest performance</a></li>
+      <li><a href="#suco">Troubleshooting</a></li>
+      <li><a href="#ruiro">Risk disclaimer</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Installation</h2>
+    <ol class="steps">
+      <li>Close MetaTrader 5 (if open).</li>
+      <li>Open the data folder: <b>File → Open Data Folder</b>.</li>
+      <li>Copy <code>Dralvo_GoldMaster.ex5</code> into <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Or copy the <code>.mq5</code> and <b>Compile (F7)</b>.)</span></li>
+      <li><b>CFTC data source</b> — pick one: <b>(a)</b> live via API (recommended) → set <code>UseLiveAPI=true</code> + whitelist the URL (section 2), <b>no</b> CSV needed; <b>(b)</b> file mode → set <code>UseLiveAPI=false</code> and you <b>must</b> copy <code>cftc_status.csv</code> into <code>MQL5\Files\</code> (missing it shows <code>CFTC FILE NOT FOUND</code>). <i>Backtests always need the CSV.</i></li>
+      <li>Reopen MT5 → <b>Navigator → Expert Advisors</b>, right-click <b>Refresh</b>.</li>
+      <li>Open an <b>XAUUSD</b> chart, switch to the <b>D1</b> timeframe, and drag <b>Dralvo GoldMaster</b> onto the chart.</li>
+      <li><b>Common</b> tab: tick <b>Allow Algo Trading</b>. <b>Inputs</b> tab: enter your <b>License key</b> + <b>MT5 Account</b> (section 2), load a <code>.set</code>.</li>
+      <li>Click <b>OK</b> → enable <b>Algo Trading</b> on the toolbar (lights up green).</li>
+    </ol>
+    <div class="callout warn">This is a <b>daily</b> system: signals are evaluated <b>once per new D1 candle</b>. It is normal to go several days between trades — don't expect intraday entries.</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>License activation — REQUIRED for demo/live</h2>
+    <p>The EA has a <b>license gate</b>: on a real chart it calls the Dralvo server to verify the key. <b>Without this step the EA will NOT run</b> and shows the warning <code>Contact telegram: @edgardinh86</code>.</p>
+    <div class="callout">In the <b>Strategy Tester (backtest)</b> the license gate is <b>skipped</b> — backtests always run without a key.</div>
+
+    <h3>Step 1 — Get your License key</h3>
+    <p>How you get the key depends on your plan:</p>
+    <table>
+      <tr><th>Plan</th><th>Where to get the License key</th></tr>
+      <tr><td><b>VIP</b></td><td>Sign in to the <b>Dashboard at <code>https://www.dralvo.com</code></b> → <b>License / Key</b> → generate a key for each MT5 account.</td></tr>
+      <tr><td><b>Free</b></td><td>Contact <b>Telegram <code>@edgardinh86</code></b> to receive a <b>License key</b>.</td></tr>
+    </table>
+    <ul>
+      <li>Whichever plan, the key is <b>bound to a specific MT5 account number</b> — you must provide/register the correct account number.</li>
+      <li>Find your account number: <b>Navigator</b>, or <b>Tools → Options → Server</b>, or the MT5 window title (6–10 digits).</li>
+    </ul>
+    <p>🔹 <b>VIP plan — out of account slots:</b> each VIP account gets a set number of slots. Once you've <b>used all (max) accounts</b> and want to <b>add a new one</b>, <b>contact the admin</b> to be granted more.</p>
+
+    <h3>Step 2 — Whitelist WebRequest ⚠️ Most-forgotten step</h3>
+    <ol class="steps">
+      <li>Open <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>Go to the <b>Expert Advisors</b> tab.</li>
+      <li>Tick <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>Type exactly: <code>https://www.dralvo.com</code></li>
+      <li>Click <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">The same URL is also used for the <b>live CFTC API</b> when <code>UseLiveAPI=true</code>. Without whitelisting → license fails <b>and</b> the dashboard shows API: <b>OFFLINE</b>. This is the <b>#1 reason</b> the EA won't run even with the key entered.</div>
+
+    <h3>Step 3 — Enter the key in Inputs</h3>
+    <table>
+      <tr><th>Parameter</th><th>Value</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>License key (VIP: from the <code>dralvo.com</code> dashboard; Free: from <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>Your MT5 account number (6–10 digits), matching the key.</td></tr>
+    </table>
+
+    <h3>Entered the key but it still won't run? Check in order</h3>
+    <table>
+      <tr><th>#</th><th>Check</th></tr>
+      <tr><td>1</td><td>Have you whitelisted <code>https://www.dralvo.com</code>? (Step 2 — the #1 reason)</td></tr>
+      <tr><td>2</td><td>Filled in <b>both</b> <code>InpLicenseKey</code> and <code>InpMT5Account</code>?</td></tr>
+      <tr><td>3</td><td>Does the account number <b>match</b> the key?</td></tr>
+      <tr><td>4</td><td>Do you have an internet connection?</td></tr>
+      <tr><td>5</td><td>If <code>UseLiveAPI=false</code>: have you copied <code>cftc_status.csv</code> into <code>MQL5\Files\</code>? (or switch <code>UseLiveAPI=true</code> to use the API)</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>How this EA trades</h2>
+    <p>On each new D1 candle, the EA only opens a <b>BUY</b> when <b>all</b> filters are met at once:</p>
+    <table>
+      <tr><th>Filter</th><th>Meaning</th></tr>
+      <tr><td><b>CFTC bullish</b></td><td>CFTC positioning leans <b>long</b>. Source: <b>live + <code>UseLiveAPI=true</code></b> → straight from the API; otherwise (backtest, or <code>UseLiveAPI=false</code>) → read from <code>cftc_status.csv</code>.</td></tr>
+      <tr><td><b>TREND</b></td><td>EMA50 &gt; EMA200 on D1 (uptrend).</td></tr>
+      <tr><td><b>PB (Pullback)</b></td><td>Price has retraced far enough from the recent high (<code>PullbackPct</code>, <code>PullbackBars</code>).</td></tr>
+      <tr><td><b>HL (Higher-Low)</b></td><td>The most recent candle low is above the lowest low of ~20 candles ago (bullish structure).</td></tr>
+    </table>
+    <p>It also needs a <b>cooldown</b> (≥ 5 days since the last trade, at most 1 trade per day). On entry: <b>SL = price − 1.5×ATR</b>, sizing by <b>% risk</b>. Management: <b>trailing <code>TrailATR</code>×ATR</b> from the high, forced close after <b>MaxHoldDays</b>.</p>
+    <div class="callout">The dashboard shows 3 tokens <b>TREND / PB / HL</b> (green = passed, red = not yet). The <b>Experts/Journal</b> tab prints an <code>ENTRY-CHK …</code> line each candle telling you exactly which gate blocked entry.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>Parameter reference</h2>
+
+    <h3>Trading / Signal</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>RiskPercent</code></td><td>2.0</td><td>% of balance risked per trade (sets lot size from the SL distance).</td></tr>
+      <tr><td><code>MAPeriod1</code></td><td>50</td><td>Fast EMA (trend).</td></tr>
+      <tr><td><code>MAPeriod2</code></td><td>200</td><td>Slow EMA (trend).</td></tr>
+      <tr><td><code>ATRPeriod</code></td><td>14</td><td>ATR period (SL/trailing).</td></tr>
+      <tr><td><code>PullbackPct</code></td><td>-1.0</td><td>Pullback threshold (%) from the high.</td></tr>
+      <tr><td><code>PullbackBars</code></td><td>10</td><td>Number of D1 candles used for the recent high.</td></tr>
+      <tr><td><code>TrailATR</code></td><td>2.0</td><td>Trailing distance = ×ATR.</td></tr>
+      <tr><td><code>TP_ATR</code></td><td>0</td><td>TP = ×ATR. 0 = no hard TP, trailing only.</td></tr>
+      <tr><td><code>MaxHoldDays</code></td><td>60</td><td>Max days to hold before a forced close.</td></tr>
+      <tr><td><code>HigherLowFilter</code></td><td>true</td><td>Enable the higher-low structure filter.</td></tr>
+    </table>
+
+    <h3>CFTC data</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>UseLiveAPI</code></td><td>false</td><td><b>Decides the CFTC source when running live.</b> true = pull CFTC <b>directly from the API</b> (needs the URL whitelisted, <b>no</b> CSV). false = read <code>cftc_status.csv</code> (file required). Backtests always use the file.</td></tr>
+      <tr><td><code>API_URL</code></td><td>dralvo.com/api/cftc-status</td><td>CFTC API address when <code>UseLiveAPI=true</code>.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>202606</td><td>Order identifier. Use a distinct number per EA/symbol.</td></tr>
+    </table>
+
+    <h3>License</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(empty)</td><td>License key (section 2). Required for demo/live.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(empty)</td><td>MT5 account number matching the key (6–10 digits).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>On-chart dashboard</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLDMASTER v1.08</span></div>
+      <div class="rows">
+        <span class="l">Trade</span><span class="g">SIGNAL READY</span>
+        <span class="l">P/L</span><span class="g">+$182.40 (+1.82%)</span>
+        <span class="l">Filters</span><span class="g">TREND&nbsp;&nbsp;PB&nbsp;&nbsp;HL</span>
+        <span class="l">Balance</span><span class="w">$10,000.00</span>
+        <span class="l">Equity</span><span class="w">$10,182.40</span>
+        <span class="l">API</span><span class="g">LOCAL</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Row</th><th>Meaning</th></tr>
+      <tr><td><b>Trade</b></td><td><span class="pill p-green">IN TRADE</span> / <span class="pill p-green">SIGNAL READY</span> / <span class="pill p-amber">MONITORING</span> / <span class="pill p-amber">STANDBY</span></td></tr>
+      <tr><td><b>P/L</b></td><td>Open-trade profit/loss ($ and %); <code>-</code> when there is no trade.</td></tr>
+      <tr><td><b>TREND · PB · HL</b></td><td>3 filter tokens: green = passed, red = not yet.</td></tr>
+      <tr><td><b>Balance / Equity / DD</b></td><td>Balance, net equity, current drawdown (%).</td></tr>
+      <tr><td><b>Symbol / Price / Time</b></td><td>Symbol, current price, server time.</td></tr>
+      <tr><td><b>API</b></td><td><span class="pill p-amber">LOCAL</span> (CSV file) / <span class="pill p-green">LIVE</span> (API OK) / <span class="pill p-red">OFFLINE</span> (not whitelisted or an error).</td></tr>
+    </table>
+    <div class="callout">The dashboard only shows on a <b>real chart</b>; backtests usually hide it for speed.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>.set files &amp; CFTC data</h2>
+    <p><b>4 setfiles by risk appetite</b> (verified — see section 7):</p>
+    <table>
+      <tr><th>Setfile</th><th>Risk/trade</th><th>For</th></tr>
+      <tr><td><code>Dralvo_GoldMaster_SAFE.set</code></td><td>1%</td><td>Capital preservation / small accounts (DD ~6%).</td></tr>
+      <tr><td><code>Dralvo_GoldMaster_BALANCED.set</code></td><td>2%</td><td><b>Recommended default</b> (DD ~11%).</td></tr>
+      <tr><td><code>Dralvo_GoldMaster_AGGRESSIVE.set</code></td><td>3%</td><td>Faster growth (DD ~15%).</td></tr>
+      <tr><td><code>Dralvo_GoldMaster_MAX.set</code></td><td>5%</td><td>Max profit, high DD (~24%).</td></tr>
+    </table>
+    <table>
+      <tr><th>Support file</th><th>Location</th><th>Role</th></tr>
+      <tr><td><code>cftc_status.csv</code></td><td><code>MQL5\Files\</code></td><td>Daily CFTC data. <b>Required for backtests</b> and for live with <code>UseLiveAPI=false</code>. <b>Not needed</b> for live with <code>UseLiveAPI=true</code> (uses the API).</td></tr>
+    </table>
+    <p>Load a set: <b>Inputs → Load</b> → pick the file for your appetite. Save your own config: <b>Save</b>.</p>
+    <h3>Setfiles by account size (quick pick)</h3>
+    <p>To match how the other EAs are selected, there is also a set of <code>Dralvo_GoldMaster_&lt;TIER&gt;_&lt;size&gt;.set</code> files (24 files = 4 tiers × 6 sizes: 1k/5k/10k/20k/50k/100k). Just pick the right <b>appetite + balance</b> and load it.</p>
+    <div class="callout">💡 <b>Important:</b> GoldMaster sizes lots <b>entirely from <code>RiskPercent</code></b> (% of balance × SL distance) so it <b>auto-scales to any account size</b>. That's why files of the same tier (e.g. every <code>BALANCED_*</code>) are <b>identical</b> — the size in the filename is only for <b>quick picking</b> and doesn't change how the EA runs. One base tier file is enough for both 1,000 and 100,000 USD.</div>
+    <div class="callout warn">If using the CSV file (<code>UseLiveAPI=false</code>), it must be <b>updated periodically</b> so "CFTC bullish" reflects the present. To avoid manual updates → set <code>UseLiveAPI=true</code> so the EA fetches via the API. <code>InpLicenseKey</code>/<code>InpMT5Account</code> are per-user and are <b>not</b> stored in shared <code>.set</code> files.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>Backtest performance (verified)</h2>
+    <p>Figures run on <b>XAUUSD D1</b>, real historical price data from <b>Exness</b> (<i>1-minute OHLC</i> model), period <b>Jul 2018 → Jun 2026 (~8 years)</b>, leverage <b>1:500</b>, no hard TP (exit by trailing). Whole period: <b>94 trades, 39.4% win rate, Profit Factor ~2.4–2.6</b> — selective entries, large profit per trade.</p>
+
+    <h3>10,000 USD account — by risk level</h3>
+    <table>
+      <tr><th>Risk/trade</th><th style="text-align:right">Net profit</th><th style="text-align:right">Growth (~8 yrs)</th><th style="text-align:right">Profit Factor</th><th style="text-align:right">Max DD (equity)</th><th style="text-align:right">Recovery</th></tr>
+      <tr><td>1%</td><td style="text-align:right;color:var(--green)">+7,702.61</td><td style="text-align:right">+77.0%</td><td style="text-align:right">2.58</td><td style="text-align:right">6.15%</td><td style="text-align:right">6.66</td></tr>
+      <tr><td><b>2%</b> <span style="color:var(--mut)">(default)</span></td><td style="text-align:right;color:var(--green)">+18,146.73</td><td style="text-align:right">+181.5%</td><td style="text-align:right"><b>2.50</b></td><td style="text-align:right">10.79%</td><td style="text-align:right">5.33</td></tr>
+      <tr><td>3%</td><td style="text-align:right;color:var(--green)">+32,691.48</td><td style="text-align:right">+326.9%</td><td style="text-align:right">2.48</td><td style="text-align:right">15.27%</td><td style="text-align:right">4.25</td></tr>
+      <tr><td>5%</td><td style="text-align:right;color:var(--green)">+79,202.86</td><td style="text-align:right">+792.0%</td><td style="text-align:right">2.40</td><td style="text-align:right">23.59%</td><td style="text-align:right">2.88</td></tr>
+    </table>
+
+    <h3>Growth-% matrix by Capital × Risk</h3>
+    <table>
+      <tr><th>Starting capital</th><th style="text-align:right">Risk 1%</th><th style="text-align:right">Risk 2%</th><th style="text-align:right">Risk 3%</th><th style="text-align:right">Risk 5%</th></tr>
+      <tr><td>1,000 <span style="color:var(--mut)">*</span></td><td style="text-align:right">+289.6%</td><td style="text-align:right">+289.6%</td><td style="text-align:right">+316.7%</td><td style="text-align:right">+804.4%</td></tr>
+      <tr><td>5,000</td><td style="text-align:right">+73.7%</td><td style="text-align:right">+157.1%</td><td style="text-align:right">+352.1%</td><td style="text-align:right">+782.0%</td></tr>
+      <tr><td>10,000</td><td style="text-align:right">+77.0%</td><td style="text-align:right">+181.5%</td><td style="text-align:right">+326.9%</td><td style="text-align:right">+792.0%</td></tr>
+      <tr><td>100,000</td><td style="text-align:right">+71.4%</td><td style="text-align:right">+176.8%</td><td style="text-align:right">+325.1%</td><td style="text-align:right">+783.4%</td></tr>
+    </table>
+    <div class="callout warn"><b>*</b> A <b>1,000 USD</b> account runs at the <b>minimum lot (0.01)</b> so real risk is "forced" higher than configured — its % is not directly comparable to larger capital. Capital from <b>5,000 USD</b> upward reflects the system correctly.</div>
+
+    <p><b>Quick read:</b> Profit Factor is stable at ~2.5 and Max DD (equity) stays <b>below 24%</b>, rising with risk (1% ≈ 6%, 2% ≈ 11%, 3% ≈ 15%, 5% ≈ 24%). The <b>2%</b> tier balances very well: +181% at only ~11% DD, Recovery Factor 5.3.</p>
+    <div class="callout">✅ Verified 2026-06-30 with the MT5 Strategy Tester, <b>Dralvo_GoldMaster v1.08</b> + the per-risk setfiles, on <b>Exness (XAUUSDm)</b> data. Full 16 scenarios: <code>Backtest_Matrix_Exness.csv</code>.</div>
+    <div class="callout warn">⚠️ A <b>long-term swing</b> system (~12 trades/year) — judge over multiple years, not weekly/monthly. <b>Important:</b> results depend heavily on the <b>completeness of the broker's historical data</b> (a broker with sparse long-term gold history produces fewer trades &amp; lower profit). Backtests <b>do not guarantee</b> the future; real spread/commission/slippage all matter.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>Troubleshooting</h2>
+    <table>
+      <tr><th>Symptom</th><th>Cause / fix</th></tr>
+      <tr><td>EA shows <b>"Contact telegram: @edgardinh86"</b></td><td>License error: (1) URL <code>https://www.dralvo.com</code> not whitelisted (section 2). (2) key + account not both filled. (3) account doesn't match. (4) no internet.</td></tr>
+      <tr><td>EA won't start, log shows <b>CFTC FILE NOT FOUND</b></td><td>You're on <code>UseLiveAPI=false</code> but haven't copied <code>cftc_status.csv</code> into <code>MQL5\Files\</code>. Fix: copy the file in, <b>or</b> set <code>UseLiveAPI=true</code> (live pulls via API, remember to whitelist the URL). Backtests always need the file.</td></tr>
+      <tr><td>No trades for a long time</td><td>Normal — a daily system needs CFTC + TREND + PB + HL <b>at once</b> and ≥ 5 days since the last trade. Check the <code>ENTRY-CHK</code> line in the Journal.</td></tr>
+      <tr><td>Dashboard API: <b>OFFLINE</b></td><td>You have <code>UseLiveAPI=true</code> but haven't whitelisted the URL / no connection. Temporarily set <code>UseLiveAPI=false</code> to use the CSV.</td></tr>
+      <tr><td>Lot too large/small</td><td>Adjust <code>RiskPercent</code>.</td></tr>
+      <tr><td>Trade held too long</td><td>That's the swing design; lower <code>MaxHoldDays</code> or <code>TrailATR</code> to exit sooner.</td></tr>
+    </table>
+    <p style="color:var(--mut)">See details in the <b>Toolbox → Experts</b> and <b>Journal</b> tabs (<code>ENTRY-CHK</code>, <code>ENTRY-TRY</code>, <code>ENTRY-OK/FAIL</code>).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>Risk disclaimer</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Margin trading is high-risk. <b>No configuration guarantees profit.</b></li>
+        <li>Always run a <b>demo / forward test</b> long enough before using real money.</li>
+        <li>The bundled <code>.set</code> files are a starting point; tune them to your broker and real volatility.</li>
+        <li>CFTC data quality directly affects signals; backtests do not guarantee the future.</li>
+        <li>Only trade money you can afford to lose.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo GoldMaster © Dralvo — User Guide v1.08</footer>
+
+</div>
+</body>
+</html>

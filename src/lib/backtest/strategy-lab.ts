@@ -214,12 +214,6 @@ function adx(candles: MarketCandle[], period: number): number[] {
   const dx: number[] = Array(candles.length).fill(0);
   const high = candles.map((c) => c.high);
   const low = candles.map((c) => c.low);
-  const close = candles.map((c) => c.close);
-  const tr = candles.map((_, i) => {
-    if (i === 0) return high[i] - low[i];
-    return Math.max(high[i] - low[i], Math.abs(high[i] - close[i-1]), Math.abs(low[i] - close[i-1]));
-  });
-  const atrSmooth = ema(tr, period);
   const plusDM = candles.map((_, i) => {
     if (i === 0) return 0;
     const up = high[i] - high[i-1];

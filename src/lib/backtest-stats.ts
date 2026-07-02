@@ -174,43 +174,6 @@ export const TIGOLD: EaProduct = {
 
 export const EA_PRODUCTS: EaProduct[] = [TIGOLD, GOLDMASTER, GOLD_SCALP];
 
-/* -------------------------------------------------------------------------- */
-/*  Legacy — Dralvo_GoldEA 20y run. Still consumed by /api/signal/current and  */
-/*  /track-record until those migrate to GOLDMASTER. NOT for marketing.        */
-/* -------------------------------------------------------------------------- */
-export const DRALVO_BACKTEST = {
-  source: "MT5 Strategy Tester",
-  asset: "XAUUSD",
-  strategy: "Tier 3A - CFTC + Trend + Pullback (D1)",
-  periodLabel: "20 years (2006-2025)",
-  direction: "long-only",
-  initialDeposit: 100_000,
-  netProfit: 896_643.57,
-  netProfitPct: 896.6,
-  profitFactor: 1.97,
-  winRate: 0.367,
-  totalTrades: 196,
-  wins: 72,
-  losses: 124,
-  avgWin: 25_272.83,
-  avgLoss: 7_443.55,
-  rewardRisk: 3.4,
-  maxBalanceDrawdownPct: 15.16,
-  maxEquityDrawdownPct: 24.78,
-  maxConsecutiveLosses: 10,
-  sharpeRatio: 10.14,
-  recoveryFactor: 2.85,
-} as const;
-
-export const DRALVO_EXPECTATIONS = {
-  winRatePct: 37,
-  maxConsecutiveLosses: 10,
-  maxDrawdownPct: 25,
-  rewardRisk: 3.4,
-  points: [
-    "Win rate ~37% - you lose more often than you win. The edge is a ~3.4:1 reward-to-risk ratio.",
-    "You can lose up to 10 trades in a row. Maximum historical drawdown ~25%.",
-    "Long only: 0 trades when gold is bearish (CFTC bearish) = capital preserved, not a malfunction.",
-    "Past backtest performance does not guarantee future results.",
-  ],
-} as const;
+/* Legacy DRALVO_BACKTEST / DRALVO_EXPECTATIONS (Dralvo_GoldEA 20y run) removed —
+   backtest is no longer maintained. The EA signal API (/api/signal/current) keeps
+   serving the live signal + CFTC; marketing uses GOLDMASTER above. */

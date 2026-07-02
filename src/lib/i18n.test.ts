@@ -5,6 +5,7 @@ import {
   PRODUCT_COPY,
   SUPPORTED_LOCALES,
   normalizeLocale,
+  withLocaleFallback,
 } from "./i18n";
 
 describe("i18n configuration", () => {
@@ -13,11 +14,9 @@ describe("i18n configuration", () => {
       "vi",
       "en",
       "pt-BR",
-      "zh",
       "es",
-      "hi",
       "id",
-      "ru",
+      "ar",
     ]);
     expect(DEFAULT_LOCALE).toBe("vi");
   });
@@ -27,17 +26,23 @@ describe("i18n configuration", () => {
     expect(normalizeLocale("pt-BR")).toBe("pt-BR");
     expect(normalizeLocale("en-US")).toBe("en");
     expect(normalizeLocale("vi-VN")).toBe("vi");
-    expect(normalizeLocale("zh-CN")).toBe("zh");
     expect(normalizeLocale("es-MX")).toBe("es");
-    expect(normalizeLocale("hi-IN")).toBe("hi");
     expect(normalizeLocale("id-ID")).toBe("id");
-    expect(normalizeLocale("ru-RU")).toBe("ru");
+    expect(normalizeLocale("ar-SA")).toBe("ar");
     expect(normalizeLocale("fr-FR")).toBe("vi");
   });
 
-  it("falls back untranslated locales to English copy", () => {
-    // zh has no PRODUCT_COPY translation yet -> should equal the English entry.
-    expect(PRODUCT_COPY.zh.primaryCta).toBe(PRODUCT_COPY.en.primaryCta);
+  it("falls back missing keys and untranslated locales to English copy", () => {
+    const copy = withLocaleFallback<{ a: string; b: string }>({
+      en: { a: "EN-A", b: "EN-B" },
+      ar: { a: "AR-A" }, // `b` omitted -> should fall back to the English value.
+    });
+    // Provided key keeps the override; missing key falls back to English.
+    expect(copy.ar.a).toBe("AR-A");
+    expect(copy.ar.b).toBe("EN-B");
+    // A locale with no override at all resolves to the full English entry.
+    expect(copy.es.a).toBe("EN-A");
+    expect(copy.es.b).toBe("EN-B");
   });
 
   it("has product copy for every supported locale", () => {

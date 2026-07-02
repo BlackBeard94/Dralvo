@@ -47,7 +47,7 @@ export async function GET(_request: NextRequest) {
   const tier = await getUserPlanTierByUserId(user.id);
   if (!isPaidTier(tier)) {
     return NextResponse.json(
-      { error: "CSV export is an Unlimited feature. Upgrade to access." },
+      { error: "CSV export is an VIP feature. Upgrade to access." },
       { status: 402 },
     );
   }

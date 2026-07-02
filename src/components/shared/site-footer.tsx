@@ -1,25 +1,10 @@
 import Link from "next/link";
 
 import { DralvoWordmark, LogoMark } from "@/components/shared/brand";
-
-const productLinks = [
-  { label: "Features", href: "/#features" },
-  { label: "Methodology", href: "/methodology" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Start free", href: "/signup" },
-];
-
-const companyLinks = [
-  { label: "About", href: "/#about" },
-  { label: "Sign in", href: "/login" },
-  { label: "Create account", href: "/signup" },
-];
-
-const legalLinks = [
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
-  { label: "Disclaimer", href: "/disclaimer" },
-];
+import { InstallAppButton } from "@/components/shared/install-app-button";
+import { SocialLinks } from "@/components/shared/social-links";
+import { COMMON_COPY } from "@/lib/common-copy";
+import type { SupportedLocale } from "@/lib/i18n";
 
 function FooterLink({ href, label }: { href: string; label: string }) {
   const external = href.startsWith("http");
@@ -46,7 +31,30 @@ function FooterLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-export function SiteFooter() {
+/** Marketing footer (columns). Pure presentational — caller supplies the locale
+ *  (client via useLocale, server via getServerLocale). */
+export function SiteFooter({ locale }: { locale: SupportedLocale }) {
+  const f = COMMON_COPY[locale].footer;
+  const l = f.links;
+
+  const productLinks = [
+    { label: l.blog, href: "/blog" },
+    { label: l.methodology, href: "/methodology" },
+    { label: l.tigold, href: "/tigold" },
+    { label: l.affiliate, href: "/affiliate" },
+    { label: l.pricing, href: "/pricing" },
+  ];
+  const companyLinks = [
+    { label: l.trackRecord, href: "/track-record" },
+    { label: l.signIn, href: "/login" },
+    { label: l.createAccount, href: "/signup" },
+  ];
+  const legalLinks = [
+    { label: l.privacy, href: "/privacy" },
+    { label: l.terms, href: "/terms" },
+    { label: l.disclaimer, href: "/disclaimer" },
+  ];
+
   return (
     <footer className="py-16 border-t border-border">
       <div className="max-w-[1200px] mx-auto px-6">
@@ -57,28 +65,21 @@ export function SiteFooter() {
               <DralvoWordmark className="text-lg" />
             </div>
             <p className="text-sm text-text-muted leading-relaxed max-w-[260px]">
-              Gold decision intelligence built from traceable market evidence.
-              Informational only, never financial advice.
+              {f.tagline}
             </p>
+            <div className="mt-4 flex flex-nowrap items-center gap-3">
+              <InstallAppButton locale={locale} compact />
+              <SocialLinks />
+            </div>
           </div>
 
-          <FooterColumn title="Product" links={productLinks} />
-          <FooterColumn title="Company" links={companyLinks} />
-          <FooterColumn title="Legal" links={legalLinks} />
+          <FooterColumn title={f.productTitle} links={productLinks} />
+          <FooterColumn title={f.companyTitle} links={companyLinks} />
+          <FooterColumn title={f.legalTitle} links={legalLinks} />
         </div>
 
-        <div className="pt-8 border-t border-border flex items-center justify-between max-sm:flex-col max-sm:gap-4">
-          <p className="text-[13px] text-text-muted">
-            (c) 2026 Dralvo. All rights reserved.
-          </p>
-          <a
-            href="https://deerflow.tech"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-full text-[13px] text-text-muted no-underline transition-all duration-300 hover:border-border-gold hover:text-text-secondary"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" /> Created By Deerflow
-          </a>
+        <div className="pt-8 border-t border-border">
+          <p className="text-[13px] text-text-muted">{f.rights}</p>
         </div>
       </div>
     </footer>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dralvo — Dashboard UI</title>
+<link rel="stylesheet" href="kit/brand.css">
+<style>
+  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  .side{background:var(--coin);border-right:1px solid var(--border);padding:20px 14px;position:sticky;top:0;height:100vh}
+  .side .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+  .navi a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);color:var(--text-3);font-size:14px;margin-bottom:2px}
+  .navi a.on,.navi a:hover{background:rgba(240,185,11,.08);color:var(--gold-200)}
+  .navi .ic{width:16px;height:16px;border-radius:4px;background:var(--border-2)}
+  .navi a.on .ic{background:var(--gold-sheen)}
+  .main{padding:24px 28px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px}
+  @media(max-width:820px){.app{grid-template-columns:1fr}.side{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><img src="dralvo-mark-512.png" style="width:34px;height:34px;border-radius:9px"><b class="mono" style="letter-spacing:.06em">DRALVO</b></div>
+    <nav class="navi">
+      <a class="on"><span class="ic"></span> Tổng quan</a>
+      <a><span class="ic"></span> Robots của tôi</a>
+      <a><span class="ic"></span> Lệnh &amp; lịch sử</a>
+      <a><span class="ic"></span> Backtest</a>
+      <a><span class="ic"></span> Tài khoản MT5</a>
+      <a><span class="ic"></span> Thanh toán</a>
+      <a><span class="ic"></span> Cài đặt</a>
+    </nav>
+    <div class="card card-gold" style="margin-top:24px;padding:16px">
+      <span class="badge badge-gold">VIP</span>
+      <p class="muted" style="font-size:13px;margin:10px 0">Mở khoá GoldScalp &amp; GoldMaster.</p>
+      <button class="btn btn-gold" style="width:100%;justify-content:center">Nâng cấp</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div><p class="eyebrow">Tổng quan</p><h3 style="margin:0">Chào, Huân 👋</h3></div>
+      <div class="row"><span class="badge badge-live">LIVE · XAUUSD</span><img src="dralvo-avatar-telegram.png" style="width:36px;height:36px;border-radius:50%"></div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:20px">
+      <div class="kpi"><div class="k-label">Balance</div><div class="k-value">$12,480</div></div>
+      <div class="kpi"><div class="k-label">Equity</div><div class="k-value num-pos">$12,905</div></div>
+      <div class="kpi"><div class="k-label">Hôm nay</div><div class="k-value num-pos">+3.4%</div></div>
+      <div class="kpi"><div class="k-label">Drawdown</div><div class="k-value num-neg">6.2%</div></div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:2fr 1fr">
+      <div class="chart-card">
+        <div class="row between" style="margin-bottom:14px"><h4 style="margin:0">Equity curve · 30 ngày</h4><span class="badge badge-gold">+18.7%</span></div>
+        <svg viewBox="0 0 600 220" width="100%" height="220" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0B90B" stop-opacity=".35"/><stop offset="1" stop-color="#F0B90B" stop-opacity="0"/></linearGradient>
+            <linearGradient id="ln" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C99A08"/><stop offset="1" stop-color="#FCD535"/></linearGradient>
+          </defs>
+          <g stroke="#2B3139" stroke-width="1"><line x1="0" y1="55" x2="600" y2="55"/><line x1="0" y1="110" x2="600" y2="110"/><line x1="0" y1="165" x2="600" y2="165"/></g>
+          <path d="M0 180 L50 172 L100 178 L150 150 L200 158 L250 130 L300 138 L350 100 L400 112 L450 78 L500 88 L550 52 L600 40 L600 220 L0 220 Z" fill="url(#area)"/>
+          <path d="M0 180 L50 172 L100 178 L150 150 L200 158 L250 130 L300 138 L350 100 L400 112 L450 78 L500 88 L550 52 L600 40" fill="none" stroke="url(#ln)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="600" cy="40" r="4.5" fill="#FCD535"/>
+        </svg>
+      </div>
+      <div class="chart-card">
+        <h4 style="margin:0 0 12px">Robots đang chạy</h4>
+        <div class="stack">
+          <div class="row between"><div><b>GoldScalp</b><br><span class="muted mono" style="font-size:12px">M15</span></div><span class="badge badge-long">+2.4%</span></div>
+          <hr class="rule" style="margin:6px 0">
+          <div class="row between"><div><b>GoldMaster</b><br><span class="muted mono" style="font-size:12px">D1</span></div><span class="badge badge-long">+1.1%</span></div>
+          <hr class="rule" style="margin:6px 0">
+          <div class="row between"><div><b>TiGold</b><br><span class="muted mono" style="font-size:12px">M1</span></div><span class="badge badge-short">−0.3%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card" style="margin-top:20px;padding:0;overflow:hidden">
+      <div style="padding:16px 20px"><h4 style="margin:0">Lệnh gần đây</h4></div>
+      <table class="tbl">
+        <thead><tr><th>Thời gian</th><th>Robot</th><th>Chiều</th><th>Lot</th><th>Giá vào</th><th>P/L</th></tr></thead>
+        <tbody>
+          <tr><td>14:32</td><td>GoldScalp</td><td><span class="badge badge-long">LONG</span></td><td>0.10</td><td>2,053.40</td><td class="num-pos">+24.10</td></tr>
+          <tr><td>13:05</td><td>GoldMaster</td><td><span class="badge badge-long">LONG</span></td><td>0.20</td><td>2,048.10</td><td class="num-pos">+53.80</td></tr>
+          <tr><td>11:47</td><td>GoldScalp</td><td><span class="badge badge-short">SHORT</span></td><td>0.10</td><td>2,061.90</td><td class="num-neg">−11.40</td></tr>
+          <tr><td>09:20</td><td>TiGold</td><td><span class="badge badge-long">LONG</span></td><td>0.05</td><td>2,044.70</td><td class="num-pos">+8.90</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</body>
+</html>

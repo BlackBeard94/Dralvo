@@ -7,6 +7,7 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { ensureProfile } from "@/lib/supabase/profile";
 import { getDashboardPlan } from "@/app/dashboard/get-dashboard-plan";
 import { isAdmin } from "@/lib/admin/auth";
+import { getPartner } from "@/lib/partners/auth";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -47,8 +48,9 @@ export default async function DashboardLayout({
   await ensureProfile(user);
 
   // Single source of truth for plan resolution (license_keys + legacy subscriptions).
-  const { planTier, planStatus, planSource } = await getDashboardPlan();
+  const { planTier, planStatus } = await getDashboardPlan();
   const userIsAdmin = await isAdmin();
+  const userIsPartner = !!(await getPartner());
 
   return (
     <DashboardShell
@@ -56,6 +58,7 @@ export default async function DashboardLayout({
       planTier={planTier}
       planStatus={planStatus}
       isAdmin={userIsAdmin}
+      isPartner={userIsPartner}
     >
       {children}
     </DashboardShell>

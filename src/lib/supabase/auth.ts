@@ -17,8 +17,14 @@ export async function getAuthenticatedUser() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll() {
-          // No-op in server context. Session is managed by proxy.
+        // Persist refreshed session tokens. The proxy skips getUser() for
+        // self-guarded API routes (perf), so this keeps sessions alive when a
+        // token rotates mid-session. try/catch: cookies() is read-only in
+        // Server Components (writable only in Route Handlers / Server Actions).
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          } catch { /* Server Component — refresh on next page load */ }
         },
       },
     },

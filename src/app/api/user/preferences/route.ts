@@ -21,6 +21,31 @@ function normalizePrefs(value: unknown): NotificationPrefs | null {
   };
 }
 
+const DEFAULT_PREFS: NotificationPrefs = { email: true, telegram: false, in_app: true };
+
+export async function GET() {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("notification_prefs")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return NextResponse.json(
+    { notification_prefs: normalizePrefs(data?.notification_prefs) ?? DEFAULT_PREFS },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
+}
+
 export async function PATCH(request: Request) {
   const rateLimit = checkRateLimit({
     key: rateLimitKey(request, "user:preferences:patch"),

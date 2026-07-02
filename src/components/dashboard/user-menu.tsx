@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { User, LogOut, CreditCard, Crown, ChevronDown } from "lucide-react";
+import { User, LogOut, CreditCard, Crown, ChevronDown, Settings, Rocket } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { planStatusLabel } from "@/lib/stripe-subscriptions";
-import { isPaidTier, type PlanSource } from "@/lib/plan";
+import { isPaidTier, PAID_PLAN_LABEL, type PlanSource } from "@/lib/plan";
 import { useLocale } from "@/hooks/use-locale";
 import { DASHBOARD_COPY } from "@/lib/i18n";
 
@@ -34,7 +34,7 @@ function getInitial(email: string): string {
 function getPlanBadge(planTier: string, freeLabel: string, planStatus?: string) {
   if (isPaidTier(planTier)) {
     return {
-      label: "Unlimited",
+      label: PAID_PLAN_LABEL,
       className: "bg-gold/15 text-gold border-gold/30",
       icon: Crown,
     };
@@ -77,10 +77,30 @@ export function UserMenu({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const { locale } = useLocale();
   const copy = DASHBOARD_COPY[locale].userMenu;
+  const c = DASHBOARD_COPY[locale].userMenuExtra;
 
   const initial = getInitial(userEmail);
   const plan = getPlanBadge(planTier, copy.free, planStatus);
   const PlanIcon = plan.icon;
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/user/profile")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!active) return;
+        setAvatarUrl(d?.avatarUrl ?? null);
+        setFullName(typeof d?.fullName === "string" && d.fullName.trim() ? d.fullName.trim() : null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayName = fullName ?? userEmail;
 
   /* ---- close on click outside ---- */
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -155,6 +175,37 @@ export function UserMenu({
     }
   }, [canManageBilling, copy.billingError, isPaid, router]);
 
+  /* ---- upgrade: start a Stripe checkout for the chosen period ---- */
+  const upgrade = useCallback(async (period: "monthly" | "sixmo" | "yearly") => {
+    setBillingError(null);
+    setBillingLoading(true);
+    try {
+      const r = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "unlimited", period }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.url) throw new Error(d.error || copy.billingError);
+      window.location.href = d.url;
+    } catch (error) {
+      setBillingError(error instanceof Error ? error.message : copy.billingError);
+      setOpen(true);
+      setBillingLoading(false);
+    }
+  }, [copy.billingError]);
+
+  const goSettings = useCallback(() => {
+    setOpen(false);
+    router.push("/dashboard/settings");
+  }, [router]);
+
+  const UPGRADE_PERIODS: { id: "monthly" | "sixmo" | "yearly"; label: string }[] = [
+    { id: "monthly", label: c.periodMonthly },
+    { id: "sixmo", label: c.periodSixMonths },
+    { id: "yearly", label: c.periodYearly },
+  ];
+
   return (
     <div className="relative flex items-center">
       {/* ── Trigger ── */}
@@ -175,15 +226,20 @@ export function UserMenu({
       >
         {/* Avatar circle */}
         <span
-          className="flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold shrink-0 bg-gold/15 text-gold border border-gold/30"
+          className="flex items-center justify-center w-7 h-7 overflow-hidden rounded-full text-xs font-semibold shrink-0 bg-gold/15 text-gold border border-gold/30"
           aria-hidden="true"
         >
-          {initial}
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            initial
+          )}
         </span>
 
-        {/* Email (hidden on small screens) */}
+        {/* Display name (hidden on small screens) */}
         <span className="hidden sm:block text-xs font-medium max-w-[120px] truncate">
-          {userEmail}
+          {displayName}
         </span>
 
         <ChevronDown
@@ -211,8 +267,11 @@ export function UserMenu({
           {/* User info */}
           <div className="px-4 py-3 border-b border-border">
             <p className="text-sm font-medium text-text-primary truncate">
-              {userEmail}
+              {displayName}
             </p>
+            {fullName && (
+              <p className="text-[12px] text-text-muted truncate">{userEmail}</p>
+            )}
             <span
               className={cn(
                 "inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[12px] font-semibold tracking-wider uppercase border",
@@ -229,27 +288,50 @@ export function UserMenu({
 
           {/* Actions */}
           <div className="py-1">
-            {/* Billing — Stripe portal for subscribers, upgrade CTA for free users */}
-            {(canManageBilling || !isPaid) && (
+            {/* Settings */}
+            <button
+              type="button"
+              role="menuitem"
+              onClick={goSettings}
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:text-text-primary hover:bg-gold/5 transition-colors duration-150"
+            >
+              <Settings size={15} className="text-text-muted" />
+              <span>{c.settings}</span>
+            </button>
+
+            {/* Upgrade — free users pick a billing period (incl. 6 tháng) */}
+            {!isPaid && (
+              <div className="border-t border-border mt-1 pt-1">
+                <p className="px-4 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.08em] text-text-muted flex items-center gap-1.5">
+                  <Rocket size={12} className="text-gold" /> {c.upgradeVip}
+                </p>
+                {UPGRADE_PERIODS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => upgrade(p.id)}
+                    disabled={billingLoading}
+                    className="flex w-full items-center justify-between px-4 py-2 text-sm text-text-secondary hover:text-gold hover:bg-gold/5 transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait"
+                  >
+                    <span>{p.label}</span>
+                    <span className="text-[11px] text-text-muted">{c.choose}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Paid Stripe subscriber — manage / change plan via portal */}
+            {isPaid && canManageBilling && (
               <button
                 type="button"
                 role="menuitem"
                 onClick={handleBilling}
                 disabled={billingLoading}
-                className={cn(
-                  "flex w-full items-center gap-3 px-4 py-2.5 text-sm",
-                  "text-text-secondary hover:text-text-primary hover:bg-gold/5",
-                  "transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait",
-                )}
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:text-text-primary hover:bg-gold/5 transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait border-t border-border mt-1"
               >
                 <CreditCard size={15} className="text-text-muted" />
-                <span>
-                  {canManageBilling
-                    ? billingLoading
-                      ? copy.openingBilling
-                      : copy.manageBilling
-                    : copy.upgrade}
-                </span>
+                <span>{billingLoading ? copy.openingBilling : c.manageChangePlan}</span>
               </button>
             )}
 

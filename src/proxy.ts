@@ -34,6 +34,39 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const isProtectedRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname === "/api/indicators" ||
+    (pathname.startsWith("/api/alerts") && pathname !== "/api/alerts/evaluate");
+
+  const isRecoveryUpdate =
+    pathname === "/reset-password" &&
+    request.nextUrl.searchParams.get("update") === "true";
+
+  const isAuthPage =
+    !isRecoveryUpdate &&
+    (pathname === "/login" ||
+      pathname === "/signup" ||
+      pathname === "/reset-password");
+
+  // The only reason to resolve the user here is to gate protected routes or
+  // bounce logged-in users off auth pages. Everything else — notably the
+  // self-guarded API routes (/api/admin, /api/partner, /api/affiliate,
+  // /api/user, …), which each re-check auth server-side — does NOT need it.
+  // Skipping the auth.getUser() round-trip there removes ~250–350ms per call
+  // (a huge win for the admin panel's frequent polling).
+  if (!isProtectedRoute && !isAuthPage) {
+    const passthrough = NextResponse.next({ request });
+    if (country && request.cookies.get("dralvo-country")?.value !== country) {
+      passthrough.cookies.set("dralvo-country", country, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: "lax",
+      });
+    }
+    return passthrough;
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -61,11 +94,6 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isProtectedRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname === "/api/indicators" ||
-    (pathname.startsWith("/api/alerts") && pathname !== "/api/alerts/evaluate");
-
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone();
     const redirectTarget = `${pathname}${request.nextUrl.search}`;
@@ -75,11 +103,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const isAuthPage =
-    pathname === "/login" ||
-    pathname === "/signup" ||
-    pathname === "/reset-password";
-
+  // (isAuthPage / isRecoveryUpdate computed above, before the auth lookup.)
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
     const redirectTarget = safeInternalRedirect(

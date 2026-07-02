@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { getDashboardPlanTier } from "@/app/dashboard/get-dashboard-plan";
-import { ThesisReplay } from "@/components/dashboard/thesis-replay";
-import { isPaidTier } from "@/lib/plan";
-
-export const metadata: Metadata = {
-  title: "Historical Replay | Dralvo",
-};
-
-export default async function DashboardReplayRoute() {
-  const planTier = await getDashboardPlanTier();
-  return <ThesisReplay isPro={isPaidTier(planTier)} />;
+// V1 market-analysis surface — not part of the V2 EA product and not in nav.
+export default function DashboardReplayRoute() {
+  redirect("/dashboard");
 }

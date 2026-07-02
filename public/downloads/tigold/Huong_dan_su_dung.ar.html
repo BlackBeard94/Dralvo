@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo TiGold — دليل الاستخدام</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:Tahoma,"Segoe UI",-apple-system,Arial,sans-serif;
+    line-height:1.8;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);
+    padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:28px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-right:20px;padding-left:0;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+
+  h2{color:var(--ink);font-size:20px;margin:38px 0 12px;padding-bottom:8px;
+    border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-left:8px;margin-right:0}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:right;
+    padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px;direction:ltr;display:inline-block;unicode-bidi:embed}
+  td code{white-space:nowrap}
+
+  ol.steps{padding-right:22px;padding-left:0}
+  ol.steps li{margin:6px 0}
+
+  .callout{border-right:4px solid var(--gold);border-left:none;background:#fffdf5;
+    padding:12px 16px;border-radius:8px 0 0 8px;margin:16px 0}
+  .callout.warn{border-right-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-right-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0;direction:ltr;text-align:left}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;
+    padding:8px 12px;display:flex;justify-content:space-between;font-size:14px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;
+    padding-top:18px;border-top:1px solid var(--line)}
+
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:22px}}
+  @media print{
+    body{background:#fff}
+    .toc{break-inside:avoid}
+    h2{break-after:avoid}
+    table{break-inside:auto}
+    .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    th,.dash,.badge,.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;TiGOLD</span>
+    <h1>دليل الاستخدام</h1>
+    <p>روبوت تداول آلي لزوج XAUUSD / BTCUSD على منصة MetaTrader 5 — مركز واحد فقط، وقف خسارة متحرك تكيفي، 3 طبقات لحماية رأس المال.</p>
+    <div class="ver">الإصدار 2.00 · الملف: Dralvo TiGold.ex5</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>الفهرس</b>
+    <ol>
+      <li><a href="#caidat">التثبيت</a></li>
+      <li><a href="#points">فهم وحدة "النقاط" (points)</a></li>
+      <li><a href="#thamso">جدول المعاملات</a></li>
+      <li><a href="#dashboard">لوحة المعلومات على الرسم البياني</a></li>
+      <li><a href="#set">ملفات .set الموصى بها</a></li>
+      <li><a href="#suco">استكشاف الأخطاء وإصلاحها</a></li>
+      <li><a href="#ruiro">تحذير المخاطر</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>التثبيت</h2>
+    <ol class="steps">
+      <li>أغلق MetaTrader 5 (إذا كان مفتوحاً).</li>
+      <li>افتح مجلد البيانات: <b>File → Open Data Folder</b>.</li>
+      <li>انسخ <code>Dralvo TiGold.ex5</code> إلى <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(أو انسخ ملف <code>.mq5</code>، افتح MetaEditor واضغط <b>Compile (F7)</b>.)</span></li>
+      <li>أعد فتح MT5 → <b>Navigator → Expert Advisors</b>، انقر بزر الفأرة الأيمن على <b>Refresh</b> إذا لم يظهر بعد.</li>
+      <li>اسحب <b>Dralvo TiGold</b> إلى رسم بياني لـ <b>XAUUSD</b> أو <b>BTCUSD</b> (يُنصح بـ M1/M5).</li>
+      <li>علامة التبويب <b>Common</b>: فعّل <b>Allow Algo Trading</b>. علامة التبويب <b>Inputs</b>: اضغط <b>Load</b> واختر ملف <code>.set</code> المناسب.</li>
+      <li>اضغط <b>OK</b>، ثم فعّل زر <b>Algo Trading</b> من شريط الأدوات (يتحول للون الأخضر).</li>
+    </ol>
+    <div class="callout">عند التشغيل الصحيح، تظهر <b>لوحة Dralvo TiGold</b> في الزاوية العلوية من الرسم البياني (انظر القسم 4).</div>
+  </section>
+
+  <section id="points">
+    <h2><span class="n">2.</span>فهم وحدة "النقاط" (points) — اقرأ قبل الضبط</h2>
+    <p>تُقاس معظم المعاملات بوحدة <b>النقاط (points)</b>، وقيمة النقطة <b>تختلف حسب الوسيط</b>:</p>
+    <table>
+      <tr><th>الرمز</th><th>عدد الخانات العشرية</th><th>1 نقطة</th><th>التحويل</th></tr>
+      <tr><td>ذهب 3 خانات (مثل XAUUSDm)</td><td>3</td><td>0.001</td><td>1.00 سعر = 1000 نقطة</td></tr>
+      <tr><td>ذهب خانتين (مثل XAUUSD)</td><td>2</td><td>0.01</td><td>1.00 سعر = 100 نقطة</td></tr>
+      <tr><td>BTC خانتين (مثل BTCUSDm)</td><td>2</td><td>0.01</td><td>1 دولار = 100 نقطة</td></tr>
+    </table>
+    <div class="callout warn"><b>نفس عدد النقاط يعطي نتائج مختلفة بين الوسطاء.</b> استخدم دائماً ملف <code>.set</code> المطابق لوسيطك/رمزك، أو قم بالتحويل يدوياً. عند بدء التشغيل، يطبع الروبوت <code>digits</code> و<code>point</code> الرمز في <b>Journal</b>.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">3.</span>جدول المعاملات</h2>
+
+    <h3>عام</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpSymbol</code></td><td>(فارغ)</td><td>رمز التداول. فارغ = استخدام رمز الرسم البياني.</td></tr>
+      <tr><td><code>InpMagic</code></td><td>20260626</td><td>معرّف الصفقات. استخدم رقماً مختلفاً لكل روبوت/رمز لتجنب التعارض.</td></tr>
+      <tr><td><code>InpSlippage</code></td><td>30</td><td>الحد الأقصى للانزلاق السعري عند التنفيذ (نقاط).</td></tr>
+      <tr><td><code>InpMaxSpread</code></td><td>350</td><td>الحد الأقصى للفارق السعري المسموح للدخول (نقاط). أعلى منه ← يتم التجاوز. 0 = معطّل.</td></tr>
+    </table>
+
+    <h3>محرك الدخول</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpEntrySensitivity</code></td><td>0</td><td>حساسية اكتشاف الإشارة (نقاط). 0 = تلقائي.</td></tr>
+      <tr><td><code>InpEntryFilter</code></td><td>3</td><td>خطوات التأكيد قبل الدخول. أعلى = أكثر انتقائية، صفقات أقل.</td></tr>
+      <tr><td><code>InpReentryDelay</code></td><td>0</td><td>الحد الأدنى للانتظار بين صفقتين (بالثواني).</td></tr>
+    </table>
+
+    <h3>فلتر الاتجاه</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpUseTrendFilter</code></td><td>true</td><td>الدخول فقط عندما يكون الاتجاه قوياً بما يكفي في اتجاه الإشارة.</td></tr>
+      <tr><td><code>InpTrendPeriod</code></td><td>3</td><td>عدد شموع M1 المستخدمة لقياس الاتجاه.</td></tr>
+      <tr><td><code>InpTrendStrength</code></td><td>300</td><td>عتبة الاتجاه (نقاط). أعلى = يتطلب اتجاهاً أقوى.</td></tr>
+    </table>
+
+    <h3>فلتر التوقيت</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpUseTimeFilter</code></td><td>true</td><td>تفعيل قيود ساعات التداول.</td></tr>
+      <tr><td><code>InpStartHour</code></td><td>8</td><td>ساعة بداية السماح بالدخول (وقت الخادم، 0–23).</td></tr>
+      <tr><td><code>InpEndHour</code></td><td>22</td><td>ساعة النهاية. Start = End ← بدون قيود.</td></tr>
+    </table>
+
+    <h3>الحماية — حماية رأس المال</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpMaxLossStreak</code></td><td>0</td><td>عدد الخسائر المتتالية التي تفعّل التوقف المؤقت. 0 = معطّل.</td></tr>
+      <tr><td><code>InpPauseMinutes</code></td><td>60</td><td>مدة التوقف المؤقت بعد التفعيل (دقائق).</td></tr>
+      <tr><td><code>InpDailyStopPercent</code></td><td>0</td><td>خسارة تتجاوز % من حقوق الملكية في بداية اليوم ← توقف لبقية اليوم (يستأنف تلقائياً في اليوم التالي). 0 = معطّل.</td></tr>
+    </table>
+
+    <h3>فلتر الأخبار — للحساب المباشر فقط</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpUseNewsFilter</code></td><td>true</td><td>التوقف عن الدخول حول أوقات الأخبار (من التقويم الاقتصادي في MT5).</td></tr>
+      <tr><td><code>InpNewsMinsBefore</code></td><td>15</td><td>دقائق التوقف قبل الخبر.</td></tr>
+      <tr><td><code>InpNewsMinsAfter</code></td><td>15</td><td>دقائق التوقف بعد الخبر.</td></tr>
+      <tr><td><code>InpNewsImpact</code></td><td>High only</td><td>مستوى التأثير الذي يُتجنب: High فقط، أو High + Medium.</td></tr>
+      <tr><td><code>InpNewsCurrencies</code></td><td>USD</td><td>العملات المراقَبة (مفصولة بفواصل، مثل USD,EUR). فارغ = الكل.</td></tr>
+    </table>
+    <div class="callout warn">فلتر الأخبار <b>لا يعمل في Strategy Tester</b> (المُختبِر لا يحتوي على تقويم). يعمل فقط في الحساب التجريبي/الحقيقي.</div>
+
+    <h3>الخروج / التريلينغ</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpStopLoss</code></td><td>2500</td><td>وقف الخسارة الأولي (نقاط).</td></tr>
+      <tr><td><code>InpTrailStart</code></td><td>500</td><td>الحد الأدنى للربح لبدء تحريك وقف الخسارة (نقاط).</td></tr>
+      <tr><td><code>InpTrailDistance</code></td><td>1000</td><td>المسافة التي يتبع بها وقف الخسارة السعر (نقاط).</td></tr>
+      <tr><td><code>InpTrailStep</code></td><td>50</td><td>الحد الأدنى للخطوة في كل تحريك لوقف الخسارة (نقاط).</td></tr>
+    </table>
+
+    <h3>إدارة رأس المال</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpLotMode</code></td><td>Fixed lot</td><td>وضع حساب حجم اللوت: Fixed (ثابت) أو Auto (حسب رأس المال).</td></tr>
+      <tr><td><code>InpFixedLot</code></td><td>0.10</td><td>[Fixed] الحجم الثابت.</td></tr>
+      <tr><td><code>InpEquityBasis</code></td><td>Balance</td><td>[Auto] أساس رأس المال: Balance / Equity / الهامش الحر.</td></tr>
+      <tr><td><code>InpCapitalPerLot</code></td><td>1000</td><td>[Auto] لكل هذا القدر من رأس المال...</td></tr>
+      <tr><td><code>InpLotPerStep</code></td><td>0.10</td><td>[Auto] ...استخدم هذا القدر من حجم اللوت.</td></tr>
+      <tr><td><code>InpMaxLot</code></td><td>0</td><td>الحد الأقصى الآمن لحجم اللوت. 0 = فقط حد الوسيط.</td></tr>
+    </table>
+    <div class="callout"><b>معادلة حجم اللوت التلقائي:</b> <code>lot = InpLotPerStep × (رأس المال / InpCapitalPerLot)</code>.<br>
+    الافتراضي: لكل 1000 من رأس المال ← 0.10 لوت ⇒ رأس مال 5000 = 0.50 لوت، رأس مال 10000 = 1.00 لوت. يزداد حجم اللوت مع رأس المال وينخفض معه.</div>
+
+    <h3>العرض</h3>
+    <table>
+      <tr><th>المعامل</th><th>الافتراضي</th><th>المعنى</th></tr>
+      <tr><td><code>InpShowPanel</code></td><td>true</td><td>إظهار لوحة المعلومات على الرسم البياني.</td></tr>
+      <tr><td><code>InpDebugLog</code></td><td>false</td><td>سجل مفصّل (فعّله فقط عند تصحيح الأخطاء).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">4.</span>لوحة المعلومات على الرسم البياني</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO TiGOLD</span><span>XAUUSD</span></div>
+      <div class="rows">
+        <span class="l">Status</span><span class="g">RUNNING</span>
+        <span class="l">Equity</span><span class="w">10,248.50</span>
+        <span class="l">Today P/L</span><span class="g">+248.50</span>
+        <span class="l">Spread</span><span class="w">28 pts</span>
+        <span class="l">Trades</span><span class="w">W18&nbsp;&nbsp;L13&nbsp;&nbsp;T31&nbsp;&nbsp;(58%)</span>
+        <span class="l">Position</span><span class="g">BUY 0.10&nbsp;&nbsp;+12.40</span>
+        <span class="l">Protection</span><span class="l">Active</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>السطر</th><th>المعنى</th></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">RUNNING</span> / <span class="pill p-amber">PAUSED · NEWS</span> / <span class="pill p-red">DAILY STOP</span></td></tr>
+      <tr><td><b>Equity</b></td><td>صافي حقوق الملكية الحالي.</td></tr>
+      <tr><td><b>Today P/L</b></td><td>ربح/خسارة اليوم (أخضر/أحمر).</td></tr>
+      <tr><td><b>Spread</b></td><td>الفارق السعري الحالي (نقاط).</td></tr>
+      <tr><td><b>Trades</b></td><td>W صفقات رابحة · L صفقات خاسرة · T الإجمالي · (% نسبة الربح) منذ بدء تشغيل الروبوت.</td></tr>
+      <tr><td><b>Position</b></td><td>الصفقة المفتوحة (الاتجاه، حجم اللوت، الربح/الخسارة) أو Flat.</td></tr>
+      <tr><td><b>Protection</b></td><td>Active / Loss streak / Pause / News window / Daily limit.</td></tr>
+    </table>
+    <div class="callout">تظهر اللوحة فقط على <b>رسم بياني حقيقي</b> أو <b>اختبار خلفي بوضع Visual</b>؛ يخفيها الاختبار الخلفي العادي/التحسين عادةً لزيادة السرعة.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">5.</span>ملفات .set الموصى بها</h2>
+    <table>
+      <tr><th>الملف</th><th>مناسب لـ</th></tr>
+      <tr><td><code>Dralvo TiGold.set</code></td><td>XAUUSD (وسيط 3 خانات عشرية)</td></tr>
+      <tr><td><code>Dralvo TiGold BTC.set</code></td><td>BTCUSD (خانتين عشريتين)</td></tr>
+    </table>
+    <p>للتحميل: علامة التبويب <b>Inputs → Load</b> ← اختر الملف. لحفظ إعداداتك الخاصة: <b>Save</b>.</p>
+    <div class="callout warn">إذا كان وسيط الذهب لديك يستخدم <b>خانتين عشريتين</b>، <b>اقسم على 10</b> معاملات النقاط في ملف إعدادات الذهب: <code>InpStopLoss</code> 2500→250، <code>InpTrendStrength</code> 300→30، <code>InpTrailDistance</code> 1000→100، <code>InpMaxSpread</code> 300→30، <code>InpTrailStart</code> 500→50، <code>InpTrailStep</code> 50→5.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">6.</span>استكشاف الأخطاء وإصلاحها</h2>
+    <table>
+      <tr><th>العرض</th><th>السبب / الحل</th></tr>
+      <tr><td>الروبوت لا يفتح صفقات</td><td>(1) Algo Trading غير مفعّل. (2) <code>InpMaxSpread</code> أصغر من الفارق السعري للوسيط ← قم برفعه. (3) خارج ساعات فلتر التوقيت. (4) في حالة توقف مؤقت (انظر سطر Protection). (5) <code>InpTrendStrength</code> كبير جداً مقارنة بنطاق الرمز.</td></tr>
+      <tr><td>صفقات كثيرة جداً / تشويش</td><td>ارفع <code>InpEntryFilter</code> و/أو <code>InpTrendStrength</code>.</td></tr>
+      <tr><td>حجم اللوت كبير/صغير جداً</td><td>تحقق من <code>InpLotMode</code>، <code>InpFixedLot</code> أو معادلة حجم اللوت التلقائي.</td></tr>
+      <tr><td>وقف الخسارة/الربح ليس كما هو متوقع</td><td>المعاملات بوحدة النقاط — تحقق من <code>digits</code> الرمز (القسم 2).</td></tr>
+      <tr><td>لا توجد لوحة معلومات</td><td><code>InpShowPanel=true</code> والتشغيل على رسم بياني حقيقي/visual.</td></tr>
+      <tr><td>فلتر الأخبار لا يمنع</td><td>فلتر الأخبار يعمل فقط في الحساب المباشر ويتطلب وسيطاً يحتوي على تقويم اقتصادي؛ لا يعمل في Strategy Tester.</td></tr>
+    </table>
+    <p style="color:var(--mut)">راجع التفاصيل في علامتي التبويب <b>Toolbox → Experts</b> و<b>Journal</b>.</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">7.</span>تحذير المخاطر</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-right:18px;padding-left:0">
+        <li>التداول بالهامش ينطوي على مخاطر عالية. <b>لا يوجد إعداد يضمن الربح.</b></li>
+        <li>شغّل دائماً حساباً <b>تجريبياً / اختباراً استشرافياً</b> لفترة كافية قبل استخدام أموال حقيقية.</li>
+        <li>ملفات <code>.set</code> المرفقة هي نقطة انطلاق؛ يجب ضبطها حسب وسيطك والفارق السعري والتقلبات الحقيقية.</li>
+        <li>نتائج الاختبار الخلفي لا تضمن نتائج مستقبلية؛ الفارق السعري/الانزلاق الحقيقي قد يختلف.</li>
+        <li>تداول فقط برأس المال الذي يمكنك تحمّل خسارته.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo TiGold © Dralvo — دليل الاستخدام v2.00</footer>
+
+</div>
+</body>
+</html>

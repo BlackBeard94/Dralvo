@@ -1,13 +1,6 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { CorrelationPage } from "@/components/dashboard/dashboard-pages";
-import { getDashboardPlanTier } from "@/app/dashboard/get-dashboard-plan";
-
-export const metadata: Metadata = {
-  title: "Correlation | Dralvo",
-};
-
-export default async function DashboardCorrelationRoute() {
-  const planTier = await getDashboardPlanTier();
-  return <CorrelationPage planTier={planTier} />;
+// V1 market-analysis surface — not part of the V2 EA product and not in nav.
+export default function DashboardCorrelationRoute() {
+  redirect("/dashboard");
 }

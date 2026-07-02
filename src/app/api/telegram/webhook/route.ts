@@ -22,12 +22,15 @@ export async function POST(req: NextRequest) {
     return rateLimitResponse(rateLimit.resetAt);
   }
 
+  // Fail closed: if no secret is configured, reject rather than accepting
+  // unsigned requests from anyone (contrast with the old behaviour that only
+  // enforced the check when the secret happened to be set).
   const expectedSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
-
-  if (
-    expectedSecret &&
-    req.headers.get("x-telegram-bot-api-secret-token") !== expectedSecret
-  ) {
+  if (!expectedSecret) {
+    console.error("[Telegram Webhook] TELEGRAM_WEBHOOK_SECRET not configured — rejecting");
+    return NextResponse.json({ ok: false, error: "Not configured" }, { status: 503 });
+  }
+  if (req.headers.get("x-telegram-bot-api-secret-token") !== expectedSecret) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 

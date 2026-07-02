@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dralvo — Website UI Kit</title>
+<link rel="stylesheet" href="kit/brand.css">
+<style>
+  .kit-nav{position:sticky;top:0;z-index:50;background:rgba(11,14,17,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .kit-nav .container{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .kit-nav a{color:var(--text-3);font-size:14px;margin-left:18px}.kit-nav a:hover,.kit-nav a.on{color:var(--gold-200)}
+  .demo{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:24px;margin-top:14px}
+  .lbl-sec{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin-top:40px}
+</style>
+</head>
+<body class="tag-noise">
+<nav class="kit-nav"><div class="container">
+  <img src="official/dralvo-lockup-gold.png" alt="Dralvo" style="height:30px">
+  <div><a href="guideline.html">Guideline</a><a class="on" href="ui-kit.html">UI Kit</a><a href="dashboard.html">Dashboard</a><a href="landing.html">Landing</a><a href="motion.html">Motion</a></div>
+</div></nav>
+
+<section class="section container">
+  <p class="eyebrow">05 — Website UI Kit</p>
+  <h2>Component library</h2>
+  <p class="lede">Các thành phần dựng sẵn theo token thương hiệu — dùng lại cho web &amp; app.</p>
+
+  <p class="lbl-sec">Buttons</p>
+  <div class="demo row wrap">
+    <button class="btn btn-gold">Bắt đầu miễn phí</button>
+    <button class="btn btn-gold btn-lg">Nâng cấp VIP →</button>
+    <button class="btn btn-ghost">Xem backtest</button>
+    <button class="btn btn-ghost" disabled style="opacity:.5">Đang xử lý…</button>
+  </div>
+
+  <p class="lbl-sec">Badges &amp; pills</p>
+  <div class="demo row wrap">
+    <span class="badge badge-gold">VIP</span>
+    <span class="badge badge-long">LONG +2.4%</span>
+    <span class="badge badge-short">SHORT −1.1%</span>
+    <span class="badge badge-live">LIVE</span>
+    <span class="badge">M15 · XAUUSD</span>
+  </div>
+
+  <p class="lbl-sec">Cards</p>
+  <div class="demo grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+    <div class="card"><span class="badge badge-gold">FREE</span><h3 style="margin-top:12px">TiGold v3.0</h3><p class="muted">EA M1, 2 chiều. 3 lớp bảo vệ vốn.</p><button class="btn btn-ghost" style="margin-top:8px">Nhận EA</button></div>
+    <div class="card card-gold"><span class="badge badge-gold">VIP · Phổ biến</span><h3 style="margin-top:12px">GoldScalp v2.0</h3><p class="muted">M15, đọc regime thị trường.</p><p class="mono" style="color:var(--gold-200);font-size:22px;margin-top:8px">$59<span class="muted" style="font-size:13px">/tháng</span></p><button class="btn btn-gold" style="margin-top:8px">Đăng ký</button></div>
+    <div class="card"><span class="badge">VIP</span><h3 style="margin-top:12px">GoldMaster v1.08</h3><p class="muted">D1, chỉ LONG, lọc CFTC.</p><button class="btn btn-ghost" style="margin-top:8px">Chi tiết</button></div>
+  </div>
+
+  <p class="lbl-sec">Form</p>
+  <div class="demo grid" style="grid-template-columns:1fr 1fr;max-width:640px">
+    <div><label class="label">Email</label><input class="input" placeholder="name@email.com"></div>
+    <div><label class="label">Số tài khoản MT5</label><input class="input" placeholder="12345678"></div>
+    <div style="grid-column:1/-1"><label class="label">Ghi chú</label><textarea class="textarea" rows="3" placeholder="Nhập nội dung…"></textarea></div>
+    <div style="grid-column:1/-1"><button class="btn btn-gold">Gửi</button></div>
+  </div>
+
+  <p class="lbl-sec">KPI / Stats</p>
+  <div class="demo grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+    <div class="kpi"><div class="k-label">Net profit</div><div class="k-value num-pos">+139.4%</div></div>
+    <div class="kpi"><div class="k-label">Profit factor</div><div class="k-value">1.89</div></div>
+    <div class="kpi"><div class="k-label">Max drawdown</div><div class="k-value num-neg">18.8%</div></div>
+    <div class="kpi"><div class="k-label">Win rate</div><div class="k-value">39%</div></div>
+  </div>
+
+  <p class="lbl-sec">Table</p>
+  <div class="demo" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Lot</th><th>P/L</th></tr></thead>
+      <tbody>
+        <tr><td>10:32</td><td>XAUUSD</td><td><span class="badge badge-long">LONG</span></td><td>0.10</td><td class="num-pos">+24.10</td></tr>
+        <tr><td>09:14</td><td>XAUUSD</td><td><span class="badge badge-short">SHORT</span></td><td>0.10</td><td class="num-neg">−11.40</td></tr>
+        <tr><td>08:05</td><td>XAUUSD</td><td><span class="badge badge-long">LONG</span></td><td>0.20</td><td class="num-pos">+53.80</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</body>
+</html>

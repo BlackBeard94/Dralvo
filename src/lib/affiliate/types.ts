@@ -45,6 +45,27 @@ export interface AffiliateCommission {
   status: "pending" | "paid" | "cancelled" | "refunded";
   paid_at: string | null;
   created_at: string;
+  // joined (admin list)
+  customer_email?: string | null;
+  affiliate_code?: string | null;
+}
+
+export interface AffiliatePayout {
+  id: string;
+  affiliate_id: string;
+  amount: number;
+  status: "requested" | "approved" | "paid" | "rejected";
+  method: string | null;
+  note: string | null;
+  requested_at: string;
+  processed_at: string | null;
+  processed_by: string | null;
+}
+
+/** Admin: payout with affiliate + user info */
+export interface AffiliatePayoutWithUser extends AffiliatePayout {
+  affiliate_code: string | null;
+  user_email: string | null;
 }
 
 /** Stats for affiliate dashboard */

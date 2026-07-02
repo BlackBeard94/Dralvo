@@ -9,7 +9,7 @@ const pagesWithHeaderSwitcher = new Set(["/", "/pricing", "/tools/calculator", "
 export function GlobalLanguageSwitcher() {
   const pathname = usePathname();
 
-  if (pagesWithHeaderSwitcher.has(pathname) || pathname.startsWith("/dashboard")) {
+  if (pagesWithHeaderSwitcher.has(pathname) || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/partner")) {
     return null;
   }
 

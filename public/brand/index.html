@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dralvo — Brand System</title>
+<link rel="stylesheet" href="kit/brand.css">
+<style>
+  .hub{max-width:960px;margin:0 auto;padding:60px 24px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:32px}
+  .tile{display:block;border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;background:linear-gradient(180deg,var(--card),var(--surface));transition:transform .2s,border-color .2s,box-shadow .2s}
+  .tile:hover{transform:translateY(-4px);border-color:var(--gold-700);box-shadow:var(--glow)}
+  .tile .n{font-family:var(--font-mono);font-size:12px;color:var(--gold-400)}
+  .tile h3{margin:.4em 0 .2em}
+  .tile p{color:var(--text-3);font-size:14px;margin:0}
+</style>
+</head>
+<body class="tag-noise">
+<div class="hub">
+  <img src="official/dralvo-lockup-gold.png" alt="Dralvo" style="height:44px">
+  <h1 style="margin-top:24px">Brand System</h1>
+  <p class="lede" style="max-width:640px">Hệ nhận diện Dralvo — 10 phase, từ logo tới landing. Mọi trang dùng chung <code class="mono">kit/brand.css</code>.</p>
+  <div class="tiles">
+    <a class="tile" href="guideline.html"><div class="n">01–04</div><h3>Brand Guideline</h3><p>Logo · màu · chữ · voice · compliance.</p></a>
+    <a class="tile" href="ui-kit.html"><div class="n">05</div><h3>Website UI Kit</h3><p>Button, card, form, KPI, table, badge.</p></a>
+    <a class="tile" href="dashboard.html"><div class="n">06</div><h3>Dashboard UI</h3><p>Sidebar, equity curve, KPI, bảng lệnh.</p></a>
+    <a class="tile" href="motion.html"><div class="n">09</div><h3>Motion Identity</h3><p>Logo reveal, loader, live pulse, ticker.</p></a>
+    <a class="tile" href="landing.html"><div class="n">10</div><h3>Landing Page</h3><p>Trang bán hoàn chỉnh theo brand.</p></a>
+    <a class="tile" href="social/ig-post.png"><div class="n">07</div><h3>Social Media Kit</h3><p>IG post/story, X cover, YouTube, quote.</p></a>
+    <a class="tile" href="marketing/ad-rectangle-300x250.png"><div class="n">08</div><h3>Marketing Kit</h3><p>Banner ads, email header.</p></a>
+    <a class="tile" href="official/dralvo-monogram.png"><div class="n">Assets</div><h3>Logo files</h3><p>official/ · icon · favicon · avatar.</p></a>
+  </div>
+  <hr class="rule">
+  <p class="muted mono" style="font-size:12px">Regen: <code>node scripts/gen-brand-assets.mjs</code> · <code>node scripts/gen-brand-social.mjs</code></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "dir": "ltr",
+  "label": "English",
+  "fontUI": "Inter, 'Segoe UI', Arial, sans-serif",
+  "fontDisp": "'Playfair Display', Georgia, serif",
+  "tagline": "DRILL INTO GOLD · NO FAKE DATA",
+  "site": "dralvo.com",
+  "disclaimer": "Past backtest results do not guarantee future results. Trading involves risk of loss.",
+  "cta": { "free": "Get TiGold free", "try": "Try it", "start": "Start", "vip": "Upgrade to VIP" },
+  "img": {
+    "ig":   { "h": ["Automated gold", "XAUUSD trading robot"], "stats": "Net +139% · PF 1.89 · Max DD 18.8% · 33 months" },
+    "story":{ "h": ["Gold, but", "with discipline"], "sub": "XAUUSD EA for MetaTrader 5" },
+    "cover":{ "h": "Drill into gold.", "sub": "Automated XAUUSD gold trading · MT5 · No Fake Data" },
+    "yt":   { "h": ["BACKTEST", "NO BS"], "sub": "Net +139% · Max DD 18.8%" },
+    "quote":{ "a": "“Don't look at win rate,", "b": "look at mathematical expectancy.”", "attr": "R:R × win rate — Dralvo" },
+    "ads": {
+      "leaderboard": { "h": "Gold XAUUSD robot", "s": "No fake data · MT5" },
+      "rectangle":   { "h": "Drill into gold", "s": "XAUUSD EA · MT5" },
+      "skyscraper":  { "h": "Gold|with discipline", "s": "MT5 · No fake data" },
+      "mobile":      { "h": "Gold robot", "s": "XAUUSD · No fake data" }
+    },
+    "emailTag": "DRILL INTO GOLD · NO FAKE DATA"
+  },
+  "web": {
+    "navRobots": "Robots", "navWhy": "No Fake Data", "navPricing": "Pricing", "navStart": "Start",
+    "heroEyebrow": "Drill into gold · No fake data",
+    "heroH": ["Automated", "XAUUSD gold", "trading robots"],
+    "heroSub": "Expert Advisors for MetaTrader 5, proven by their own verified backtests — drawdown and losing months disclosed.",
+    "ctaFree": "Get TiGold free", "ctaBacktest": "See the backtest",
+    "secProdEyebrow": "Products", "secProdTitle": "3 robots, 1 philosophy",
+    "whyEyebrow": "Why we're different", "whyTitle": "“No Fake Data”",
+    "whyLede": "Most EA groups brag about “100%/month” then quietly delete it when accounts blow up. Dralvo does the opposite: every robot publishes its real backtest — drawdown and losing months included.",
+    "pricingEyebrow": "VIP pricing", "pricingTitle": "Unlock every robot"
+  }
+}

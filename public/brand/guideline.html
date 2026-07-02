@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dralvo — Brand Guideline</title>
+<link rel="stylesheet" href="kit/brand.css">
+<style>
+  .kit-nav{position:sticky;top:0;z-index:50;background:rgba(11,14,17,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .kit-nav .container{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .kit-nav a{color:var(--text-3);font-size:14px;margin-left:18px}
+  .kit-nav a:hover,.kit-nav a.on{color:var(--gold-200)}
+  .hero-logo{display:block;max-width:520px;width:80%;margin:0 auto}
+  .clear-demo{position:relative;display:inline-block;padding:14%;background:
+    linear-gradient(var(--gold-700),var(--gold-700)) 0 0/100% 1px no-repeat,
+    linear-gradient(var(--gold-700),var(--gold-700)) 0 100%/100% 1px no-repeat,
+    linear-gradient(var(--gold-700),var(--gold-700)) 0 0/1px 100% no-repeat,
+    linear-gradient(var(--gold-700),var(--gold-700)) 100% 0/1px 100% no-repeat;}
+  .variant{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:22px;display:flex;align-items:center;justify-content:center;min-height:120px}
+  .variant.on-light{background:#FAFAFA}
+  .do,.dont{border-radius:var(--r-md);padding:16px;font-size:14px}
+  .do{background:var(--long-bg);border:1px solid rgba(14,203,129,.3)} .dont{background:var(--short-bg);border:1px solid rgba(246,70,93,.3)}
+</style>
+</head>
+<body class="tag-noise">
+<nav class="kit-nav"><div class="container">
+  <img src="official/dralvo-lockup-gold.png" alt="Dralvo" style="height:30px">
+  <div><a class="on" href="guideline.html">Guideline</a><a href="ui-kit.html">UI Kit</a><a href="dashboard.html">Dashboard</a><a href="landing.html">Landing</a><a href="motion.html">Motion</a></div>
+</div></nav>
+
+<header class="section center container reveal">
+  <p class="eyebrow">Brand Guideline · v1.0</p>
+  <h1 class="gold-text">DRALVO</h1>
+  <p class="lede" style="max-width:640px;margin:0 auto 32px">Hệ nhận diện thương hiệu robot giao dịch vàng XAUUSD. <b>Drill into gold — No fake data.</b></p>
+  <img class="hero-logo" src="official/dralvo-lockup-gold.png" alt="Dralvo logo">
+</header>
+
+<div class="sheen-line"></div>
+
+<!-- LOGO -->
+<section class="section container">
+  <p class="eyebrow">01 — Logo System</p>
+  <h2>Logo &amp; biến thể</h2>
+  <p class="lede">Monogram <b>DA</b> vàng ánh kim (D + A lồng nhau, nến tăng dần, mũi tên đi lên) + wordmark DRALVO. Chọn biến thể theo nền.</p>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:24px">
+    <div><div class="variant"><img src="official/dralvo-lockup-gold.png" style="max-width:100%;max-height:70px"></div><p class="muted mono" style="font-size:12px;margin-top:8px">Gold · nền tối (mặc định)</p></div>
+    <div><div class="variant"><img src="official/dralvo-lockup-white.png" style="max-width:100%;max-height:70px"></div><p class="muted mono" style="font-size:12px;margin-top:8px">White · nền tối/ảnh</p></div>
+    <div><div class="variant on-light"><img src="official/dralvo-lockup-black.png" style="max-width:100%;max-height:70px"></div><p class="muted mono" style="font-size:12px;margin-top:8px">Black · nền sáng/in</p></div>
+    <div><div class="variant"><img src="dralvo-mark-512.png" style="width:80px;height:80px;border-radius:18px"></div><p class="muted mono" style="font-size:12px;margin-top:8px">Monogram · app icon</p></div>
+    <div><div class="variant"><img src="dralvo-avatar-telegram.png" style="width:80px;height:80px;border-radius:50%"></div><p class="muted mono" style="font-size:12px;margin-top:8px">Avatar tròn · social</p></div>
+    <div><div class="variant"><img src="dralvo-avatar-vip.png" style="width:80px;height:80px"></div><p class="muted mono" style="font-size:12px;margin-top:8px">Huy hiệu VIP</p></div>
+  </div>
+  <h3 style="margin-top:40px">Clear-space &amp; min-size</h3>
+  <div class="row wrap" style="margin-top:12px">
+    <div class="variant clear-demo"><img src="official/dralvo-lockup-gold.png" style="height:56px"></div>
+    <ul class="muted" style="max-width:420px">
+      <li>Clear-space quanh logo ≥ chiều cao chữ <b>D</b>.</li>
+      <li>Monogram tối thiểu <b>32px</b>; lockup ngang tối thiểu <b>160px</b>.</li>
+      <li>Dưới 32px dùng favicon; ưu tiên đủ tương phản với nền.</li>
+    </ul>
+  </div>
+  <h3 style="margin-top:40px">Do / Don't</h3>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:12px">
+    <div class="do">✅ Đặt logo vàng trên nền tối/đen; giữ tỉ lệ gốc; chừa clear-space.</div>
+    <div class="dont">🚫 Đổi màu, xoay, bóp méo, thêm viền/đổ bóng lạ, đặt lên nền rối.</div>
+  </div>
+</section>
+
+<div class="sheen-line"></div>
+
+<!-- COLOR -->
+<section class="section container">
+  <p class="eyebrow">02 — Color Palette</p>
+  <h2>Bảng màu</h2>
+  <h4 style="margin-top:20px">Gold (primary)</h4>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+    <div class="sw" style="background:#FDE9A8;color:#4D3A06">100 #FDE9A8</div>
+    <div class="sw" style="background:#FCD535;color:#4D3A06">200 #FCD535</div>
+    <div class="sw" style="background:#F0B90B;color:#4D3A06">400 · Primary #F0B90B</div>
+    <div class="sw" style="background:#C99A08;color:#241c00">500 #C99A08</div>
+    <div class="sw" style="background:#8B6914;color:#FDE9A8">700 #8B6914</div>
+    <div class="sw" style="background:linear-gradient(160deg,#FDE9A8,#B8860B,#7A5C0C);color:#4D3A06">Metal gradient</div>
+  </div>
+  <h4 style="margin-top:24px">Neutral (dark)</h4>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+    <div class="sw" style="background:#0B0E11;color:#EAECEF;border:1px solid #2B3139">Deep #0B0E11</div>
+    <div class="sw" style="background:#15181E;color:#EAECEF">Coin #15181E</div>
+    <div class="sw" style="background:#1E2329;color:#EAECEF">Card #1E2329</div>
+    <div class="sw" style="background:#2B3139;color:#EAECEF">Border #2B3139</div>
+    <div class="sw" style="background:#848E9C;color:#0B0E11">Text-3 #848E9C</div>
+    <div class="sw" style="background:#EAECEF;color:#0B0E11">Text #EAECEF</div>
+  </div>
+  <h4 style="margin-top:24px">Semantic (trading)</h4>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+    <div class="sw" style="background:#0ECB81;color:#00351f">Long #0ECB81</div>
+    <div class="sw" style="background:#F6465D;color:#3d0009">Short #F6465D</div>
+    <div class="sw" style="background:#3B9CF0;color:#04213d">Info #3B9CF0</div>
+  </div>
+</section>
+
+<div class="sheen-line"></div>
+
+<!-- TYPE -->
+<section class="section container">
+  <p class="eyebrow">03 — Typography</p>
+  <h2>Hệ chữ</h2>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:20px">
+    <div class="card"><p class="muted mono" style="font-size:11px">DISPLAY — DM Serif Display</p><p class="display" style="font-size:40px">Drill into gold</p><p class="muted">Tiêu đề lớn, cảm giác "đắt", luxe.</p></div>
+    <div class="card"><p class="muted mono" style="font-size:11px">UI / BODY — Inter</p><p style="font-size:24px;font-weight:600">Robot giao dịch vàng XAUUSD</p><p class="muted">Giao diện, nội dung, nút.</p></div>
+    <div class="card"><p class="muted mono" style="font-size:11px">DATA — JetBrains Mono</p><p class="mono" style="font-size:22px">Net <span style="color:#0ECB81">+139%</span> · PF 1.89 · DD <span style="color:#F6465D">18.8%</span></p><p class="muted">Số liệu, giá, tham số.</p></div>
+  </div>
+  <p class="muted" style="margin-top:16px">Scale: H1 clamp(38–68) · H2 (28–42) · H3 22 · body 16 · caption 12. Con số luôn dùng mono để canh cột.</p>
+</section>
+
+<div class="sheen-line"></div>
+
+<!-- VOICE + COMPLIANCE -->
+<section class="section container">
+  <p class="eyebrow">04 — Voice &amp; Compliance</p>
+  <h2>Giọng điệu &amp; tuân thủ</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:20px">
+    <div class="card">
+      <h4>Tone of voice</h4>
+      <ul class="muted">
+        <li>Thẳng thắn, kỷ luật, <b>không thổi phồng</b>. Bán bằng sự thật.</li>
+        <li>Luôn nêu số kèm ngữ cảnh rủi ro (drawdown, tháng thua).</li>
+        <li>Song ngữ VI (chính) / EN (phụ). Thuật ngữ kỹ thuật giữ nguyên (XAUUSD, EA, MT5, PF).</li>
+        <li>❌ Không "100%/tháng", "làm giàu nhanh", "không bao giờ thua".</li>
+      </ul>
+    </div>
+    <div class="card card-gold">
+      <h4>⚖️ Bắt buộc (Legal / Compliance)</h4>
+      <p class="muted" style="font-size:14px">Mọi ấn phẩm hiển thị số liệu phải kèm disclaimer:</p>
+      <blockquote style="border-left:3px solid var(--gold-600);padding-left:14px;margin:12px 0;color:var(--text-2);font-size:14px">
+        Dralvo cung cấp công cụ giao dịch, <b>không phải lời khuyên tài chính</b>. Mọi số liệu là kết quả backtest quá khứ, <b>không bảo đảm kết quả tương lai</b>. Giao dịch có rủi ro mất vốn.
+      </blockquote>
+      <p class="muted" style="font-size:13px">EN: “Past performance is not indicative of future results. Trading involves risk of loss.”</p>
+    </div>
+  </div>
+</section>
+
+<footer class="section center container">
+  <img src="dralvo-mark-512.png" style="width:56px;height:56px;border-radius:14px">
+  <p class="muted mono" style="margin-top:12px;font-size:12px">DRALVO Brand Guideline v1.0 · dralvo.com</p>
+</footer>
+</body>
+</html>

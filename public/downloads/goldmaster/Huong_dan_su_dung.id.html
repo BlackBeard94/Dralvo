@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo GoldMaster — Panduan Penggunaan</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLDMASTER</span>
+    <h1>Panduan Penggunaan</h1>
+    <p>EA swing jangka panjang untuk XAUUSD di MetaTrader 5 — beroperasi pada timeframe D1, dengan filter CFTC + trend + pullback + higher-low, trailing berbasis ATR.</p>
+    <div class="ver">Versi 1.08 · File: Dralvo_GoldMaster.ex5 · Timeframe D1</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Daftar Isi</b>
+    <ol>
+      <li><a href="#caidat">Instalasi</a></li>
+      <li><a href="#license">Aktivasi Lisensi</a></li>
+      <li><a href="#logic">Cara Kerja EA</a></li>
+      <li><a href="#thamso">Tabel Parameter</a></li>
+      <li><a href="#dashboard">Dashboard di Chart</a></li>
+      <li><a href="#set">File .set &amp; Data CFTC</a></li>
+      <li><a href="#hieusuat">Performa Backtest</a></li>
+      <li><a href="#suco">Pemecahan Masalah</a></li>
+      <li><a href="#ruiro">Peringatan Risiko</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Instalasi</h2>
+    <ol class="steps">
+      <li>Tutup MetaTrader 5 (jika sedang terbuka).</li>
+      <li>Buka folder data: <b>File → Open Data Folder</b>.</li>
+      <li>Salin <code>Dralvo_GoldMaster.ex5</code> ke <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Atau salin file <code>.mq5</code> lalu klik <b>Compile (F7)</b>.)</span></li>
+      <li><b>Sumber data CFTC</b> — pilih salah satu: <b>(a)</b> live via API (disarankan) → atur <code>UseLiveAPI=true</code> + whitelist URL (bagian 2), <b>tidak perlu</b> file CSV; <b>(b)</b> mode file → biarkan <code>UseLiveAPI=false</code> dan Anda <b>wajib</b> menyalin <code>cftc_status.csv</code> ke <code>MQL5\Files\</code> (jika tidak ada akan muncul <code>CFTC FILE NOT FOUND</code>). <i>Backtest selalu membutuhkan CSV.</i></li>
+      <li>Buka kembali MT5 → <b>Navigator → Expert Advisors</b>, klik kanan lalu <b>Refresh</b>.</li>
+      <li>Buka chart <b>XAUUSD</b>, ganti ke timeframe <b>D1</b>, dan seret <b>Dralvo GoldMaster</b> ke chart.</li>
+      <li>Tab <b>Common</b>: centang <b>Allow Algo Trading</b>. Tab <b>Inputs</b>: masukkan <b>License key</b> + <b>MT5 Account</b> Anda (bagian 2), muat file <code>.set</code>.</li>
+      <li>Klik <b>OK</b> → aktifkan <b>Algo Trading</b> di toolbar (menyala hijau).</li>
+    </ol>
+    <div class="callout warn">Ini adalah sistem <b>harian</b>: sinyal dievaluasi <b>sekali per candle D1 baru</b>. Wajar jika beberapa hari tidak ada transaksi — jangan berharap entry intraday.</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>Aktivasi Lisensi — WAJIB untuk demo/live</h2>
+    <p>EA ini memiliki <b>gerbang lisensi</b>: pada chart nyata, ia memanggil server Dralvo untuk memverifikasi key. <b>Tanpa langkah ini EA TIDAK akan berjalan</b> dan menampilkan peringatan <code>Contact telegram: @edgardinh86</code>.</p>
+    <div class="callout">Pada <b>Strategy Tester (backtest)</b>, gerbang lisensi <b>dilewati</b> — backtest selalu berjalan tanpa key.</div>
+
+    <h3>Langkah 1 — Dapatkan License key Anda</h3>
+    <p>Cara mendapatkan key tergantung paket Anda:</p>
+    <table>
+      <tr><th>Paket</th><th>Cara mendapatkan License key</th></tr>
+      <tr><td><b>VIP</b></td><td>Login ke <b>Dashboard di <code>https://www.dralvo.com</code></b> → <b>License / Key</b> → buat key untuk setiap akun MT5.</td></tr>
+      <tr><td><b>Free</b></td><td>Hubungi <b>Telegram <code>@edgardinh86</code></b> untuk mendapatkan <b>License key</b>.</td></tr>
+    </table>
+    <ul>
+      <li>Pada paket apa pun, key <b>terikat pada nomor akun MT5 tertentu</b> — Anda harus memberikan/mendaftarkan nomor akun yang benar.</li>
+      <li>Lihat nomor akun Anda di: <b>Navigator</b>, atau <b>Tools → Options → Server</b>, atau judul jendela MT5 (6–10 digit).</li>
+    </ul>
+    <p>🔹 <b>Paket VIP — slot akun habis:</b> setiap akun VIP mendapat sejumlah slot tertentu. Jika Anda sudah <b>menggunakan semua (maks.) akun</b> dan ingin <b>menambah akun baru</b>, <b>hubungi admin</b> untuk mendapatkan tambahan.</p>
+
+    <h3>Langkah 2 — Whitelist WebRequest ⚠️ Langkah yang Paling Sering Terlupa</h3>
+    <ol class="steps">
+      <li>Buka <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>Buka tab <b>Expert Advisors</b>.</li>
+      <li>Centang <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>Ketik persis: <code>https://www.dralvo.com</code></li>
+      <li>Klik <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">URL yang sama juga digunakan untuk <b>API CFTC live</b> saat <code>UseLiveAPI=true</code>. Tanpa whitelist → lisensi gagal <b>dan</b> dashboard menampilkan API: <b>OFFLINE</b>. Ini adalah <b>penyebab #1</b> EA tidak berjalan meski key sudah diisi.</div>
+
+    <h3>Langkah 3 — Masukkan key di Inputs</h3>
+    <table>
+      <tr><th>Parameter</th><th>Nilai</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>License key (VIP: dari dashboard <code>dralvo.com</code>; Free: dari <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>Nomor akun MT5 Anda (6–10 digit), sesuai dengan key.</td></tr>
+    </table>
+
+    <h3>Sudah masukkan key tapi masih tidak jalan? Periksa berurutan</h3>
+    <table>
+      <tr><th>#</th><th>Pemeriksaan</th></tr>
+      <tr><td>1</td><td>Apakah Anda sudah whitelist <code>https://www.dralvo.com</code>? (Langkah 2 — penyebab #1)</td></tr>
+      <tr><td>2</td><td>Apakah <b>kedua</b> kolom <code>InpLicenseKey</code> dan <code>InpMT5Account</code> sudah diisi?</td></tr>
+      <tr><td>3</td><td>Apakah nomor akun <b>sesuai</b> dengan key?</td></tr>
+      <tr><td>4</td><td>Apakah Anda memiliki koneksi internet?</td></tr>
+      <tr><td>5</td><td>Jika <code>UseLiveAPI=false</code>: sudahkah Anda menyalin <code>cftc_status.csv</code> ke <code>MQL5\Files\</code>? (atau ubah ke <code>UseLiveAPI=true</code> untuk menggunakan API)</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>Cara Kerja EA Ini</h2>
+    <p>Pada setiap candle D1 baru, EA hanya membuka posisi <b>BUY</b> ketika <b>semua</b> filter terpenuhi sekaligus:</p>
+    <table>
+      <tr><th>Filter</th><th>Arti</th></tr>
+      <tr><td><b>CFTC bullish</b></td><td>Posisi CFTC condong <b>beli</b>. Sumber: <b>live + <code>UseLiveAPI=true</code></b> → langsung dari API; selain itu (backtest, atau <code>UseLiveAPI=false</code>) → dibaca dari <code>cftc_status.csv</code>.</td></tr>
+      <tr><td><b>TREND</b></td><td>EMA50 &gt; EMA200 pada D1 (tren naik).</td></tr>
+      <tr><td><b>PB (Pullback)</b></td><td>Harga sudah retrace cukup dalam dari puncak terbaru (<code>PullbackPct</code>, <code>PullbackBars</code>).</td></tr>
+      <tr><td><b>HL (Higher-Low)</b></td><td>Low candle terbaru berada di atas low terendah dari ~20 candle sebelumnya (struktur bullish).</td></tr>
+    </table>
+    <p>Juga memerlukan <b>cooldown</b> (≥ 5 hari sejak transaksi terakhir, maksimal 1 transaksi per hari). Saat entry: <b>SL = harga − 1.5×ATR</b>, ukuran posisi berdasarkan <b>% risiko</b>. Manajemen: <b>trailing <code>TrailATR</code>×ATR</b> dari puncak, penutupan paksa setelah <b>MaxHoldDays</b>.</p>
+    <div class="callout">Dashboard menampilkan 3 indikator <b>TREND / PB / HL</b> (hijau = terpenuhi, merah = belum). Tab <b>Experts/Journal</b> mencetak baris <code>ENTRY-CHK …</code> setiap candle yang menunjukkan filter mana yang menghalangi entry.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>Tabel Parameter</h2>
+
+    <h3>Trading / Sinyal</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>RiskPercent</code></td><td>2.0</td><td>% saldo yang dipertaruhkan per transaksi (menentukan lot dari jarak SL).</td></tr>
+      <tr><td><code>MAPeriod1</code></td><td>50</td><td>EMA cepat (trend).</td></tr>
+      <tr><td><code>MAPeriod2</code></td><td>200</td><td>EMA lambat (trend).</td></tr>
+      <tr><td><code>ATRPeriod</code></td><td>14</td><td>Periode ATR (SL/trailing).</td></tr>
+      <tr><td><code>PullbackPct</code></td><td>-1.0</td><td>Ambang pullback (%) dari puncak.</td></tr>
+      <tr><td><code>PullbackBars</code></td><td>10</td><td>Jumlah candle D1 yang digunakan untuk puncak terbaru.</td></tr>
+      <tr><td><code>TrailATR</code></td><td>2.0</td><td>Jarak trailing = ×ATR.</td></tr>
+      <tr><td><code>TP_ATR</code></td><td>0</td><td>TP = ×ATR. 0 = tanpa TP tetap, hanya trailing.</td></tr>
+      <tr><td><code>MaxHoldDays</code></td><td>60</td><td>Maksimum hari sebelum penutupan paksa.</td></tr>
+      <tr><td><code>HigherLowFilter</code></td><td>true</td><td>Aktifkan filter struktur higher-low.</td></tr>
+    </table>
+
+    <h3>Data CFTC</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>UseLiveAPI</code></td><td>false</td><td><b>Menentukan sumber CFTC saat live.</b> true = ambil CFTC <b>langsung dari API</b> (perlu whitelist URL, <b>tanpa</b> CSV). false = baca <code>cftc_status.csv</code> (file wajib ada). Backtest selalu menggunakan file.</td></tr>
+      <tr><td><code>API_URL</code></td><td>dralvo.com/api/cftc-status</td><td>Alamat API CFTC saat <code>UseLiveAPI=true</code>.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>202606</td><td>Identifier order. Gunakan angka berbeda per EA/simbol.</td></tr>
+    </table>
+
+    <h3>Lisensi</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(kosong)</td><td>License key (bagian 2). Wajib untuk demo/live.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(kosong)</td><td>Nomor akun MT5 yang sesuai dengan key (6–10 digit).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>Dashboard di Chart</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLDMASTER v1.08</span></div>
+      <div class="rows">
+        <span class="l">Trade</span><span class="g">SIGNAL READY</span>
+        <span class="l">P/L</span><span class="g">+$182.40 (+1.82%)</span>
+        <span class="l">Filters</span><span class="g">TREND&nbsp;&nbsp;PB&nbsp;&nbsp;HL</span>
+        <span class="l">Balance</span><span class="w">$10,000.00</span>
+        <span class="l">Equity</span><span class="w">$10,182.40</span>
+        <span class="l">API</span><span class="g">LOCAL</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Baris</th><th>Arti</th></tr>
+      <tr><td><b>Trade</b></td><td><span class="pill p-green">IN TRADE</span> / <span class="pill p-green">SIGNAL READY</span> / <span class="pill p-amber">MONITORING</span> / <span class="pill p-amber">STANDBY</span></td></tr>
+      <tr><td><b>P/L</b></td><td>Untung/rugi posisi terbuka ($ dan %); <code>-</code> jika tidak ada posisi.</td></tr>
+      <tr><td><b>TREND · PB · HL</b></td><td>3 indikator filter: hijau = terpenuhi, merah = belum.</td></tr>
+      <tr><td><b>Balance / Equity / DD</b></td><td>Saldo, ekuitas bersih, drawdown saat ini (%).</td></tr>
+      <tr><td><b>Symbol / Price / Time</b></td><td>Simbol, harga saat ini, waktu server.</td></tr>
+      <tr><td><b>API</b></td><td><span class="pill p-amber">LOCAL</span> (file CSV) / <span class="pill p-green">LIVE</span> (API OK) / <span class="pill p-red">OFFLINE</span> (belum whitelist atau error).</td></tr>
+    </table>
+    <div class="callout">Dashboard hanya muncul pada <b>chart nyata</b>; backtest biasanya menyembunyikannya demi kecepatan.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>File .set &amp; Data CFTC</h2>
+    <p><b>4 setfile berdasarkan profil risiko</b> (sudah diverifikasi — lihat bagian 7):</p>
+    <table>
+      <tr><th>Setfile</th><th>Risiko/transaksi</th><th>Untuk</th></tr>
+      <tr><td><code>Dralvo_GoldMaster_SAFE.set</code></td><td>1%</td><td>Menjaga modal / akun kecil (DD ~6%).</td></tr>
+      <tr><td><code>Dralvo_GoldMaster_BALANCED.set</code></td><td>2%</td><td><b>Default yang disarankan</b> (DD ~11%).</td></tr>
+      <tr><td><code>Dralvo_GoldMaster_AGGRESSIVE.set</code></td><td>3%</td><td>Pertumbuhan lebih cepat (DD ~15%).</td></tr>
+      <tr><td><code>Dralvo_GoldMaster_MAX.set</code></td><td>5%</td><td>Profit maksimal, DD tinggi (~24%).</td></tr>
+    </table>
+    <table>
+      <tr><th>File pendukung</th><th>Lokasi</th><th>Fungsi</th></tr>
+      <tr><td><code>cftc_status.csv</code></td><td><code>MQL5\Files\</code></td><td>Data CFTC harian. <b>Wajib untuk backtest</b> dan untuk live dengan <code>UseLiveAPI=false</code>. <b>Tidak diperlukan</b> pada live dengan <code>UseLiveAPI=true</code> (menggunakan API).</td></tr>
+    </table>
+    <p>Memuat set: tab <b>Inputs → Load</b> → pilih file sesuai profil Anda. Menyimpan konfigurasi sendiri: <b>Save</b>.</p>
+    <h3>Setfile berdasarkan ukuran akun (pilihan cepat)</h3>
+    <p>Untuk menyamakan pola pemilihan dengan EA lainnya, tersedia juga file <code>Dralvo_GoldMaster_&lt;PROFIL&gt;_&lt;ukuran&gt;.set</code> (24 file = 4 profil × 6 ukuran: 1k/5k/10k/20k/50k/100k). Cukup pilih <b>profil + saldo</b> yang tepat lalu muat.</p>
+    <div class="callout">💡 <b>Penting:</b> GoldMaster menghitung lot <b>sepenuhnya berdasarkan <code>RiskPercent</code></b> (% saldo × jarak SL), sehingga <b>otomatis menyesuaikan diri dengan ukuran akun mana pun</b>. Itu sebabnya file dengan profil yang sama (misalnya semua <code>BALANCED_*</code>) <b>identik</b> — ukuran dalam nama file hanya untuk <b>pilihan cepat</b> dan tidak mengubah cara kerja EA. Satu file profil dasar sudah cukup untuk 1.000 maupun 100.000 USD.</div>
+    <div class="callout warn">Jika menggunakan file CSV (<code>UseLiveAPI=false</code>), file harus <b>diperbarui secara berkala</b> agar "CFTC bullish" mencerminkan kondisi terkini. Untuk menghindari update manual → atur <code>UseLiveAPI=true</code> agar EA mengambil data via API. <code>InpLicenseKey</code>/<code>InpMT5Account</code> bersifat per-pengguna dan <b>tidak</b> tersimpan dalam file <code>.set</code> yang dibagikan.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>Performa Backtest (Terverifikasi)</h2>
+    <p>Angka dijalankan pada <b>XAUUSD D1</b>, data harga historis nyata dari <b>Exness</b> (model <i>1-minute OHLC</i>), periode <b>Jul 2018 → Jun 2026 (~8 tahun)</b>, leverage <b>1:500</b>, tanpa TP tetap (keluar via trailing). Seluruh periode: <b>94 transaksi, win rate 39,4%, Profit Factor ~2,4–2,6</b> — entry selektif, profit besar per transaksi.</p>
+
+    <h3>Akun 10.000 USD — berdasarkan tingkat risiko</h3>
+    <table>
+      <tr><th>Risiko/transaksi</th><th style="text-align:right">Profit bersih</th><th style="text-align:right">Pertumbuhan (~8 thn)</th><th style="text-align:right">Profit Factor</th><th style="text-align:right">Max DD (equity)</th><th style="text-align:right">Recovery</th></tr>
+      <tr><td>1%</td><td style="text-align:right;color:var(--green)">+7.702,61</td><td style="text-align:right">+77,0%</td><td style="text-align:right">2,58</td><td style="text-align:right">6,15%</td><td style="text-align:right">6,66</td></tr>
+      <tr><td><b>2%</b> <span style="color:var(--mut)">(default)</span></td><td style="text-align:right;color:var(--green)">+18.146,73</td><td style="text-align:right">+181,5%</td><td style="text-align:right"><b>2,50</b></td><td style="text-align:right">10,79%</td><td style="text-align:right">5,33</td></tr>
+      <tr><td>3%</td><td style="text-align:right;color:var(--green)">+32.691,48</td><td style="text-align:right">+326,9%</td><td style="text-align:right">2,48</td><td style="text-align:right">15,27%</td><td style="text-align:right">4,25</td></tr>
+      <tr><td>5%</td><td style="text-align:right;color:var(--green)">+79.202,86</td><td style="text-align:right">+792,0%</td><td style="text-align:right">2,40</td><td style="text-align:right">23,59%</td><td style="text-align:right">2,88</td></tr>
+    </table>
+
+    <h3>Matriks pertumbuhan % berdasarkan Modal × Risiko</h3>
+    <table>
+      <tr><th>Modal awal</th><th style="text-align:right">Risiko 1%</th><th style="text-align:right">Risiko 2%</th><th style="text-align:right">Risiko 3%</th><th style="text-align:right">Risiko 5%</th></tr>
+      <tr><td>1.000 <span style="color:var(--mut)">*</span></td><td style="text-align:right">+289,6%</td><td style="text-align:right">+289,6%</td><td style="text-align:right">+316,7%</td><td style="text-align:right">+804,4%</td></tr>
+      <tr><td>5.000</td><td style="text-align:right">+73,7%</td><td style="text-align:right">+157,1%</td><td style="text-align:right">+352,1%</td><td style="text-align:right">+782,0%</td></tr>
+      <tr><td>10.000</td><td style="text-align:right">+77,0%</td><td style="text-align:right">+181,5%</td><td style="text-align:right">+326,9%</td><td style="text-align:right">+792,0%</td></tr>
+      <tr><td>100.000</td><td style="text-align:right">+71,4%</td><td style="text-align:right">+176,8%</td><td style="text-align:right">+325,1%</td><td style="text-align:right">+783,4%</td></tr>
+    </table>
+    <div class="callout warn"><b>*</b> Akun <b>1.000 USD</b> berjalan pada <b>lot minimum (0,01)</b> sehingga risiko sebenarnya "terpaksa" lebih tinggi dari yang dikonfigurasi — persentasenya tidak dapat langsung dibandingkan dengan modal yang lebih besar. Modal mulai <b>5.000 USD</b> ke atas baru mencerminkan sistem secara akurat.</div>
+
+    <p><b>Ringkasan cepat:</b> Profit Factor stabil di ~2,5 dan Max DD (equity) tetap <b>di bawah 24%</b>, meningkat seiring risiko (1% ≈ 6%, 2% ≈ 11%, 3% ≈ 15%, 5% ≈ 24%). Tingkat <b>2%</b> memberikan keseimbangan sangat baik: +181% dengan DD hanya ~11%, Recovery Factor 5,3.</p>
+    <div class="callout">✅ Diverifikasi pada 30-06-2026 dengan MT5 Strategy Tester, <b>Dralvo_GoldMaster v1.08</b> + setfile berdasarkan risiko, pada data <b>Exness (XAUUSDm)</b>. Detail 16 skenario: <code>Backtest_Matrix_Exness.csv</code>.</div>
+    <div class="callout warn">⚠️ Sistem <b>swing jangka panjang</b> (~12 transaksi/tahun) — evaluasi selama beberapa tahun, bukan mingguan/bulanan. <b>Penting:</b> hasil sangat bergantung pada <b>kelengkapan data historis broker</b> (broker dengan riwayat emas jangka panjang yang tidak lengkap akan menghasilkan lebih sedikit transaksi & profit lebih rendah). Backtest <b>tidak menjamin</b> masa depan; spread/komisi/slippage nyata semuanya berpengaruh.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>Pemecahan Masalah</h2>
+    <table>
+      <tr><th>Gejala</th><th>Penyebab / solusi</th></tr>
+      <tr><td>EA menampilkan <b>"Contact telegram: @edgardinh86"</b></td><td>Error lisensi: (1) URL <code>https://www.dralvo.com</code> belum di-whitelist (bagian 2). (2) key + akun belum diisi lengkap. (3) akun tidak sesuai. (4) tidak ada internet.</td></tr>
+      <tr><td>EA tidak mau start, log menampilkan <b>CFTC FILE NOT FOUND</b></td><td>Anda sedang di <code>UseLiveAPI=false</code> tetapi belum menyalin <code>cftc_status.csv</code> ke <code>MQL5\Files\</code>. Solusi: salin file tersebut, <b>atau</b> atur <code>UseLiveAPI=true</code> (live otomatis ambil via API, ingat untuk whitelist URL). Backtest selalu membutuhkan file.</td></tr>
+      <tr><td>Lama tidak ada transaksi</td><td>Normal — sistem harian yang membutuhkan CFTC + TREND + PB + HL <b>sekaligus</b> dan ≥ 5 hari sejak transaksi terakhir. Periksa baris <code>ENTRY-CHK</code> di Journal.</td></tr>
+      <tr><td>Dashboard API: <b>OFFLINE</b></td><td>Anda mengaktifkan <code>UseLiveAPI=true</code> tetapi belum whitelist URL / tidak ada koneksi. Sementara atur <code>UseLiveAPI=false</code> untuk menggunakan CSV.</td></tr>
+      <tr><td>Lot terlalu besar/kecil</td><td>Sesuaikan <code>RiskPercent</code>.</td></tr>
+      <tr><td>Posisi ditahan terlalu lama</td><td>Itu bagian dari desain swing; kurangi <code>MaxHoldDays</code> atau <code>TrailATR</code> untuk keluar lebih cepat.</td></tr>
+    </table>
+    <p style="color:var(--mut)">Lihat detail di tab <b>Toolbox → Experts</b> dan <b>Journal</b> (<code>ENTRY-CHK</code>, <code>ENTRY-TRY</code>, <code>ENTRY-OK/FAIL</code>).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>Peringatan Risiko</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Trading margin berisiko tinggi. <b>Tidak ada konfigurasi yang menjamin profit.</b></li>
+        <li>Selalu jalankan <b>demo / forward test</b> cukup lama sebelum menggunakan uang sungguhan.</li>
+        <li>File <code>.set</code> yang disertakan adalah titik awal; sesuaikan dengan broker dan volatilitas nyata Anda.</li>
+        <li>Kualitas data CFTC secara langsung memengaruhi sinyal; backtest tidak menjamin masa depan.</li>
+        <li>Hanya gunakan modal yang siap Anda relakan jika hilang.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo GoldMaster © Dralvo — Panduan Penggunaan v1.08</footer>
+
+</div>
+</body>
+</html>

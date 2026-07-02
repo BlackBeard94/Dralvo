@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dralvo Gold Scalp — Panduan Penggunaan</title>
+<style>
+  :root{
+    --gold:#C8A23A; --gold-dk:#8a6d1f; --gold-lt:#f6eccb;
+    --ink:#1b1e24; --txt:#2c2f36; --mut:#6b7280;
+    --line:#e6e3da; --panel:#161A21; --bg:#faf9f6;
+    --green:#2e9e63; --red:#cf4439; --amber:#c8881a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 70px}
+  .hero{background:var(--ink);border-bottom:4px solid var(--gold);padding:34px 22px;margin-bottom:8px}
+  .hero .inner{max-width:880px;margin:0 auto}
+  .badge{display:inline-block;background:var(--gold);color:#15171c;
+    font-weight:700;letter-spacing:1px;font-size:13px;padding:5px 12px;border-radius:3px}
+  .hero h1{color:#fff;margin:14px 0 4px;font-size:30px;letter-spacing:.5px;font-weight:600}
+  .hero p{color:#b9bdc7;margin:0;font-size:14px}
+  .hero .ver{color:var(--gold);font-size:13px;margin-top:8px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0 30px}
+  .toc b{display:block;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:30px}
+  .toc a{color:var(--gold-dk);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  h2{color:var(--ink);font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--gold);font-weight:600}
+  h2 .n{color:var(--gold);margin-right:8px}
+  h3{color:var(--gold-dk);font-size:16px;margin:22px 0 6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th{background:var(--ink);color:var(--gold-lt);text-align:left;padding:9px 12px;font-weight:600;font-size:13px}
+  td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fcfbf8}
+  code{background:var(--gold-lt);color:#5a4612;padding:1px 6px;border-radius:4px;
+    font-family:Consolas,Monaco,monospace;font-size:13px}
+  td code{white-space:nowrap}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .callout{border-left:4px solid var(--gold);background:#fffdf5;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .callout.warn{border-color:var(--amber);background:#fff8ec}
+  .callout.danger{border-color:var(--red);background:#fdeeec}
+  .callout b{color:var(--ink)}
+  .dash{width:300px;max-width:100%;background:var(--panel);border:2px solid var(--gold);
+    border-radius:4px;font-family:Consolas,monospace;overflow:hidden;margin:14px 0}
+  .dash .t{background:var(--gold);color:#12141a;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;font-size:13px}
+  .dash .rows{display:grid;grid-template-columns:96px 1fr;row-gap:4px;padding:11px 14px;font-size:13px}
+  .dash .l{color:#969eaa}
+  .dash .w{color:#eef0f5}
+  .dash .g{color:#46d278}
+  .dash .a{color:#ebb446}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .p-green{background:#e6f3ec;color:var(--green)}
+  .p-amber{background:#fbf0db;color:var(--amber)}
+  .p-red{background:#fbe6e3;color:var(--red)}
+  footer{text-align:center;color:var(--mut);font-size:13px;margin-top:50px;padding-top:18px;border-top:1px solid var(--line)}
+  @media (max-width:620px){.toc ol{columns:1}.hero h1{font-size:24px}}
+  @media print{body{background:#fff}.toc{break-inside:avoid}h2{break-after:avoid}
+    .hero,th,.dash,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="badge">DRALVO&nbsp;GOLD&nbsp;SCALP</span>
+    <h1>Panduan Penggunaan</h1>
+    <p>EA scalping/intraday untuk XAUUSD di MetaTrader 5 — mendeteksi regime pasar, 3 jenis setup, pyramiding "house money" &amp; trailing basket.</p>
+    <div class="ver">Versi 2.00 · File: Dralvo_Gold_Scalp.ex5 · Timeframe yang disarankan M15</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <b>Daftar Isi</b>
+    <ol>
+      <li><a href="#caidat">Instalasi</a></li>
+      <li><a href="#license">Aktivasi Lisensi</a></li>
+      <li><a href="#logic">Cara Kerja EA</a></li>
+      <li><a href="#thamso">Tabel Parameter</a></li>
+      <li><a href="#dashboard">Dashboard di Chart</a></li>
+      <li><a href="#set">File .set yang Disarankan</a></li>
+      <li><a href="#hieusuat">Performa Backtest</a></li>
+      <li><a href="#suco">Pemecahan Masalah</a></li>
+      <li><a href="#ruiro">Peringatan Risiko</a></li>
+    </ol>
+  </nav>
+
+  <section id="caidat">
+    <h2><span class="n">1.</span>Instalasi</h2>
+    <ol class="steps">
+      <li>Tutup MetaTrader 5 (jika sedang terbuka).</li>
+      <li>Buka folder data: <b>File → Open Data Folder</b>.</li>
+      <li>Salin <code>Dralvo_Gold_Scalp.ex5</code> ke <code>MQL5\Experts\</code>. <span style="color:var(--mut)">(Atau salin file <code>.mq5</code> lalu klik <b>Compile (F7)</b>.)</span></li>
+      <li>Buka kembali MT5 → <b>Navigator → Expert Advisors</b>, klik kanan lalu <b>Refresh</b>.</li>
+      <li>Buka chart <b>XAUUSD</b>, timeframe <b>M15</b>, dan seret <b>Dralvo Gold Scalp</b> ke chart.</li>
+      <li>Tab <b>Common</b>: centang <b>Allow Algo Trading</b>. Tab <b>Inputs</b>: masukkan <b>License key</b> + <b>MT5 Account</b> Anda (bagian 2), muat file <code>.set</code>.</li>
+      <li>Klik <b>OK</b> → aktifkan <b>Algo Trading</b> di toolbar (menyala hijau).</li>
+    </ol>
+    <div class="callout">Jika berjalan dengan benar, <b>panel Gold Scalp</b> akan muncul di sudut kiri atas chart (lihat bagian 5).</div>
+  </section>
+
+  <section id="license">
+    <h2><span class="n">2.</span>Aktivasi Lisensi — WAJIB untuk demo/live</h2>
+    <p>EA ini memiliki <b>gerbang lisensi</b>: pada chart nyata, ia memanggil server Dralvo untuk memverifikasi key. <b>Tanpa langkah ini EA TIDAK akan berjalan</b> dan menampilkan peringatan <code>Contact telegram: @edgardinh86</code>.</p>
+    <div class="callout">Pada <b>Strategy Tester (backtest)</b>, gerbang lisensi <b>dilewati</b> — backtest selalu berjalan tanpa key.</div>
+
+    <h3>Langkah 1 — Dapatkan License key Anda</h3>
+    <p>Cara mendapatkan key tergantung paket Anda:</p>
+    <table>
+      <tr><th>Paket</th><th>Cara mendapatkan License key</th></tr>
+      <tr><td><b>VIP</b></td><td>Login ke <b>Dashboard di <code>https://www.dralvo.com</code></b> → <b>License / Key</b> → buat key untuk setiap akun MT5.</td></tr>
+      <tr><td><b>Free</b></td><td>Hubungi <b>Telegram <code>@edgardinh86</code></b> untuk mendapatkan <b>License key</b>.</td></tr>
+    </table>
+    <ul>
+      <li>Pada paket apa pun, key <b>terikat pada nomor akun MT5 tertentu</b> — Anda harus memberikan/mendaftarkan nomor akun yang benar.</li>
+      <li>Lihat nomor akun Anda di: <b>Navigator</b>, atau <b>Tools → Options → Server</b>, atau judul jendela MT5 (6–10 digit).</li>
+    </ul>
+    <p>🔹 <b>Paket VIP — slot akun habis:</b> setiap akun VIP mendapat sejumlah slot tertentu. Jika Anda sudah <b>menggunakan semua (maks.) akun</b> dan ingin <b>menambah akun baru</b>, <b>hubungi admin</b> untuk mendapatkan tambahan.</p>
+
+    <h3>Langkah 2 — Whitelist WebRequest ⚠️ Langkah yang Paling Sering Terlupa</h3>
+    <ol class="steps">
+      <li>Buka <b>Tools → Options</b> (<code>Ctrl+O</code>).</li>
+      <li>Buka tab <b>Expert Advisors</b>.</li>
+      <li>Centang <b>☑ Allow WebRequest for listed URL</b>.</li>
+      <li>Ketik persis: <code>https://www.dralvo.com</code></li>
+      <li>Klik <b>OK</b>.</li>
+    </ol>
+    <div class="callout warn">Jika Anda <b>melewatkan</b> langkah ini, meski key sudah benar, EA akan error dan tidak berjalan (MT5 memblokir koneksi). Ini adalah <b>penyebab #1</b>.</div>
+
+    <h3>Langkah 3 — Masukkan key di Inputs</h3>
+    <table>
+      <tr><th>Parameter</th><th>Nilai</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>License key (VIP: dari dashboard <code>dralvo.com</code>; Free: dari <code>@edgardinh86</code>).</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>Nomor akun MT5 Anda (6–10 digit), sesuai dengan key.</td></tr>
+    </table>
+
+    <h3>Sudah masukkan key tapi masih tidak jalan? Periksa berurutan</h3>
+    <table>
+      <tr><th>#</th><th>Pemeriksaan</th></tr>
+      <tr><td>1</td><td>Apakah Anda sudah whitelist <code>https://www.dralvo.com</code>? (Langkah 2 — penyebab #1)</td></tr>
+      <tr><td>2</td><td>Apakah <b>kedua</b> kolom <code>InpLicenseKey</code> dan <code>InpMT5Account</code> sudah diisi?</td></tr>
+      <tr><td>3</td><td>Apakah nomor akun <b>sesuai</b> dengan key?</td></tr>
+      <tr><td>4</td><td>Apakah Anda memiliki koneksi internet?</td></tr>
+      <tr><td>5</td><td>Lepaskan EA dari chart lalu pasang kembali setelah mengatur Options.</td></tr>
+    </table>
+  </section>
+
+  <section id="logic">
+    <h2><span class="n">3.</span>Cara Kerja EA Ini</h2>
+    <p><b>Langkah 1 — Deteksi Regime:</b> menggunakan ADX + EMA + bias timeframe lebih tinggi (HTF) untuk mengklasifikasikan <b>RANGING / TREN NAIK / TREN TURUN / TRANSISI</b>.</p>
+    <p><b>Langkah 2 — Pilih setup entry:</b></p>
+    <table>
+      <tr><th>Setup</th><th>Kapan</th><th>Default</th></tr>
+      <tr><td><b>A. Breakout + Retest</b></td><td>Breakout asli diikuti pullback untuk retest level → tradingkan kelanjutan searah tren.</td><td>Aktif</td></tr>
+      <tr><td><b>B. Fakeout + Reclaim</b></td><td>Breakout palsu yang close kembali di dalam range → tradingkan reversal.</td><td>Aktif</td></tr>
+      <tr><td><b>C. Range Fade</b></td><td>Fade kedua sisi saat pasar ranging.</td><td>Nonaktif</td></tr>
+    </table>
+    <p><b>Langkah 3 — Pyramiding "house money":</b> hanya <b>menambah posisi</b> saat basket saat ini sudah <b>breakeven/aman</b> (risk-free), dengan volume <b>menurun</b>, menggunakan <b>satu SL basket bersama</b> yang trailing mengikuti struktur — tidak pernah membiarkan basket untung berbalik menjadi rugi.</p>
+    <div class="callout">Dashboard menampilkan <b>Regime</b>, <b>Bias HTF</b>, <b>ADX</b>, dan <b>Status</b> yang menunjukkan apakah EA sedang scanning / menunggu retest / menahan basket / dijeda.</div>
+  </section>
+
+  <section id="thamso">
+    <h2><span class="n">4.</span>Tabel Parameter (Grup Utama)</h2>
+
+    <h3>Regime Pasar</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>ADX_Period</code></td><td>14</td><td>Periode ADX.</td></tr>
+      <tr><td><code>ADX_RangeBelow</code></td><td>20</td><td>ADX &lt; ambang → ranging.</td></tr>
+      <tr><td><code>ADX_TrendAbove</code></td><td>25</td><td>ADX &gt; ambang → trending (di antara keduanya = transisi).</td></tr>
+      <tr><td><code>EMA_Fast / EMA_Slow</code></td><td>21 / 50</td><td>EMA cepat/lambat (struktur & bias).</td></tr>
+      <tr><td><code>HTF_Timeframe</code></td><td>H1</td><td>Timeframe lebih tinggi untuk bias.</td></tr>
+      <tr><td><code>Require_HTF_Align</code></td><td>true</td><td>Hanya trading searah bias timeframe lebih tinggi.</td></tr>
+    </table>
+
+    <h3>Setup Entry</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>Use_BreakoutRetest</code></td><td>true</td><td>Aktifkan setup A (breakout + retest).</td></tr>
+      <tr><td><code>Use_FakeoutReclaim</code></td><td>true</td><td>Aktifkan setup B (reversal fakeout).</td></tr>
+      <tr><td><code>Use_RangeFade</code></td><td>false</td><td>Aktifkan setup C (fade sisi saat ranging).</td></tr>
+      <tr><td><code>Min_RR</code></td><td>1.5</td><td>R:R minimum untuk entry.</td></tr>
+      <tr><td><code>SL_Buffer_ATR</code></td><td>0.4</td><td>Jarak SL dari titik struktur ×ATR.</td></tr>
+      <tr><td><code>Min_Bars_Between</code></td><td>1</td><td>Minimum candle antara dua entry dasar.</td></tr>
+    </table>
+
+    <h3>Pyramiding (Penambahan House Money)</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>Use_Pyramid</code></td><td>true</td><td>Aktifkan penambahan posisi.</td></tr>
+      <tr><td><code>Max_Adds</code></td><td>3</td><td>Maksimum jumlah penambahan (total posisi = Max_Adds + 1).</td></tr>
+      <tr><td><code>Add_Lot_Factor</code></td><td>0.6</td><td>Faktor lot per penambahan (&lt;1 = menurun, disarankan).</td></tr>
+      <tr><td><code>Add_Trigger_ATR</code></td><td>1.0</td><td>Hanya menambah saat basket sudah untung ≥ ×ATR.</td></tr>
+      <tr><td><code>Lock_Buffer_ATR</code></td><td>0.15</td><td>SL basket harus ≥ breakeven + ×ATR agar penambahan diizinkan (risk-free).</td></tr>
+      <tr><td><code>Pyramid_BasketTrail</code></td><td>true</td><td>Setelah menambah: hapus TP tetap, gunakan trailing basket.</td></tr>
+    </table>
+
+    <h3>SL Basket / Trailing</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>Trail_ATR_Mult</code></td><td>2.0</td><td>Trailing berdasarkan ×ATR.</td></tr>
+      <tr><td><code>Trail_By_Structure</code></td><td>true</td><td>Trailing mengikuti swing terbaru.</td></tr>
+      <tr><td><code>Exit_On_StructBreak</code></td><td>true</td><td>Tutup seluruh basket saat struktur pecah.</td></tr>
+    </table>
+
+    <h3>Manajemen Modal</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>Use_Risk_Percent</code></td><td>true</td><td>Hitung lot berdasarkan % risiko (untuk entry dasar).</td></tr>
+      <tr><td><code>Risk_Percent</code></td><td>0.5</td><td>% risiko untuk entry pertama.</td></tr>
+      <tr><td><code>Fixed_Lot</code></td><td>0.01</td><td>Lot tetap jika % risiko dinonaktifkan.</td></tr>
+      <tr><td><code>MagicNumber</code></td><td>99020202</td><td>Identifier order EA.</td></tr>
+    </table>
+
+    <h3>Lisensi</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>InpLicenseKey</code></td><td>(kosong)</td><td>License key (bagian 2). Wajib untuk demo/live.</td></tr>
+      <tr><td><code>InpMT5Account</code></td><td>(kosong)</td><td>Nomor akun MT5 yang sesuai dengan key (6–10 digit).</td></tr>
+    </table>
+
+    <h3>Proteksi Akun</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>MaxSpread_Points</code></td><td>300</td><td>Spread maksimum yang diizinkan untuk entry (points).</td></tr>
+      <tr><td><code>Slippage_Points</code></td><td>20</td><td>Slippage maksimum saat eksekusi (points).</td></tr>
+      <tr><td><code>Max_Trades_Per_Day</code></td><td>30</td><td>Maksimum transaksi per hari.</td></tr>
+      <tr><td><code>Daily_Max_Loss_Percent</code></td><td>3.0</td><td>Kerugian ≥ % ekuitas awal hari → jeda untuk sisa hari.</td></tr>
+    </table>
+
+    <h3>Filter Waktu (waktu server)</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>Use_Session_Filter</code></td><td>true</td><td>Aktifkan batasan jam trading.</td></tr>
+      <tr><td><code>Session_Start_Hour</code></td><td>7</td><td>Jam mulai (~London).</td></tr>
+      <tr><td><code>Session_End_Hour</code></td><td>23</td><td>Jam akhir (~penutupan NY).</td></tr>
+      <tr><td><code>Avoid_Rollover</code></td><td>true</td><td>Hindari momen rollover (pergantian hari).</td></tr>
+      <tr><td><code>Rollover_Buffer_Min</code></td><td>5</td><td>Menit yang dihindari di sekitar rollover.</td></tr>
+    </table>
+
+    <h3>Tampilan</h3>
+    <table>
+      <tr><th>Parameter</th><th>Default</th><th>Arti</th></tr>
+      <tr><td><code>Show_Dashboard</code></td><td>true</td><td>Tampilkan panel informasi di chart.</td></tr>
+      <tr><td><code>Verbose_Log</code></td><td>false</td><td>Log detail (aktifkan hanya untuk debugging).</td></tr>
+    </table>
+  </section>
+
+  <section id="dashboard">
+    <h2><span class="n">5.</span>Dashboard di Chart</h2>
+    <div class="dash">
+      <div class="t"><span>DRALVO GOLD SCALP</span><span>XAUUSD M15</span></div>
+      <div class="rows">
+        <span class="l">Regime</span><span class="g">TREN NAIK</span>
+        <span class="l">Bias HTF</span><span class="w">NAIK (H1)</span>
+        <span class="l">ADX</span><span class="w">27.4</span>
+        <span class="l">Status</span><span class="g">MENAHAN BASKET</span>
+        <span class="l">Basket</span><span class="g">LONG 2 order 0.03l</span>
+        <span class="l">P/L basket</span><span class="g">+38.20 [aman]</span>
+      </div>
+    </div>
+    <table>
+      <tr><th>Baris</th><th>Arti</th></tr>
+      <tr><td><b>Regime</b></td><td>RANGING / TREN NAIK / TREN TURUN / TRANSISI.</td></tr>
+      <tr><td><b>Bias HTF</b></td><td>Bias timeframe lebih tinggi (NAIK / TURUN / NETRAL).</td></tr>
+      <tr><td><b>ADX</b></td><td>Nilai ADX saat ini.</td></tr>
+      <tr><td><b>Balance / Equity</b></td><td>Saldo, ekuitas bersih.</td></tr>
+      <tr><td><b>Spread</b></td><td>Spread saat ini (merah jika melebihi <code>MaxSpread_Points</code>).</td></tr>
+      <tr><td><b>Status</b></td><td><span class="pill p-green">SCANNING</span> / <span class="pill p-amber">MENUNGGU RETEST ↑↓</span> / <span class="pill p-green">MENAHAN BASKET</span> / <span class="pill p-red">PAUSED</span> (limit harian · spread tinggi · di luar jam sesi).</td></tr>
+      <tr><td><b>Basket</b></td><td>Arah + jumlah order + total lot basket pyramid (— jika kosong).</td></tr>
+      <tr><td><b>P/L basket</b></td><td>P/L basket + label <code>[aman]</code> (risk-free) atau <code>[masih berisiko]</code>.</td></tr>
+      <tr><td><b>Hari ini</b></td><td>Transaksi hari ini + P/L harian.</td></tr>
+      <tr><td><b>Max DD</b></td><td>Drawdown ekuitas terbesar (%).</td></tr>
+    </table>
+    <div class="callout">Dashboard hanya muncul pada <b>chart nyata</b> atau <b>backtest mode Visual</b>; backtest normal biasanya menyembunyikannya demi kecepatan.</div>
+  </section>
+
+  <section id="set">
+    <h2><span class="n">6.</span>File .set yang Disarankan</h2>
+    <p>4 tingkat berdasarkan profil risiko (folder <code>setfiles/</code>):</p>
+    <table>
+      <tr><th>File</th><th>Tingkat risiko</th><th>Max DD</th><th>Untuk</th></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_SAFE.set</code></td><td>Aman (1,0%)</td><td>~10%</td><td>Menjaga modal / pemula.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_BALANCED.set</code></td><td>Seimbang (1,5%)</td><td>~14%</td><td>Kurva ekuitas mulus, DD rendah.</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_AGGRESSIVE.set</code></td><td>Agresif (2,0%)</td><td>~19%</td><td><b>Disarankan</b> — keseimbangan profit/risiko terbaik (+139%).</td></tr>
+      <tr><td><code>Dralvo_Gold_Scalp_MAX.set</code></td><td>Maksimal (2,5%)</td><td>~29%</td><td>Profit maksimal, DD mendekati batas 30%.</td></tr>
+    </table>
+    <p>Semua dioptimalkan untuk <b>XAUUSD M15</b>. Memuat: tab <b>Inputs → Load</b> → pilih file. Menyimpan konfigurasi sendiri: <b>Save</b>.</p>
+    <div class="callout">💡 <b>Cara kerja:</b> EA menghitung lot berdasarkan <b>% risiko</b> (<code>Use_Risk_Percent=true</code>) sehingga <b>otomatis menyesuaikan diri dengan saldo Anda</b> — 4 file profil di atas berfungsi untuk <b>ukuran akun mana pun</b>, persentase return tetap sama baik untuk 1.000 maupun 100.000 USD.</div>
+
+    <h3>Setfile berdasarkan ukuran akun (opsional)</h3>
+    <p>Jika Anda ingin <b>pilihan cepat berdasarkan saldo</b> atau lebih suka <b>lot tetap</b> daripada %, gunakan kumpulan file <code>&lt;PROFIL&gt;_&lt;ukuran&gt;.set</code> (24 file = 4 profil × 6 ukuran). Setiap file tetap menggunakan <code>Use_Risk_Percent=true</code> (berjalan persis seperti file profil dasar), tetapi sudah memiliki <b><code>Fixed_Lot</code> yang telah diatur</b> untuk ukuran tersebut sebagai cadangan — jika Anda beralih ke <code>Use_Risk_Percent=false</code>, EA akan berjalan dengan lot tetap yang benar tanpa perhitungan manual.</p>
+    <table>
+      <tr><th>Modal (USD)</th><th>SAFE</th><th>BALANCED</th><th>AGGRESSIVE</th><th>MAX</th></tr>
+      <tr><td>1.000</td><td>0.01</td><td>0.02</td><td>0.02</td><td>0.03</td></tr>
+      <tr><td>5.000</td><td>0.05</td><td>0.08</td><td>0.10</td><td>0.13</td></tr>
+      <tr><td>10.000</td><td>0.10</td><td>0.15</td><td>0.20</td><td>0.25</td></tr>
+      <tr><td>20.000</td><td>0.20</td><td>0.30</td><td>0.40</td><td>0.50</td></tr>
+      <tr><td>50.000</td><td>0.50</td><td>0.75</td><td>1.00</td><td>1.25</td></tr>
+      <tr><td>100.000</td><td>1.00</td><td>1.50</td><td>2.00</td><td>2.50</td></tr>
+    </table>
+    <p>Contoh: modal 10.000 USD, profil agresif → muat <code>Dralvo_Gold_Scalp_AGGRESSIVE_10k.set</code> (Risiko 2,0%, Fixed_Lot cadangan 0.20).</p>
+    <div class="callout">⚠️ <code>Fixed_Lot</code> hanya sebagai <b>cadangan</b> — secara default EA tetap menghitung berdasarkan % risiko. Angka backtest yang terverifikasi menggunakan mode <b>% risiko</b>.</div>
+    <div class="callout"><code>InpLicenseKey</code>/<code>InpMT5Account</code> bersifat per-pengguna dan <b>tidak</b> tersimpan dalam file <code>.set</code> yang dibagikan — isi manual di setiap perangkat.</div>
+  </section>
+
+  <section id="hieusuat">
+    <h2><span class="n">7.</span>Performa Backtest (Terverifikasi)</h2>
+    <p>Angka dijalankan dengan <b>data real-tick XAUUSD dari GTC (kualitas 98%)</b>, model <i>Every tick based on real ticks</i>, modal <b>10.000 USD</b>, periode <b>Sep 2023 → Jun 2026 (~2,8 tahun)</b>. Parameter telah <b>dioptimalkan ulang</b> dengan algoritma genetika (4.342 kali) lalu diverifikasi dengan tick nyata.</p>
+
+    <h3>Profit per tahun (SAFE · Risiko 1%) — POSITIF selama 4 tahun</h3>
+    <table>
+      <tr><th>Tahun</th><th style="text-align:right">Profit</th></tr>
+      <tr><td>2023 (Sep–Des)</td><td style="text-align:right;color:var(--green)">+1.966</td></tr>
+      <tr><td>2024</td><td style="text-align:right;color:var(--green)">+1.164</td></tr>
+      <tr><td>2025</td><td style="text-align:right;color:var(--green)">+1.565</td></tr>
+      <tr><td>2026 (Jan–Jun)</td><td style="text-align:right;color:var(--green)">+992</td></tr>
+    </table>
+    <div class="callout">Menarik: <b>2024 dan 2025</b> (emas banyak ranging) keduanya menguntungkan — sesuatu yang diperbaiki oleh versi baru yang dioptimalkan dibandingkan versi sebelumnya.</div>
+
+    <h3>Berdasarkan tingkat risiko (10.000 USD · ~2,8 tahun)</h3>
+    <table>
+      <tr><th>Profil</th><th style="text-align:right">Risiko</th><th style="text-align:right">Profit bersih</th><th style="text-align:right">Pertumbuhan</th><th style="text-align:right">PF</th><th style="text-align:right">Max DD</th><th style="text-align:right">Transaksi</th></tr>
+      <tr><td><b>SAFE</b></td><td style="text-align:right">1,0%</td><td style="text-align:right;color:var(--green)">+5.686,94</td><td style="text-align:right">+56,9%</td><td style="text-align:right">1,90</td><td style="text-align:right">9,7%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>BALANCED</b></td><td style="text-align:right">1,5%</td><td style="text-align:right;color:var(--green)">+9.550,00</td><td style="text-align:right">+95,5%</td><td style="text-align:right"><b>1,91</b></td><td style="text-align:right">14,3%</td><td style="text-align:right">110</td></tr>
+      <tr><td><b>AGGRESSIVE ★</b></td><td style="text-align:right">2,0%</td><td style="text-align:right;color:var(--green)">+13.899,00</td><td style="text-align:right">+139,0%</td><td style="text-align:right">1,89</td><td style="text-align:right">18,8%</td><td style="text-align:right">111</td></tr>
+      <tr><td><b>MAX</b></td><td style="text-align:right">2,5%</td><td style="text-align:right;color:var(--green)">+15.830,55</td><td style="text-align:right">+158,3%</td><td style="text-align:right">1,80</td><td style="text-align:right">28,6%</td><td style="text-align:right">109</td></tr>
+    </table>
+    <p><b>Ringkasan cepat:</b> Profit Factor stabil di <b>~1,9</b> (jauh lebih baik dari versi lama ~1,2), DD meningkat linear seiring risiko, dan <b>semua tingkat tetap di bawah batas 30%</b>. Tingkat <b>AGGRESSIVE (2,0%)</b> yang disarankan: +139% dengan DD masih di bawah 20%.</p>
+    <div class="callout">✅ Diverifikasi pada 30-06-2026 dengan MT5 Strategy Tester pada tick nyata GTC (kualitas 98%). Dikonfirmasi serupa dengan data Exness (2024–2026) (Exness hanya berkualitas 70%, sehingga tahun-tahun awal kurang dapat diandalkan).</div>
+    <div class="callout warn">⚠️ Backtest <b>tidak menjamin</b> masa depan. Ini adalah sistem scalping yang membutuhkan <b>broker dengan spread rendah</b>; spread/komisi/slippage berpengaruh langsung → lakukan forward-test di demo terlebih dahulu. Timeframe lain (M5/M1/H1) yang diuji selalu <b>berkinerja lebih buruk daripada M15</b>.</div>
+  </section>
+
+  <section id="suco">
+    <h2><span class="n">8.</span>Pemecahan Masalah</h2>
+    <table>
+      <tr><th>Gejala</th><th>Penyebab / solusi</th></tr>
+      <tr><td>EA menampilkan <b>"Contact telegram: @edgardinh86"</b></td><td>Error lisensi: (1) URL <code>https://www.dralvo.com</code> belum di-whitelist (bagian 2). (2) key + akun belum diisi lengkap. (3) akun tidak sesuai. (4) tidak ada internet.</td></tr>
+      <tr><td>EA tidak melakukan transaksi</td><td>(1) Algo Trading nonaktif. (2) Spread &gt; <code>MaxSpread_Points</code> (dashboard merah). (3) Di luar jam sesi. (4) Mencapai <code>Daily_Max_Loss_Percent</code> atau <code>Max_Trades_Per_Day</code>. (5) Kondisi setup belum terpenuhi (lihat Status).</td></tr>
+      <tr><td>Transaksi terlalu sedikit</td><td>Banyak berada di regime <b>TRANSISI</b>; pertimbangkan mengaktifkan <code>Use_RangeFade</code> atau <code>Require_HTF_Align=false</code> (lebih berisiko).</td></tr>
+      <tr><td>Terlalu banyak penambahan / risiko tinggi</td><td>Kurangi <code>Max_Adds</code>, turunkan <code>Add_Lot_Factor</code>, naikkan <code>Lock_Buffer_ATR</code>.</td></tr>
+      <tr><td>Lot terlalu besar/kecil</td><td>Periksa <code>Use_Risk_Percent</code> / <code>Risk_Percent</code> (atau <code>Fixed_Lot</code>).</td></tr>
+      <tr><td>Dashboard tidak muncul</td><td><code>Show_Dashboard=true</code> dan berjalan di chart nyata/visual.</td></tr>
+    </table>
+    <p style="color:var(--mut)">Lihat detail di tab <b>Toolbox → Experts</b> dan <b>Journal</b> (aktifkan <code>Verbose_Log=true</code> untuk pemeriksaan lebih mendalam).</p>
+  </section>
+
+  <section id="ruiro">
+    <h2><span class="n">9.</span>Peringatan Risiko</h2>
+    <div class="callout danger">
+      <ul style="margin:0;padding-left:18px">
+        <li>Trading margin berisiko tinggi. <b>Tidak ada konfigurasi yang menjamin profit.</b></li>
+        <li>Selalu jalankan <b>demo / forward test</b> cukup lama sebelum menggunakan uang sungguhan.</li>
+        <li>Pyramiding meningkatkan profit maupun risiko jika salah konfigurasi — pahami <code>Max_Adds</code>, <code>Add_Lot_Factor</code> sebelum menaikkannya.</li>
+        <li>File <code>.set</code> yang disertakan adalah titik awal; sesuaikan dengan broker, spread, dan volatilitas nyata Anda.</li>
+        <li>Hanya gunakan modal yang siap Anda relakan jika hilang.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Dralvo Gold Scalp © Dralvo — Panduan Penggunaan v2.00</footer>
+
+</div>
+</body>
+</html>

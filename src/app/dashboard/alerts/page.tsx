@@ -1,13 +1,7 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { AlertsPage } from "@/components/dashboard/dashboard-pages";
-import { getDashboardPlanTier } from "@/app/dashboard/get-dashboard-plan";
-
-export const metadata: Metadata = {
-  title: "Alerts | Dralvo",
-};
-
-export default async function DashboardAlertsRoute() {
-  const planTier = await getDashboardPlanTier();
-  return <AlertsPage planTier={planTier} />;
+// v1 "Alert Rules" (thesis monitors) page removed. Keep this redirect so old
+// links / bookmarks don't 404 — notifications now live in the bell + inbox.
+export default function DashboardAlertsRoute() {
+  redirect("/dashboard");
 }

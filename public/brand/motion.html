@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dralvo — Motion Identity</title>
+<link rel="stylesheet" href="kit/brand.css">
+<style>
+  .kit-nav{position:sticky;top:0;z-index:50;background:rgba(11,14,17,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .kit-nav .container{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .kit-nav a{color:var(--text-3);font-size:14px;margin-left:18px}.kit-nav a:hover,.kit-nav a.on{color:var(--gold-200)}
+  .stage{background:var(--coin);border:1px solid var(--border);border-radius:var(--r-lg);min-height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .cap{font-family:var(--font-mono);font-size:12px;color:var(--text-3);margin-top:10px}
+
+  /* 1. Logo reveal */
+  @keyframes revIn{0%{opacity:0;transform:scale(.8) translateY(14px)}60%{opacity:1}100%{opacity:1;transform:none}}
+  @keyframes shineSweep{0%{left:-60%}100%{left:160%}}
+  .reveal-logo{position:relative;animation:revIn 1s cubic-bezier(.2,.7,.2,1) both}
+  .reveal-logo::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:40%;transform:skewX(-20deg);
+    background:linear-gradient(90deg,transparent,rgba(255,247,214,.55),transparent);animation:shineSweep 2.4s ease-in-out 0.6s infinite}
+
+  /* 2. Loader — spinning gold ring + pulse */
+  .loader{width:56px;height:56px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--gold-200);animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* 3. Live dot */
+  .live{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono)}
+  .live b{width:12px;height:12px;border-radius:50%;background:var(--gold-200);box-shadow:0 0 0 0 rgba(240,185,11,.6);animation:pulse 1.8s infinite}
+
+  /* 4. Ticker marquee */
+  .ticker{width:100%;overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0}
+  .ticker span{display:inline-block;font-family:var(--font-mono);animation:marq 18s linear infinite}
+  @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* 5. Count-up handled by JS */
+  /* 6. Button micro-interaction via .btn (defined in brand.css) + hover glow */
+  .btn-gold{background-image:linear-gradient(90deg,#C99A08,#FCD535,#C99A08);background-size:200% 100%;transition:background-position .5s,box-shadow .3s,transform .12s}
+  .btn-gold:hover{background-position:100% 0}
+
+  /* 7. Card lift */
+  .lift{transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s}
+  .lift:hover{transform:translateY(-6px);box-shadow:var(--shadow-3),var(--glow)}
+</style>
+</head>
+<body>
+<nav class="kit-nav"><div class="container">
+  <img src="official/dralvo-lockup-gold.png" alt="Dralvo" style="height:30px">
+  <div><a href="guideline.html">Guideline</a><a href="ui-kit.html">UI Kit</a><a href="dashboard.html">Dashboard</a><a href="landing.html">Landing</a><a class="on" href="motion.html">Motion</a></div>
+</div></nav>
+
+<section class="section container">
+  <p class="eyebrow">09 — Motion Identity</p>
+  <h2>Chuyển động thương hiệu</h2>
+  <p class="lede">Nguyên tắc: <b>mượt, có trọng lượng, ánh kim quét nhẹ</b>. Easing chủ đạo <code class="mono">cubic-bezier(.2,.7,.2,1)</code>, thời lượng 200–700ms. Ánh vàng chỉ quét, không nhấp nháy loè loẹt.</p>
+
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:24px">
+    <div><div class="stage"><img class="reveal-logo" src="official/dralvo-lockup-gold.png" style="height:56px"></div><p class="cap">1 · Logo reveal + shine sweep (intro/splash)</p></div>
+    <div><div class="stage"><div class="loader"></div></div><p class="cap">2 · Loader — vòng vàng quay</p></div>
+    <div><div class="stage"><span class="live"><b></b> LIVE · XAUUSD 2,053.40</span></div><p class="cap">3 · Live pulse (dữ liệu thật)</p></div>
+    <div><div class="stage" style="min-height:auto;padding:0"><div class="ticker"><span>GoldScalp +2.4% &nbsp;·&nbsp; XAUUSD 2,053.40 &nbsp;·&nbsp; GoldMaster +1.1% &nbsp;·&nbsp; TiGold −0.3% &nbsp;·&nbsp; GoldScalp +2.4% &nbsp;·&nbsp; XAUUSD 2,053.40 &nbsp;·&nbsp; GoldMaster +1.1% &nbsp;·&nbsp; TiGold −0.3% &nbsp;·&nbsp;</span></div></div><p class="cap">4 · Ticker marquee</p></div>
+    <div><div class="stage"><div class="mono gold-text" id="cu" style="font-size:52px;font-weight:700">0%</div></div><p class="cap">5 · Count-up số liệu</p></div>
+    <div><div class="stage"><button class="btn btn-gold btn-lg">Hover: gold sweep</button></div><p class="cap">6 · Button micro-interaction</p></div>
+    <div><div class="stage"><div class="card lift" style="width:180px">Hover me<br><span class="muted">card lift + glow</span></div></div><p class="cap">7 · Card lift on hover</p></div>
+    <div><div class="stage"><div class="sheen-line" style="width:70%"></div></div><p class="cap">8 · Gold sheen divider (idle shimmer)</p></div>
+  </div>
+
+  <hr class="rule">
+  <p class="muted">Tất cả hiệu ứng là CSS thuần trong <code class="mono">kit/brand.css</code> (reveal, pulse, shimmer, sheen) — tái sử dụng trên web/app. Tôn trọng <code class="mono">prefers-reduced-motion</code> khi triển khai thật.</p>
+</section>
+
+<script>
+  // Count-up demo (loops)
+  const el = document.getElementById('cu');
+  function run(){let v=0;const t=setInterval(()=>{v+=3;if(v>=139){v=139;clearInterval(t);setTimeout(run,1400)}el.textContent='+'+v+'%';},22);}
+  run();
+</script>
+</body>
+</html>

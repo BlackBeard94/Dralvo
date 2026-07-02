@@ -3,37 +3,44 @@
 > Dralvo Capital builds verified automated gold (XAUUSD) trading robots — "Expert Advisors" — for the MetaTrader 5 platform. Strategies are tested on real market data with full transparency: no martingale, no grid, hard stop-losses on every trade. Website: https://www.dralvo.com
 
 ## What Dralvo is
-Dralvo is a trading-software product company. It distributes MetaTrader 5 Expert Advisors (automated trading robots) for the XAUUSD (gold vs. US dollar) market, plus a free in-browser FX backtest tool and a publicly published track record. Dralvo does not manage money, is not a fund, and does not sell "guaranteed-profit" signals.
+Dralvo is a trading-software product company. It distributes MetaTrader 5 Expert Advisors (automated trading robots) for the XAUUSD (gold vs. US dollar) market, plus a free in-browser position-size & risk calculator and a publicly published track record. Dralvo does not manage money, is not a fund, and does not sell "guaranteed-profit" signals.
 
 ## Products (MetaTrader 5 Expert Advisors for XAUUSD)
 - **Dralvo GoldMaster** — D1 (daily) swing system. Long-only, trend-following; uses CFTC Commitment of Traders positioning as a filter and can stay idle for long stretches when gold is bearish (capital preservation by design).
-- **Dralvo GoldScalp** — M5 (5-minute) momentum scalper. Every trade has a hard stop-loss and a time-stop. No grid, no martingale.
+- **Dralvo GoldScalp** — M15 (15-minute) momentum scalper. Every trade has a hard stop-loss and a time-stop. No grid, no martingale.
 - **Dralvo TiGold** — a free, adaptive XAUUSD robot available at no cost through the Dralvo IB (introducing-broker) partnership.
 
 All robots run on Windows via MetaTrader 5 and are verified on real / 100%-real-tick historical data. Past performance does not guarantee future results.
 
 ## Pricing (USD)
-- **Free — $0.** Get the TiGold robot free by opening a real MT5 account through the Dralvo IB link. Includes 1 IB-verified live MT5 account, 1 demo account for 30 days, the free FX backtest tool, and the Telegram community.
+- **Free — $0.** Get the TiGold robot free by opening a real MT5 account through the Dralvo IB link. Includes 1 IB-verified live MT5 account, 1 demo account for 30 days, the free position-size & risk calculator, and the Telegram community.
 - **Dralvo Unlimited — $59/month, $318/6 months, or $599/year.** Includes all three robots (GoldMaster, GoldScalp, TiGold), unlimited MT5 accounts, Telegram VIP, continuous updates, install support, 1 VPS, early access to new robots, and priority support.
 
 ## Key differentiators
 - No martingale, no grid, no averaging-down — every trade is risk-managed with a hard stop-loss.
 - Radical transparency: the full backtest and honest expectations (win rate, longest losing streak, maximum drawdown) are published openly rather than hidden.
-- Free FX backtest tool runs in the browser with no account required.
-- Available in 8 languages: English, Vietnamese, Portuguese (BR), Chinese, Spanish, Hindi, Indonesian, Russian.
+- Free position-size & risk calculator runs in the browser with no account required.
+- Available in 6 languages: Vietnamese, English, Portuguese (BR), Spanish, Indonesian, Arabic.
 
 ## Important pages
 - Home: https://www.dralvo.com/
 - Dralvo vs grid/martingale gold EAs (comparison): https://www.dralvo.com/compare
 - TiGold (free robot): https://www.dralvo.com/tigold
 - Public track record: https://www.dralvo.com/track-record
-- Free FX backtest tool: https://www.dralvo.com/tools/backtest
+- Pricing: https://www.dralvo.com/pricing
+- Methodology (how the gold thesis is sourced & limited): https://www.dralvo.com/methodology
+- Free position-size & risk calculator: https://www.dralvo.com/tools/calculator
+- Blog (guides & analysis on automated gold/XAUUSD trading): https://www.dralvo.com/blog
+- Blog RSS feed: https://www.dralvo.com/feed.xml
 - Disclaimer: https://www.dralvo.com/disclaimer
 - Terms of Service: https://www.dralvo.com/terms
 - Privacy Policy: https://www.dralvo.com/privacy
 
 ## Contact
 - Telegram: https://t.me/dralvoea
+- Facebook: https://www.facebook.com/dralvo.ea/
+- YouTube: https://www.youtube.com/@dralvo-ea
+- X (Twitter): https://x.com/dralvo_ea
 
 ## Important note
 Dralvo provides trading software and market/educational content only. It is not financial advice, it does not manage funds, and it does not guarantee profits. Trading XAUUSD and other leveraged instruments involves substantial risk of loss.

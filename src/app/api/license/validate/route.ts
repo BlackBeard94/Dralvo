@@ -8,10 +8,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // ponytail: EA calls this via WebRequest on startup (and periodically).
-// GET /api/license/validate?key=<uuid>&account=<mt5_account>
-// `account` is REQUIRED for both tigold and unlimited:
-//   - tigold:    must match the single account bound to the key.
-//   - unlimited: bound on first use to up to `max_accounts` accounts (anti-share).
+// GET /api/license/validate?key=<uuid>&account=<mt5_account>&product=<ea>
+// Each EA sends its own `product` (goldmaster|goldscalp|tigold) so a key only
+// unlocks the EA it was issued for. `account` is REQUIRED:
+//   - mt5_account pre-bound key (tigold-free / IB): account must match exactly (1 account).
+//   - otherwise: bound on first use to up to `max_accounts` accounts (anti-share).
 export async function GET(request: Request) {
   const rateLimit = checkRateLimit({
     key: rateLimitKey(request, "license:validate"),
@@ -25,9 +26,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const key = searchParams.get("key");
   const account = searchParams.get("account")?.trim() || null;
+  const product = searchParams.get("product")?.trim() || null;
 
   if (!key) {
     return NextResponse.json({ valid: false, reason: "missing_key" }, { status: 400 });
+  }
+  if (!product) {
+    return NextResponse.json({ valid: false, reason: "missing_product" }, { status: 400 });
   }
 
   const supabase = getSupabaseAdminClient();
@@ -37,12 +42,17 @@ export async function GET(request: Request) {
 
   const { data } = await supabase
     .from("license_keys")
-    .select("id, plan, expires_at, mt5_account, is_lifetime, max_accounts")
+    .select("id, plan, product, expires_at, mt5_account, is_lifetime, max_accounts")
     .eq("key", key)
     .single();
 
   if (!data) {
     return NextResponse.json({ valid: false, reason: "not_found" });
+  }
+
+  // Per-EA gate: a key only validates for the EA it was issued for.
+  if (data.product !== product) {
+    return NextResponse.json({ valid: false, reason: "product_mismatch" });
   }
 
   // Expiry: lifetime comps never expire; every other license needs a concrete
@@ -57,15 +67,20 @@ export async function GET(request: Request) {
     }
   }
 
-  // tigold: locked to the single account bound on the license row.
-  if (data.plan === "tigold") {
+  const maxAccounts = data.max_accounts ?? 2;
+
+  // Pre-bound key (tigold-free via IB): locked to the single account on the row.
+  // This hard lock applies ONLY to single-account keys — a multi-account key
+  // (max_accounts > 1) is governed by `max_accounts` + license_devices, even if
+  // it still carries a legacy mt5_account.
+  if (data.mt5_account && maxAccounts <= 1) {
     if (!account || data.mt5_account !== account) {
       return NextResponse.json({ valid: false, reason: "account_mismatch" });
     }
-    return NextResponse.json({ valid: true, plan: data.plan });
+    return NextResponse.json({ valid: true, plan: data.plan, product: data.product });
   }
 
-  // unlimited: anti-sharing via per-account binding (trust-on-first-use).
+  // Otherwise: anti-sharing via per-account binding (trust-on-first-use).
   if (!account) {
     return NextResponse.json({ valid: false, reason: "account_required" });
   }
@@ -80,7 +95,6 @@ export async function GET(request: Request) {
   }
 
   const knownAccounts = (devices ?? []).map((d) => d.mt5_account as string);
-  const maxAccounts = data.max_accounts ?? 2;
   const decision = evaluateDeviceBinding(knownAccounts, account, maxAccounts);
 
   if (!decision.allowed) {
@@ -115,5 +129,5 @@ export async function GET(request: Request) {
       .eq("mt5_account", account);
   }
 
-  return NextResponse.json({ valid: true, plan: data.plan, maxAccounts });
+  return NextResponse.json({ valid: true, plan: data.plan, product: data.product, maxAccounts });
 }

@@ -12,9 +12,18 @@ export type PlanSource = "license" | "subscription" | "none";
 
 export const PAID_TIER: PlanTier = "Unlimited";
 
+/** User-facing display name for the paid tier. The internal id stays
+ *  "Unlimited" (DB `plan`, Stripe price keys) — only the label changed. */
+export const PAID_PLAN_LABEL = "VIP";
+
 /** True when the tier grants full (paid) access. */
 export function isPaidTier(tier: string | null | undefined): boolean {
   return tier === PAID_TIER;
+}
+
+/** Map an internal plan tier to its user-facing display name. */
+export function planDisplayName(tier: string | null | undefined): string {
+  return isPaidTier(tier) ? PAID_PLAN_LABEL : "Free";
 }
 
 export interface PlanDetails {
@@ -27,6 +36,8 @@ export interface PlanDetails {
 export interface LicenseRow {
   plan: string | null;
   expires_at: string | null;
+  /** Lifetime comp (admin-granted). Only such rows may have a null expiry. */
+  is_lifetime?: boolean | null;
 }
 
 export interface SubscriptionRow {
@@ -59,7 +70,8 @@ export function resolvePlan(
   const licenseValid =
     !!license &&
     license.plan === "unlimited" &&
-    (!license.expires_at || new Date(license.expires_at) > now);
+    (license.is_lifetime === true ||
+      (!!license.expires_at && new Date(license.expires_at) > now));
 
   // Stripe subscriptions: trust status (webhook keeps it fresh).
   // Non-Stripe subscriptions (manual): also require the period to not

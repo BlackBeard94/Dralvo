@@ -12,7 +12,6 @@ import {
   Wallet,
 } from "lucide-react";
 import { BrandLink } from "@/components/shared/brand";
-import { NavBar } from "@/components/shared/nav-bar";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
@@ -188,7 +187,7 @@ export default function RiskManagerPage() {
   const [riskPct, setRiskPct] = useState(1);
   const [takeProfit, setTakeProfit] = useState(3380);
   const [propFirm, setPropFirm] = useState("");
-  const [dailyLoss, setDailyLoss] = useState(0);
+  const [dailyLoss] = useState(0);
 
   const selectedSymbol = SYMBOLS.find((s) => s.key === symbol) ?? SYMBOLS[0];
   const pointSize = selectedSymbol.pointSize;
@@ -198,7 +197,6 @@ export default function RiskManagerPage() {
   const tpPoints = Math.abs(takeProfit - entry) / pointSize;
   const riskAmount = balance * (riskPct / 100);
   const lotSize = slPoints > 0 ? riskAmount / (slPoints * pipValue) : 0;
-  const potentialLoss = lotSize * slPoints * pipValue;
   const rrRatio = tpPoints > 0 && slPoints > 0 ? tpPoints / slPoints : 0;
   const estimatedProfit = lotSize * tpPoints * pipValue;
   const breakEvenRate = rrRatio > 0 ? (1 / (rrRatio + 1)) * 100 : 0;
@@ -215,13 +213,17 @@ export default function RiskManagerPage() {
   const riskTone = riskLevel === copy.safe ? "good" : riskLevel === copy.moderate ? "warn" : "bad";
 
   return (
-    <div className="min-h-screen bg-deep text-text-primary antialiased">
+    <div className="min-h-screen overflow-x-hidden bg-deep text-text-primary antialiased">
       <nav className="sticky top-0 z-50 border-b border-border bg-deep/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6">
-          <BrandLink />
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-2 px-4 sm:px-6">
+          <BrandLink
+            className="min-w-0 gap-2 sm:gap-4"
+            logoClassName="h-10 w-10 sm:h-[72px] sm:w-[72px]"
+            wordmarkClassName="text-base sm:text-2xl transition-colors group-hover:text-text-primary"
+          />
           <div className="flex items-center gap-2">
-            <Link href="/" className="inline-flex h-10 items-center gap-1.5 rounded-md border border-border px-3 text-[13px] text-text-muted no-underline transition-colors hover:border-gold/40 hover:text-gold">
-              <ArrowLeft size={14} />{copy.navHome}
+            <Link href="/" className="inline-flex h-10 items-center gap-1.5 rounded-md border border-border px-2.5 text-[13px] text-text-muted no-underline transition-colors hover:border-gold/40 hover:text-gold sm:px-3">
+              <ArrowLeft size={14} /><span className="hidden sm:inline">{copy.navHome}</span>
             </Link>
             <ThemeToggle className="h-10 w-10" />
             <LanguageSwitcher className="h-10" />

@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, Download, Check, ShieldCheck, ChevronDown,
+  ArrowRight, ArrowDown, Download, Check, ShieldCheck, ChevronDown,
   ExternalLink, Copy, MessageCircle,
 } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
+import { InstallAppButton } from "@/components/shared/install-app-button";
+import { SocialLinks } from "@/components/shared/social-links";
 import { NavBar } from "@/components/shared/nav-bar";
 import { MainNavActions } from "@/components/shared/site-nav";
 import { mainNavLinks } from "@/components/shared/nav-links";
@@ -21,6 +23,13 @@ import { cn } from "@/lib/utils";
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
 const GOLD_BRIGHT = "#f0cf5a";
 const alpha = (a: number) => `rgba(212,169,45,${a})`;
+
+/** Hero demo clip — self-hosted (not the YouTube Shorts embed, which pads the
+ *  1080x1202 source into a fixed 9:16 canvas and shows player chrome/letterboxing).
+ *  Empty string hides the video slot and the hero falls back to a single
+ *  centered column. Real encoded size: 720x802 (~9:10). */
+const TIGOLD_VIDEO_SRC = "/videos/tigold-demo.mp4";
+const TIGOLD_VIDEO_ASPECT = "720 / 802";
 
 /** Account types — ids/refs are data; display name/desc come from i18n (t.acc[key]). */
 const ACCOUNT_TYPES = [
@@ -119,36 +128,63 @@ export default function TiGoldPage() {
           <GridPattern />
           <GlowOrb className="w-[800px] h-[600px] -top-60 -right-32 opacity-50" />
           <GlowOrb className="w-[400px] h-[400px] bottom-0 left-0 opacity-30" />
-          <div className="max-w-[900px] mx-auto relative z-10 text-center">
-            <Reveal><Eyebrow>{t.heroEyebrow}</Eyebrow></Reveal>
-            <Reveal delay={80}>
-              <h1 className="text-[2.8rem] sm:text-6xl font-normal leading-[1.04] tracking-[-0.02em] mt-6 mb-5 text-balance" style={{ fontFamily: SERIF }}>
-                Dralvo <span style={{ color: GOLD_BRIGHT }}>TiGold</span>
-              </h1>
-            </Reveal>
-            <Reveal delay={120}>
-              <p className="text-base sm:text-lg leading-relaxed max-w-[560px] mx-auto mb-8 text-text-secondary">
-                {t.heroSub1}<br />{t.heroSub2}
-              </p>
-            </Reveal>
-            <Reveal delay={160}>
-              <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
-                {TIGOLD.headline.map((kpi, i) => (
-                  <span key={i} className={cn("px-4 py-2 rounded-lg border font-mono text-sm font-semibold",
-                    kpi.tone === "good" ? "border-green/20 bg-green/5 text-green" :
-                    kpi.tone === "bad" ? "border-red/20 bg-red/5 text-red" :
-                    "border-gold/20 bg-gold/5 text-gold-bright")}>{kpi.value}</span>
-                ))}
-              </div>
-            </Reveal>
-            <Reveal delay={200}>
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
-                <span className="text-gold">M1</span><span>·</span>
-                <span>6mo real-tick</span><span>·</span>
-                <span>GTC · 100% ticks</span><span>·</span>
-                <span>1,105 trades</span>
-              </div>
-            </Reveal>
+          <div className={cn(
+            "mx-auto relative z-10 grid gap-12 items-center",
+            TIGOLD_VIDEO_SRC ? "max-w-[1320px] lg:grid-cols-2 text-center lg:text-left" : "max-w-[900px] text-center"
+          )}>
+            <div>
+              <Reveal><Eyebrow>{t.heroEyebrow}</Eyebrow></Reveal>
+              <Reveal delay={80}>
+                <h1 className="text-[2.8rem] sm:text-6xl font-normal leading-[1.04] tracking-[-0.02em] mt-6 mb-5 text-balance" style={{ fontFamily: SERIF }}>
+                  Dralvo <span style={{ color: GOLD_BRIGHT }}>TiGold</span>
+                </h1>
+              </Reveal>
+              <Reveal delay={120}>
+                <p className={cn("text-base sm:text-lg leading-relaxed max-w-[560px] mb-8 text-text-secondary", TIGOLD_VIDEO_SRC ? "mx-auto lg:mx-0" : "mx-auto")}>
+                  {t.heroSub1}<br />{t.heroSub2}
+                </p>
+              </Reveal>
+              <Reveal delay={160}>
+                <div className={cn("inline-flex flex-wrap items-center gap-2 mb-6", TIGOLD_VIDEO_SRC ? "justify-center lg:justify-start" : "justify-center")}>
+                  {TIGOLD.headline.map((kpi, i) => (
+                    <span key={i} className={cn("px-4 py-2 rounded-lg border font-mono text-sm font-semibold",
+                      kpi.tone === "good" ? "border-green/20 bg-green/5 text-green" :
+                      kpi.tone === "bad" ? "border-red/20 bg-red/5 text-red" :
+                      "border-gold/20 bg-gold/5 text-gold-bright")}>{kpi.value}</span>
+                  ))}
+                </div>
+              </Reveal>
+              <Reveal delay={200}>
+                <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted", TIGOLD_VIDEO_SRC ? "justify-center lg:justify-start" : "justify-center")}>
+                  <span className="text-gold">M1</span><span>·</span>
+                  <span>6mo real-tick</span><span>·</span>
+                  <span>GTC · 100% ticks</span><span>·</span>
+                  <span>1,105 trades</span>
+                </div>
+              </Reveal>
+            </div>
+
+            {TIGOLD_VIDEO_SRC && (
+              <Reveal delay={120}>
+                {/* Self-hosted at its real encoded ratio — no YouTube player
+                 *  chrome/letterboxing to work around. */}
+                <div
+                  className="relative mx-auto lg:mx-0 w-full overflow-hidden rounded-2xl border border-border bg-card shadow-[0_1px_0_rgba(212,169,45,0.08)_inset]"
+                  style={{ maxWidth: 600, aspectRatio: TIGOLD_VIDEO_ASPECT }}
+                >
+                  <video
+                    className="absolute inset-0 h-full w-full object-cover"
+                    src={TIGOLD_VIDEO_SRC}
+                    aria-label={t.heroVideoLabel}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                  />
+                </div>
+              </Reveal>
+            )}
           </div>
         </section>
 
@@ -157,20 +193,32 @@ export default function TiGoldPage() {
           <GlowOrb className="w-[500px] h-[400px] -bottom-32 right-0 opacity-25" />
           <div className="max-w-[960px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
-              <Eyebrow>{t.s1.eyebrow}</Eyebrow>
+              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-bold tracking-[0.06em] uppercase border-2" style={{ borderColor: alpha(0.5), color: GOLD_BRIGHT, background: alpha(0.1) }}>
+                {t.s1.eyebrow}
+              </div>
               <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.s1.title}</h2>
               <p className="text-text-secondary max-w-[520px] mx-auto">{t.s1.sub}</p>
             </Reveal>
 
             <Reveal delay={60}>
+              <p className="text-center text-sm font-semibold mb-4 flex items-center justify-center gap-1.5" style={{ color: GOLD_BRIGHT }}>
+                <ArrowDown size={14} />
+                {t.s1.selectHint}
+              </p>
               <div className="grid sm:grid-cols-2 gap-4 mb-6 max-w-[580px] mx-auto">
                 {ACCOUNT_TYPES.map((at) => (
                   <button key={at.id} type="button" onClick={() => { setAccountType(at.id); setVerified(false); setError(""); }}
-                    className={cn("lift group relative rounded-2xl border p-5 text-left transition-all duration-300 cursor-pointer",
-                      accountType === at.id ? "border-gold/40 bg-gold/5" : "border-border bg-card hover:border-gold/20")}>
+                    className={cn("lift group relative rounded-2xl border-2 p-5 text-left transition-all duration-300 cursor-pointer",
+                      accountType === at.id ? "border-gold/50 bg-gold/5" : "border-border bg-card hover:border-gold/25")}>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className={cn("font-semibold text-sm", accountType === at.id ? "text-gold-bright" : "text-text-primary")}>{t.acc[at.key].name}</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded font-mono border border-gold/30 text-gold bg-gold/5">GTC</span>
+                      {accountType === at.id ? (
+                        <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: GOLD_BRIGHT }}>
+                          <Check size={12} className="text-[#060609]" strokeWidth={3} />
+                        </span>
+                      ) : (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded font-mono border border-gold/30 text-gold bg-gold/5">GTC</span>
+                      )}
                     </div>
                     <p className="text-[12px] text-text-muted leading-relaxed">{t.acc[at.key].desc}</p>
                   </button>
@@ -243,8 +291,45 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* Step 3: download */}
+        {/* Step 3: license (must happen before EA install — the key gets typed into the EA during setup) */}
         <section className="relative py-20 px-6 bg-surface overflow-hidden">
+          <GlowOrb className="w-[500px] h-[400px] -top-16 right-0 opacity-25" />
+          <div className="max-w-[720px] mx-auto relative z-10">
+            <Reveal className="text-center mb-10">
+              <Eyebrow>{t.s4.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.s4.title}</h2>
+              <p className="text-text-secondary">{t.s4.sub}</p>
+            </Reveal>
+
+            <Reveal delay={60}>
+              <div className="rounded-2xl border p-7" style={{ borderColor: alpha(0.25), background: `linear-gradient(168deg, ${alpha(0.06)}, var(--bg-card) 55%)` }}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: alpha(0.12) }}>
+                    <MessageCircle size={28} style={{ color: GOLD_BRIGHT }} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-text-primary mb-3">{t.s4.cardHeading}</h3>
+                    <ol className="space-y-2 text-[13px] text-text-secondary leading-relaxed">
+                      <li>1. {t.s4.l1} <code className="font-mono text-gold bg-deep/60 px-1.5 py-0.5 rounded text-[11px]">@dralvo_bot</code></li>
+                      <li dangerouslySetInnerHTML={{ __html: `2. ${t.s4.l2}` }} />
+                      <li>3. {t.s4.l3}</li>
+                      <li>4. {t.s4.l4}</li>
+                    </ol>
+                  </div>
+                  <a href="https://t.me/dralvo_bot?start=tigold" target="_blank" rel="noopener noreferrer"
+                    className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
+                    style={{ background: GOLD_BRIGHT }}>
+                    {t.s4.open} <ExternalLink size={15} />
+                  </a>
+                </div>
+                <p className="mt-5 text-[11px] text-text-muted border-t border-border pt-4">{t.s4.note}</p>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* Step 4: download & install */}
+        <section className="relative py-20 px-6 overflow-hidden">
           <GlowOrb className="w-[500px] h-[400px] -bottom-24 right-0 opacity-25" />
           <div className="max-w-[860px] mx-auto relative z-10">
             <Reveal className="text-center mb-10">
@@ -304,43 +389,6 @@ export default function TiGoldPage() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
-        {/* Step 4: license */}
-        <section className="relative py-20 px-6 overflow-hidden">
-          <GlowOrb className="w-[500px] h-[400px] -top-16 right-0 opacity-25" />
-          <div className="max-w-[720px] mx-auto relative z-10">
-            <Reveal className="text-center mb-10">
-              <Eyebrow>{t.s4.eyebrow}</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{t.s4.title}</h2>
-              <p className="text-text-secondary">{t.s4.sub}</p>
-            </Reveal>
-
-            <Reveal delay={60}>
-              <div className="rounded-2xl border p-7" style={{ borderColor: alpha(0.25), background: `linear-gradient(168deg, ${alpha(0.06)}, var(--bg-card) 55%)` }}>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: alpha(0.12) }}>
-                    <MessageCircle size={28} style={{ color: GOLD_BRIGHT }} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-text-primary mb-3">{t.s4.cardHeading}</h3>
-                    <ol className="space-y-2 text-[13px] text-text-secondary leading-relaxed">
-                      <li>1. {t.s4.l1} <code className="font-mono text-gold bg-deep/60 px-1.5 py-0.5 rounded text-[11px]">@dralvo_bot</code></li>
-                      <li dangerouslySetInnerHTML={{ __html: `2. ${t.s4.l2}` }} />
-                      <li>3. {t.s4.l3}</li>
-                      <li>4. {t.s4.l4}</li>
-                    </ol>
-                  </div>
-                  <a href="https://t.me/dralvo_bot?start=tigold" target="_blank" rel="noopener noreferrer"
-                    className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]"
-                    style={{ background: GOLD_BRIGHT }}>
-                    {t.s4.open} <ExternalLink size={15} />
-                  </a>
-                </div>
-                <p className="mt-5 text-[11px] text-text-muted border-t border-border pt-4">{t.s4.note}</p>
               </div>
             </Reveal>
           </div>
@@ -458,6 +506,10 @@ export default function TiGoldPage() {
             <div>
               <BrandLink logoSize={28} wordmarkClassName="text-lg" />
               <p className="text-sm text-text-muted leading-relaxed max-w-[220px] mt-4">{lc.footer.tagline}</p>
+              <div className="mt-4 flex flex-nowrap items-center gap-3">
+                <InstallAppButton locale={locale} compact />
+                <SocialLinks />
+              </div>
             </div>
             <div>
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{lc.footer.product}</div>

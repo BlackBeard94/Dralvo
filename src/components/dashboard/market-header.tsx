@@ -91,7 +91,7 @@ export function MarketHeader() {
 
   if (spot === null || !stats) {
     return (
-      <div className="flex min-h-20 items-center justify-between gap-4 rounded-xl border border-border bg-surface px-5 py-4">
+      <div className="card-elevate flex min-h-20 items-center justify-between gap-4 rounded-xl border border-border bg-surface px-5 py-4 h-full">
         <div>
           <p className="text-[12px] uppercase tracking-[0.16em] text-text-muted">
             XAUUSD market context
@@ -109,7 +109,7 @@ export function MarketHeader() {
   const ChangeIcon = positive ? TrendingUp : TrendingDown;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-8 gap-y-4 rounded-xl border border-border bg-surface px-5 py-4">
+    <div className="card-elevate flex flex-wrap items-center gap-x-8 gap-y-4 rounded-xl border border-border bg-surface px-5 py-4 h-full">
       <div>
         <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-text-muted">
           <span className="h-2 w-2 rounded-full bg-green" />

@@ -306,17 +306,6 @@ function SignupForm() {
             </>
           )}
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-text-muted text-xs mt-6 font-mono">
-          <Link
-            href="https://deerflow.tech"
-            target="_blank"
-            className="hover:text-gold transition-colors"
-          >
-            Deerflow
-          </Link>
-        </p>
       </div>
     </main>
   );

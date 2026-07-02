@@ -3,12 +3,22 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocale } from "@/hooks/use-locale";
 import { AFFILIATE_COPY } from "@/lib/affiliate/copy";
-import type { AffiliateStats, AffiliateCommission, Affiliate } from "@/lib/affiliate/types";
+import type { AffiliateStats, AffiliateCommission, Affiliate, AffiliatePayout } from "@/lib/affiliate/types";
+import {
+  VN_BANKS,
+  USDT_NETWORKS,
+  parsePayoutMethod,
+  formatPayoutMethod,
+  type PayoutMethod,
+  type UsdtNetwork,
+} from "@/lib/affiliate/payout-options";
 
 type DashboardData = {
   affiliate: Pick<Affiliate, "id" | "code" | "status" | "display_name" | "created_at">;
   stats: AffiliateStats;
   commissions: AffiliateCommission[];
+  openPayout: AffiliatePayout | null;
+  minPayout: number;
   referralUrl: string;
 } | null;
 
@@ -21,6 +31,15 @@ export default function AffiliateDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [requesting, setRequesting] = useState(false);
+  const [payoutMsg, setPayoutMsg] = useState<string | null>(null);
+  // Payout-destination form
+  const [region, setRegion] = useState<"vn_bank" | "usdt">("vn_bank");
+  const [bank, setBank] = useState<string>(VN_BANKS[0]);
+  const [account, setAccount] = useState("");
+  const [holder, setHolder] = useState("");
+  const [network, setNetwork] = useState<UsdtNetwork>(USDT_NETWORKS[0].value);
+  const [address, setAddress] = useState("");
 
   const loadStats = useCallback(() => {
     setLoading(true);
@@ -54,6 +73,46 @@ export default function AffiliateDashboardPage() {
       setError("Failed to apply");
     }
     setApplying(false);
+  };
+
+  const errorMessage = (code: string): string => {
+    const map: Record<string, string> = {
+      invalid_bank: d.payoutErrInvalidBank,
+      invalid_account: d.payoutErrInvalidAccount,
+      invalid_holder: d.payoutErrInvalidHolder,
+      invalid_network: d.payoutErrInvalidNetwork,
+      invalid_address: d.payoutErrInvalidAddress,
+      below_minimum: d.notEligible,
+      already_requested: d.payoutRequested,
+    };
+    return map[code] ?? d.payoutError;
+  };
+
+  const handleRequestPayout = async () => {
+    const method: PayoutMethod =
+      region === "vn_bank"
+        ? { type: "vn_bank", bank, account: account.trim(), holder: holder.trim() }
+        : { type: "usdt", network, address: address.trim() };
+
+    setRequesting(true);
+    setPayoutMsg(null);
+    try {
+      const r = await fetch("/api/affiliate/payout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ method }),
+      });
+      const json = await r.json();
+      if (r.ok && json.success) {
+        setPayoutMsg(d.payoutSuccess);
+        loadStats(); // reload → CTA now reflects the pending request
+      } else {
+        setPayoutMsg(errorMessage(json.error ?? ""));
+      }
+    } catch {
+      setPayoutMsg(d.payoutError);
+    }
+    setRequesting(false);
   };
 
   const copyLink = () => {
@@ -188,24 +247,110 @@ export default function AffiliateDashboardPage() {
       </div>
 
       {/* Payout CTA */}
-      {data.affiliate.status === "active" && (
-        <div className="rounded-xl border border-border bg-card p-5 flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <div className="text-sm font-semibold text-text-primary">{d.requestPayout}</div>
-            <div className="text-[12px] text-text-muted mt-0.5">
-              {data.stats.available_for_payout >= 50
-                ? `${d.stats.available}: $${data.stats.available_for_payout.toFixed(2)}`
-                : `${d.notEligible} ($${data.stats.available_for_payout.toFixed(2)} / $50)`}
+      {data.affiliate.status === "active" && (() => {
+        const eligible = data.stats.available_for_payout >= data.minPayout;
+        const openMethod = parsePayoutMethod(data.openPayout?.method ?? null);
+        const formValid =
+          region === "vn_bank"
+            ? /^\d{6,19}$/.test(account.trim()) && holder.trim().length >= 2
+            : (USDT_NETWORKS.find((n) => n.value === network)?.address.test(address.trim()) ?? false);
+        const inputCls =
+          "w-full rounded-md border border-border bg-deep px-3 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-gold/50";
+
+        // ── Already has an open request: show summary + pending ──
+        if (data.openPayout) {
+          return (
+            <div className="rounded-xl border border-gold/30 bg-gold/5 p-5">
+              <div className="text-sm font-semibold text-text-primary">{d.payoutRequested}</div>
+              <div className="text-[12px] text-text-muted mt-0.5">{d.payoutPendingDetail}</div>
+              <div className="text-[12px] text-text-secondary mt-2">
+                <span className="text-text-muted">{d.payoutSubmittedTo}: </span>
+                <span className="font-mono">{formatPayoutMethod(openMethod)}</span>
+                <span className="text-text-muted"> · ${data.openPayout.amount.toFixed(2)}</span>
+              </div>
             </div>
+          );
+        }
+
+        return (
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div>
+              <div className="text-sm font-semibold text-text-primary">{d.requestPayout}</div>
+              <div className="text-[12px] text-text-muted mt-0.5">
+                {eligible
+                  ? `${d.stats.available}: $${data.stats.available_for_payout.toFixed(2)}`
+                  : `${d.notEligible} ($${data.stats.available_for_payout.toFixed(2)} / $${data.minPayout})`}
+              </div>
+            </div>
+
+            {eligible && (
+              <>
+                {/* Region toggle */}
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.06em] text-text-muted mb-1.5">{d.payoutMethodTitle}</div>
+                  <div className="flex gap-1 rounded-lg border border-border bg-deep p-1 w-fit">
+                    {([["vn_bank", d.payoutRegionVn], ["usdt", d.payoutRegionUsdt]] as const).map(([val, lbl]) => (
+                      <button
+                        key={val}
+                        onClick={() => { setRegion(val); setPayoutMsg(null); }}
+                        className={`px-3 py-1.5 rounded-md text-xs font-semibold cursor-pointer border-none transition-colors ${region === val ? "bg-gold text-[#060609]" : "bg-transparent text-text-muted hover:text-text-primary"}`}
+                      >
+                        {lbl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* VN bank fields */}
+                {region === "vn_bank" ? (
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <label className="text-[12px] text-text-secondary">
+                      {d.payoutBank}
+                      <select value={bank} onChange={(e) => setBank(e.target.value)} className={`${inputCls} mt-1`}>
+                        {VN_BANKS.map((b) => <option key={b} value={b}>{b}</option>)}
+                      </select>
+                    </label>
+                    <label className="text-[12px] text-text-secondary">
+                      {d.payoutAccount}
+                      <input value={account} onChange={(e) => setAccount(e.target.value)} inputMode="numeric" placeholder="0123456789" className={`${inputCls} mt-1 font-mono`} />
+                    </label>
+                    <label className="text-[12px] text-text-secondary">
+                      {d.payoutHolder}
+                      <input value={holder} onChange={(e) => setHolder(e.target.value)} placeholder="NGUYEN VAN A" className={`${inputCls} mt-1`} />
+                    </label>
+                  </div>
+                ) : (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="text-[12px] text-text-secondary">
+                      {d.payoutNetwork}
+                      <select value={network} onChange={(e) => setNetwork(e.target.value as UsdtNetwork)} className={`${inputCls} mt-1`}>
+                        {USDT_NETWORKS.map((n) => <option key={n.value} value={n.value}>{n.label}</option>)}
+                      </select>
+                      <span className="block text-[11px] text-text-muted mt-1">{USDT_NETWORKS.find((n) => n.value === network)?.hint}</span>
+                    </label>
+                    <label className="text-[12px] text-text-secondary">
+                      {d.payoutAddress}
+                      <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="T… / 0x…" className={`${inputCls} mt-1 font-mono`} />
+                    </label>
+                  </div>
+                )}
+              </>
+            )}
+
+            {payoutMsg && (
+              <div className={`text-[12px] ${payoutMsg === d.payoutSuccess ? "text-green" : "text-red"}`}>{payoutMsg}</div>
+            )}
+
+            <button
+              onClick={handleRequestPayout}
+              disabled={requesting || !eligible || !formValid}
+              className="rounded-md bg-gold-bright text-[#060609] text-sm font-semibold px-5 py-2.5 cursor-pointer border-none hover:scale-[1.02] transition-transform disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {requesting ? d.requesting : d.requestPayout}
+            </button>
           </div>
-          <button
-            disabled={data.stats.available_for_payout < 50}
-            className="rounded-md bg-gold-bright text-[#060609] text-sm font-semibold px-5 py-2.5 cursor-pointer border-none hover:scale-[1.02] transition-transform disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {d.requestPayout}
-          </button>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Commission history */}
       <div>

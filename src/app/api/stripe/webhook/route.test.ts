@@ -25,6 +25,8 @@ vi.mock("@/lib/stripe-subscriptions", () => ({
   hasProAccess: mocks.hasProAccess,
   upsertProSubscriptionFromCheckoutSession:
     mocks.upsertProSubscriptionFromCheckoutSession,
+  periodEndFromPlan: () => "2030-01-01T00:00:00.000Z",
+  subscriptionPeriodEndIso: () => "2030-01-01T00:00:00.000Z",
 }));
 
 vi.mock("@/lib/run-logs", () => ({
@@ -43,14 +45,25 @@ function stripeRequest() {
   }) as never;
 }
 
+// Chainable Supabase stub: every builder method returns the same chain (so it
+// supports select/insert/upsert/update/delete + eq/in/lte/order/limit), the
+// chain is awaitable (thenable) and single()/maybeSingle() resolve to `result`.
+// `update` and `eq` are exposed so tests can assert on them.
 function supabaseMock() {
-  const eq = vi.fn().mockResolvedValue({ error: null });
-  const update = vi.fn(() => ({ eq }));
+  const result: { data: unknown; error: unknown } = { data: null, error: null };
+  const chain: Record<string, unknown> = {};
+  const ret = () => chain;
+  for (const m of ["select", "insert", "upsert", "update", "delete", "eq", "in", "lte", "order", "limit"]) {
+    chain[m] = vi.fn(ret);
+  }
+  chain.single = vi.fn(() => Promise.resolve(result));
+  chain.maybeSingle = vi.fn(() => Promise.resolve(result));
+  chain.then = (resolve: (v: typeof result) => unknown) => resolve(result);
   return {
-    eq,
-    update,
+    update: chain.update as ReturnType<typeof vi.fn>,
+    eq: chain.eq as ReturnType<typeof vi.fn>,
     client: {
-      from: vi.fn(() => ({ update })),
+      from: vi.fn(() => chain),
     },
   };
 }

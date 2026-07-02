@@ -2,15 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Bell, Mail, MessageCircle, Check, X, Copy, ExternalLink } from "lucide-react";
-
-//  Types 
-type ConnectStatus = {
-  connectCode: string;
-  isConnected: boolean;
-  botUsername: string | null;
-  notification_prefs?: NotificationPrefs;
-};
+import { Bell, Mail, Check, Loader2 } from "lucide-react";
+import { useLocale } from "@/hooks/use-locale";
+import { DASHBOARD_COPY } from "@/lib/i18n";
 
 type NotificationPrefs = {
   email: boolean;
@@ -18,311 +12,144 @@ type NotificationPrefs = {
   in_app: boolean;
 };
 
-type Props = {
-  className?: string;
-};
+const DEFAULT_PREFS: NotificationPrefs = { email: true, telegram: false, in_app: true };
 
-//  Component 
-export function NotificationPreferences({ className }: Props) {
-  const [status, setStatus] = useState<ConnectStatus | null>(null);
-  const [prefs, setPrefs] = useState<NotificationPrefs>({
-    email: true,
-    telegram: false,
-    in_app: true,
-  });
+const CHANNELS: {
+  key: "in_app" | "email";
+  icon: typeof Mail;
+}[] = [
+  { key: "in_app", icon: Bell },
+  { key: "email", icon: Mail },
+];
+
+function Switch({ active, onChange, label }: { active: boolean; onChange: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={active}
+      aria-label={label}
+      onClick={onChange}
+      className={cn(
+        "relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-1 focus-visible:ring-offset-card",
+        active ? "bg-green" : "bg-border",
+      )}
+    >
+      <span
+        className={cn(
+          "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
+          active ? "left-[22px]" : "left-0.5",
+        )}
+      />
+    </button>
+  );
+}
+
+export function NotificationPreferences({ className }: { className?: string }) {
+  const { locale } = useLocale();
+  const c = DASHBOARD_COPY[locale].notificationPrefs;
+  const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [disconnecting, setDisconnecting] = useState(false);
-  const [testing, setTesting] = useState(false);
-  const [testMessage, setTestMessage] = useState<string | null>(null);
-
-  //  Fetch connect status 
-  const fetchStatus = useCallback(async () => {
-    try {
-      const res = await fetch("/api/telegram/connect");
-      if (res.ok) {
-        const data = await res.json();
-        setStatus(data);
-        if (data.notification_prefs) {
-          setPrefs(data.notification_prefs);
-        } else if (data.isConnected) {
-          setPrefs((current) => ({ ...current, telegram: true }));
-        }
-      }
-    } catch {
-      // silent
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [savedTick, setSavedTick] = useState(false);
 
   useEffect(() => {
-    fetchStatus();
-  }, [fetchStatus]);
+    let active = true;
+    fetch("/api/user/preferences", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (active && d?.notification_prefs) setPrefs({ ...DEFAULT_PREFS, ...d.notification_prefs });
+      })
+      .catch(() => {})
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  //  Toggle preference 
-  const togglePref = (key: keyof NotificationPrefs) => {
-    setPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  //  Save preferences 
-  const savePrefs = async () => {
+  // Auto-save on every toggle — no separate "Save" step to forget.
+  const persist = useCallback(async (next: NotificationPrefs) => {
     setSaving(true);
+    setSavedTick(false);
     try {
       await fetch("/api/user/preferences", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notification_prefs: prefs }),
+        body: JSON.stringify({ notification_prefs: next }),
       });
+      setSavedTick(true);
+      window.setTimeout(() => setSavedTick(false), 1800);
     } catch {
-      // silent
+      /* silent */
     } finally {
       setSaving(false);
     }
-  };
+  }, []);
 
-  //  Copy connect code 
-  const copyCode = async () => {
-    if (!status?.connectCode) return;
-    await navigator.clipboard.writeText(status.connectCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  //  Disconnect Telegram 
-  const disconnectTelegram = async () => {
-    setDisconnecting(true);
-    try {
-      const res = await fetch("/api/telegram/connect", { method: "DELETE" });
-      if (res.ok) {
-        setStatus((prev) => prev ? { ...prev, isConnected: false } : null);
-        setPrefs((p) => ({ ...p, telegram: false }));
-      }
-    } catch {
-      // silent
-    } finally {
-      setDisconnecting(false);
-    }
-  };
-
-  const sendTestNotification = async () => {
-    setTesting(true);
-    setTestMessage(null);
-    try {
-      const response = await fetch("/api/alerts/test-notification", {
-        method: "POST",
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(body.error || "Failed to send test notification.");
-      }
-
-      const sentChannels = Object.entries(body.dispatched ?? {})
-        .filter(([, sent]) => sent)
-        .map(([channel]) => channel.replace("_", "-"));
-      setTestMessage(
-        sentChannels.length > 0
-          ? `Test sent via ${sentChannels.join(", ")}.`
-          : "No channel was enabled or connected.",
-      );
-    } catch (error) {
-      setTestMessage(
-        error instanceof Error ? error.message : "Failed to send test notification.",
-      );
-    } finally {
-      setTesting(false);
-    }
+  const togglePref = (key: "in_app" | "email") => {
+    setPrefs((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      void persist(next);
+      return next;
+    });
   };
 
   if (loading) {
     return (
-      <div className={cn("rounded-xl border border-border bg-card p-5", className)}>
+      <div className={cn("rounded-2xl border border-border bg-surface/60 p-5", className)}>
         <div className="animate-pulse space-y-3">
-          <div className="h-4 w-32 bg-surface rounded" />
-          <div className="h-8 w-full bg-surface rounded" />
-          <div className="h-8 w-full bg-surface rounded" />
+          <div className="h-4 w-40 rounded bg-surface" />
+          <div className="h-10 w-full rounded bg-surface" />
+          <div className="h-10 w-full rounded bg-surface" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("rounded-xl border border-border bg-card p-5 space-y-5", className)}>
+    <div className={cn("card-elevate rounded-2xl border border-border bg-surface/60 p-5", className)}>
       {/* Header */}
-      <div className="flex items-center gap-2.5">
-        <Bell className="w-4 h-4 text-gold" />
-        <h3 className="font-display text-base text-text-primary">Notification Preferences</h3>
-      </div>
-
-      {/* Channels */}
-      <div className="space-y-3">
-        {/* Email */}
-        <div className="flex items-center justify-between py-2">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-gold/10 border border-gold/20 flex items-center justify-center">
-              <Mail className="w-3.5 h-3.5 text-gold" />
-            </div>
-            <div>
-              <p className="font-mono text-sm text-text-primary">Email</p>
-              <p className="font-mono text-[13px] text-text-muted">Alert emails to your account email</p>
-            </div>
-          </div>
-          <button
-            onClick={() => togglePref("email")}
-            className={cn(
-              "relative h-6 w-11 rounded-full transition-colors",
-              prefs.email ? "bg-green" : "bg-border"
-            )}
-          >
-            <span
-              className={cn(
-                "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
-                prefs.email ? "left-[22px]" : "left-0.5"
-              )}
-            />
-          </button>
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Bell className="h-4 w-4 text-gold" />
+          <h3 className="font-display text-base text-text-primary">{c.title}</h3>
         </div>
-
-        {/* Telegram */}
-        <div className="flex items-center justify-between py-2">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
-            </div>
-            <div>
-              <p className="font-mono text-sm text-text-primary">Telegram</p>
-              <p className="font-mono text-[13px] text-text-muted">
-                {status?.isConnected
-                  ? "Connected - instant alerts via Telegram"
-                  : "Connect your Telegram to receive alerts"}
-              </p>
-            </div>
-          </div>
-          {status?.isConnected ? (
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1 font-mono text-[13px] text-green">
-                <Check className="w-3 h-3" /> Connected
-              </span>
-              <button
-                onClick={disconnectTelegram}
-                disabled={disconnecting}
-                className="font-mono text-[13px] text-red hover:text-red/80 transition-colors"
-              >
-                {disconnecting ? "..." : "Disconnect"}
-              </button>
-            </div>
+        <span className="inline-flex items-center gap-1 text-[11px] text-text-muted">
+          {saving ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" /> {c.saving}
+            </>
+          ) : savedTick ? (
+            <>
+              <Check className="h-3 w-3 text-green" /> {c.saved}
+            </>
           ) : (
-            <button
-              onClick={() => togglePref("telegram")}
-              className={cn(
-                "relative h-6 w-11 rounded-full transition-colors",
-                prefs.telegram ? "bg-green" : "bg-border"
-              )}
-            >
-              <span
-                className={cn(
-                  "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
-                  prefs.telegram ? "left-[22px]" : "left-0.5"
-                )}
-              />
-            </button>
+            c.autoSave
           )}
-        </div>
-
-        {/* In-App */}
-        <div className="flex items-center justify-between py-2">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-gold/10 border border-gold/20 flex items-center justify-center">
-              <Bell className="w-3.5 h-3.5 text-gold" />
-            </div>
-            <div>
-              <p className="font-mono text-sm text-text-primary">In-App</p>
-              <p className="font-mono text-[13px] text-text-muted">Show notifications in dashboard</p>
-            </div>
-          </div>
-          <button
-            onClick={() => togglePref("in_app")}
-            className={cn(
-              "relative h-6 w-11 rounded-full transition-colors",
-              prefs.in_app ? "bg-green" : "bg-border"
-            )}
-          >
-            <span
-              className={cn(
-                "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
-                prefs.in_app ? "left-[22px]" : "left-0.5"
-              )}
-            />
-          </button>
-        </div>
+        </span>
       </div>
 
-      {/* Telegram Connect Section */}
-      {!status?.isConnected && status?.botUsername && (
-        <div className="rounded-lg border border-border bg-surface/50 p-4 space-y-3">
-          <p className="font-mono text-xs text-text-secondary">
-            To connect Telegram, send this code to{" "}
-            <a
-              href={`https://t.me/${status.botUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gold hover:text-gold-bright transition-colors"
-            >
-              @{status.botUsername}
-            </a>
-          </p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 rounded-md border border-gold/20 bg-deep px-3 py-2 font-mono text-sm text-gold select-all">
-              {status.connectCode}
-            </code>
-            <button
-              onClick={copyCode}
-              className="shrink-0 h-9 w-9 rounded-md border border-border bg-surface flex items-center justify-center hover:border-gold/30 transition-colors"
-              title="Copy code"
-            >
-              {copied ? (
-                <Check className="w-3.5 h-3.5 text-green" />
-              ) : (
-                <Copy className="w-3.5 h-3.5 text-text-muted" />
-              )}
-            </button>
-          </div>
-          <a
-            href={`https://t.me/${status.botUsername}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 font-mono text-xs text-gold hover:text-gold-bright transition-colors"
-          >
-            Open Telegram Bot <ExternalLink className="w-3 h-3" />
-          </a>
-        </div>
-      )}
-
-      {/* Save Button */}
-      <div className="grid gap-2 sm:grid-cols-2">
-        <button
-          onClick={savePrefs}
-          disabled={saving}
-          className="rounded-md bg-gold px-4 py-2.5 font-mono text-sm font-medium text-deep hover:bg-gold-bright transition-colors disabled:opacity-50"
-        >
-          {saving ? "Saving..." : "Save Preferences"}
-        </button>
-        <button
-          onClick={sendTestNotification}
-          disabled={testing}
-          className="rounded-md border border-border-gold px-4 py-2.5 font-mono text-sm font-medium text-gold hover:bg-gold/10 transition-colors disabled:opacity-50"
-        >
-          {testing ? "Sending..." : "Send Test"}
-        </button>
+      {/* Channels — each auto-saves on toggle */}
+      <div className="divide-y divide-border/60">
+        {CHANNELS.map(({ key, icon: Icon }) => {
+          const label = key === "in_app" ? c.inAppLabel : c.emailLabel;
+          const desc = key === "in_app" ? c.inAppDesc : c.emailDesc;
+          return (
+            <div key={key} className="flex items-center justify-between gap-3 py-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-gold/20 bg-gold/10 text-gold">
+                  <Icon className="h-3.5 w-3.5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm text-text-primary">{label}</p>
+                  <p className="text-[12px] text-text-muted">{desc}</p>
+                </div>
+              </div>
+              <Switch active={prefs[key]} onChange={() => togglePref(key)} label={label} />
+            </div>
+          );
+        })}
       </div>
-
-      {testMessage && (
-        <p className="rounded-md border border-border bg-surface/60 px-3 py-2 font-mono text-[13px] text-text-secondary">
-          {testMessage}
-        </p>
-      )}
     </div>
   );
 }
-

@@ -2,26 +2,31 @@
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server-client";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import Link from "next/link";
+import { CftcStatusCard } from "@/components/dashboard/cftc-status-card";
+import { EaCard } from "@/components/dashboard/ea-card";
+import { MarketHeader } from "@/components/dashboard/market-header";
+import { getServerLocale } from "@/lib/server-locale";
+import { DASHBOARD_COPY, FALLBACK_LOCALE, type SupportedLocale } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Dralvo | License & Downloads",
 };
 
+// Each entry's `product` matches the license_keys.product id sent by the EA.
 const EA_DOWNLOADS = {
   goldmaster: {
     name: "GoldMaster",
     tf: "D1 Swing",
     accent: "#d4a82d",
     ex5: "/downloads/goldmaster/Dralvo GoldMaster.ex5",
-    set: "/downloads/goldmaster/Dralvo GoldMaster v1.08.set",
+    set: "/downloads/goldmaster/Dralvo GoldMaster - Presets.zip",
   },
-  scalp: {
+  goldscalp: {
     name: "GoldScalp",
-    tf: "M5 Momentum",
+    tf: "M15 Momentum",
     accent: "#5aa9e6",
     ex5: "/downloads/goldscalp/Dralvo Gold Scalp.ex5",
-    set: "/downloads/goldscalp/Dralvo Gold Scalp v2.set",
+    set: "/downloads/goldscalp/Dralvo Gold Scalp - Presets.zip",
   },
   tigold: {
     name: "TiGold",
@@ -29,17 +34,53 @@ const EA_DOWNLOADS = {
     accent: "#00c98d",
     ex5: "/downloads/tigold/Dralvo TiGold.ex5",
     set: "/downloads/tigold/Dralvo tigold v1.set",
-    guide: "/downloads/tigold/Huong_dan_su_dung.html",
   },
 } as const;
 
 type EaKey = keyof typeof EA_DOWNLOADS;
 
+/**
+ * Which locales have a translated usage guide, per EA. "vi" is the base file
+ * Huong_dan_su_dung.html; other locales are Huong_dan_su_dung.<locale>.html.
+ * The user's locale is served when available, else English (fallback), else vi.
+ */
+const GUIDE_LOCALES: Partial<Record<EaKey, SupportedLocale[]>> = {
+  goldmaster: ["vi", "en", "pt-BR", "es", "id", "ar"],
+  goldscalp: ["vi", "en", "pt-BR", "es", "id", "ar"],
+  tigold: ["vi", "en", "pt-BR", "es", "id", "ar"],
+};
+
+function resolveGuide(id: EaKey, locale: SupportedLocale): string | undefined {
+  const avail = GUIDE_LOCALES[id];
+  if (!avail || avail.length === 0) return undefined;
+  const chosen = avail.includes(locale)
+    ? locale
+    : avail.includes(FALLBACK_LOCALE)
+      ? FALLBACK_LOCALE
+      : avail[0];
+  const file = chosen === "vi" ? "Huong_dan_su_dung.html" : `Huong_dan_su_dung.${chosen}.html`;
+  return `/downloads/${id}/${file}`;
+}
+
+interface KeyInfo {
+  key: string;
+  plan: string;
+  expires_at: string | null;
+}
+
+const TELEGRAM_ADMIN = "https://t.me/dralvoea";
+
+/** A per-EA license row is usable if it has no expiry, or expires in the future. */
+function isLicenseActive(row: { expires_at: string | null }): boolean {
+  return !row.expires_at || new Date(row.expires_at) > new Date();
+}
+
 export default async function DashboardPage() {
-  let licenseKey: string | null = null;
-  let plan: string | null = null;
-  let expiresAt: string | null = null;
-  let hasAccess = false;
+  const locale = await getServerLocale();
+  const c = DASHBOARD_COPY[locale].dashboardHome;
+
+  // product → its active license row (key + expiry + tier)
+  const keysByProduct: Partial<Record<EaKey, KeyInfo>> = {};
 
   try {
     const supabase = await createServerSupabaseClient();
@@ -47,87 +88,63 @@ export default async function DashboardPage() {
     const admin = getSupabaseAdminClient();
     if (user && admin) {
       // license_keys is not readable by the `authenticated` role under RLS,
-      // so read through the admin client scoped to this user id.
+      // so read through the admin client scoped to this user id. A user may
+      // now hold one key per EA.
       const { data } = await admin
         .from("license_keys")
-        .select("key, plan, expires_at")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      // ponytail: valid = unlimited AND not expired
-      const currentPeriodEnd = data?.expires_at;
-      const valid =
-        !!data &&
-        data.plan === "unlimited" &&
-        (!currentPeriodEnd || new Date(currentPeriodEnd) > new Date());
-      if (valid) {
-        licenseKey = data.key;
-        plan = data.plan;
-        expiresAt = data.expires_at;
-        hasAccess = true;
+        .select("key, plan, product, expires_at")
+        .eq("user_id", user.id);
+      for (const row of data ?? []) {
+        const product = row.product as EaKey | null;
+        if (!product || !(product in EA_DOWNLOADS)) continue;
+        if (!isLicenseActive(row)) continue;
+        keysByProduct[product] = { key: row.key, plan: row.plan, expires_at: row.expires_at };
       }
     }
   } catch { /* table may not exist — show free UI */ }
 
-  const eaList: EaKey[] = hasAccess ? ["goldmaster", "scalp", "tigold"] : ["tigold"];
+  // Show every EA the user has a key for; tigold-free users still see TiGold.
+  const eaList = (Object.keys(EA_DOWNLOADS) as EaKey[]).filter(
+    (id) => keysByProduct[id] || id === "tigold",
+  );
 
   return (
     <div className="space-y-6">
-      {/* License status bar */}
-      <div className="rounded-xl border p-5"
-        style={{ borderColor: hasAccess ? "rgba(212,168,67,0.35)" : "rgba(0,201,141,0.3)", background: hasAccess ? "linear-gradient(135deg, rgba(212,168,67,0.08), var(--bg-card) 70%)" : "linear-gradient(135deg, rgba(0,201,141,0.08), var(--bg-card) 70%)" }}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-semibold" style={{ color: hasAccess ? "var(--gold-bright)" : "#00c98d" }}>
-              {hasAccess ? "Dralvo Unlimited" : "Dralvo Free"}
-            </h2>
-            <p className="text-sm text-text-muted mt-1">
-              {hasAccess
-                ? `License key: ${licenseKey} · Hết hạn: ${expiresAt ? new Date(expiresAt).toLocaleDateString("vi-VN") : "Vĩnh viễn"}`
-                : "Miễn phí trọn đời — mở tài khoản qua đối tác IB Dralvo"}
-            </p>
-          </div>
-          {!hasAccess && (
-            <Link href="/pricing" className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold bg-gold-bright text-[#060609] no-underline hover:scale-[1.02] transition-transform">
-              Nâng cấp lên Unlimited
-            </Link>
-          )}
-        </div>
+      {/* Market data (Twelve Data) + CFTC positioning — one row, two columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
+        <MarketHeader />
+        <CftcStatusCard />
       </div>
 
-      {/* Dralvo EA */}
+      {/* Dralvo EA cards */}
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
         {eaList.map((id) => {
           const ea = EA_DOWNLOADS[id];
+          const lic = keysByProduct[id];
           return (
-            <div key={id} className="rounded-xl border border-border bg-card p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold text-text-primary">{ea.name}</h3>
-                  <p className="text-xs text-text-muted">{ea.tf}</p>
-                </div>
-                <span className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ background: `${ea.accent}1a`, border: `1px solid ${ea.accent}40` }}>
-                  <span className="text-xs font-mono font-bold" style={{ color: ea.accent }}>{ea.tf.split(" ")[0]}</span>
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <a href={ea.ex5} download className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold bg-gold/10 border border-gold/20 text-gold hover:bg-gold/15 no-underline transition-colors">
-                  Tải .ex5
-                </a>
-                {"set" in ea && (
-                  <a href={ea.set} download className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold bg-card border border-border text-text-secondary hover:text-text-primary no-underline transition-colors">
-                    Tải .set
-                  </a>
-                )}
-                {"guide" in ea && (
-                  <a href={ea.guide} target="_blank" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold bg-card border border-border text-text-muted hover:text-text-primary no-underline transition-colors">
-                    Hướng dẫn
-                  </a>
-                )}
-              </div>
-            </div>
+            <EaCard
+              key={id}
+              id={id}
+              name={ea.name}
+              tf={ea.tf}
+              accent={ea.accent}
+              ex5={ea.ex5}
+              set={ea.set}
+              guide={resolveGuide(id, locale)}
+              license={lic ? { key: lic.key, expiresAt: lic.expires_at } : null}
+            />
           );
         })}
+      </div>
+
+      {/* Contact admin for more keys / accounts */}
+      <div className="card-elevate rounded-xl border border-border bg-card/60 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <p className="text-sm text-text-muted">
+          {c.contactPrompt}
+        </p>
+        <a href={TELEGRAM_ADMIN} target="_blank" className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold bg-gold/10 border border-gold/20 text-gold hover:bg-gold/15 no-underline transition-colors">
+          {c.contactAdmin}
+        </a>
       </div>
     </div>
   );

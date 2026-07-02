@@ -71,8 +71,9 @@ describe("GET /api/stripe/checkout/success", () => {
 
     expect(mocks.syncCheckoutSession).toHaveBeenCalledWith("cs_test", "user-1");
     expect(response.status).toBe(307);
+    // The route appends the order id (session id) for post-purchase tracking.
     expect(response.headers.get("location")).toBe(
-      "https://www.dralvo.com/dashboard?checkout=success",
+      "https://www.dralvo.com/dashboard?checkout=success&oid=cs_test",
     );
   });
 

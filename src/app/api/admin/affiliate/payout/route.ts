@@ -3,32 +3,14 @@
  * Admin: list pending commissions, mark as paid, manage affiliates.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import type { AffiliateWithUser, AffiliateCommission } from "@/lib/affiliate/types";
-
-const ADMIN_IDS = (process.env.AFFILIATE_ADMIN_IDS ?? "").split(",").filter(Boolean);
-
-async function ensureAdmin(request: NextRequest): Promise<boolean> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { getAll() { return cookieStore.getAll(); }, setAll() { } } },
-    );
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
-    if (ADMIN_IDS.length > 0) return ADMIN_IDS.includes(user.id);
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { getAdmin, can } from "@/lib/admin/auth";
+import { settlePayoutAsPaid } from "@/lib/affiliate/server";
+import type { AffiliateWithUser, AffiliateCommission, AffiliatePayoutWithUser } from "@/lib/affiliate/types";
 
 export async function GET(request: NextRequest) {
-  if (!(await ensureAdmin(request))) {
+  const admin = await getAdmin();
+  if (!admin || !can(admin, "affiliate.manage")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -39,6 +21,28 @@ export async function GET(request: NextRequest) {
 
   const url = new URL(request.url);
   const action = url.searchParams.get("action") ?? "commissions";
+
+  if (action === "payouts") {
+    // List payout requests (newest first) joined with affiliate code + email
+    const { data: payouts } = await supabase
+      .from("affiliate_payouts")
+      .select("*, affiliates(code, user_id)")
+      .order("requested_at", { ascending: false })
+      .limit(100);
+
+    const withUser: AffiliatePayoutWithUser[] = [];
+    for (const p of payouts ?? []) {
+      const aff = (p as { affiliates?: { code: string; user_id: string } }).affiliates;
+      let email: string | null = null;
+      if (aff?.user_id) {
+        const { data: authUser } = await supabase.auth.admin.getUserById(aff.user_id);
+        email = authUser?.user?.email ?? null;
+      }
+      withUser.push({ ...p, affiliate_code: aff?.code ?? null, user_email: email } as AffiliatePayoutWithUser);
+    }
+
+    return NextResponse.json({ payouts: withUser });
+  }
 
   if (action === "affiliates") {
     // List all affiliates with user emails
@@ -59,21 +63,35 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ affiliates: withEmails });
   }
 
-  // Default: list pending commissions
+  // Default: list recent commissions (all statuses) with customer + affiliate detail
   const { data: commissions } = await supabase
     .from("affiliate_commissions")
-    .select("*")
-    .eq("status", "pending")
+    .select("*, affiliates(code)")
     .order("created_at", { ascending: false })
     .limit(100);
 
-  return NextResponse.json({ commissions: (commissions ?? []) as AffiliateCommission[] });
+  // Resolve customer emails in one listUsers call (max 1000), then map.
+  const { data: usersPage } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  const emailById = new Map((usersPage?.users ?? []).map((u) => [u.id, u.email ?? null]));
+
+  const enriched: AffiliateCommission[] = (commissions ?? []).map((c) => {
+    const aff = (c as { affiliates?: { code: string } }).affiliates;
+    return {
+      ...c,
+      customer_email: c.customer_id ? emailById.get(c.customer_id) ?? null : null,
+      affiliate_code: aff?.code ?? null,
+    } as AffiliateCommission;
+  });
+
+  return NextResponse.json({ commissions: enriched });
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await ensureAdmin(request))) {
+  const admin = await getAdmin();
+  if (!admin || !can(admin, "affiliate.manage")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const adminUserId = admin.user_id;
 
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
@@ -84,61 +102,103 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, ...payload } = body;
 
+    // Update an affiliate's status; 404 if the id matched no row (no silent ok).
+    const setAffiliateStatus = async (
+      affiliateId: string,
+      patch: Record<string, unknown>,
+    ) => {
+      const { data, error } = await supabase
+        .from("affiliates")
+        .update(patch)
+        .eq("id", affiliateId)
+        .select("id");
+      if (error) return NextResponse.json({ error: "Update failed" }, { status: 500 });
+      if (!data || data.length === 0) {
+        return NextResponse.json({ error: "Affiliate not found" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    };
+
     switch (action) {
-      case "approve_affiliate": {
+      case "approve_affiliate":
+      case "activate_affiliate": {
         const { affiliateId } = payload as { affiliateId: string };
-        await supabase
-          .from("affiliates")
-          .update({ status: "active", approved_at: new Date().toISOString() })
-          .eq("id", affiliateId);
-        return NextResponse.json({ success: true });
+        return setAffiliateStatus(affiliateId, { status: "active", approved_at: new Date().toISOString() });
       }
 
       case "reject_affiliate": {
         const { affiliateId } = payload as { affiliateId: string };
-        await supabase
-          .from("affiliates")
-          .update({ status: "rejected" })
-          .eq("id", affiliateId);
-        return NextResponse.json({ success: true });
+        return setAffiliateStatus(affiliateId, { status: "rejected" });
       }
 
       case "suspend_affiliate": {
         const { affiliateId } = payload as { affiliateId: string };
-        await supabase
-          .from("affiliates")
-          .update({ status: "suspended" })
-          .eq("id", affiliateId);
+        return setAffiliateStatus(affiliateId, { status: "suspended" });
+      }
+
+      case "delete_affiliate": {
+        // Removes the affiliate; commissions / payouts / referrals cascade.
+        const { affiliateId } = payload as { affiliateId: string };
+        const { error } = await supabase.from("affiliates").delete().eq("id", affiliateId);
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
         return NextResponse.json({ success: true });
       }
 
       case "mark_paid": {
         const { commissionIds } = payload as { commissionIds: string[] };
+        if (!Array.isArray(commissionIds) || commissionIds.length === 0) {
+          return NextResponse.json({ error: "No commissions" }, { status: 400 });
+        }
         const now = new Date().toISOString();
-        await supabase
+        // Only settle commissions still PENDING (skip already-paid ones so
+        // paid_out is never double-counted). Returns the rows actually flipped.
+        const { data: flipped, error: flipErr } = await supabase
           .from("affiliate_commissions")
           .update({ status: "paid", paid_at: now })
-          .in("id", commissionIds);
+          .in("id", commissionIds)
+          .eq("status", "pending")
+          .select("affiliate_id, amount");
+        if (flipErr) return NextResponse.json({ error: "Update failed" }, { status: 500 });
 
-        // Update affiliate paid_out
-        for (const cid of commissionIds) {
-          const { data: comm } = await supabase
-            .from("affiliate_commissions")
-            .select("affiliate_id, amount")
-            .eq("id", cid)
-            .single();
-          if (comm) {
-            const { data: aff } = await supabase
-              .from("affiliates")
-              .select("paid_out")
-              .eq("id", comm.affiliate_id)
-              .single();
-            const newPaid = (aff?.paid_out ?? 0) + comm.amount;
-            await supabase
-              .from("affiliates")
-              .update({ paid_out: newPaid })
-              .eq("id", comm.affiliate_id);
-          }
+        // Bump each affiliate's paid_out by the sum actually settled.
+        const byAffiliate = new Map<string, number>();
+        for (const c of flipped ?? []) {
+          byAffiliate.set(c.affiliate_id, (byAffiliate.get(c.affiliate_id) ?? 0) + Number(c.amount));
+        }
+        for (const [affId, sum] of byAffiliate) {
+          const { data: aff } = await supabase
+            .from("affiliates").select("paid_out").eq("id", affId).single();
+          await supabase
+            .from("affiliates")
+            .update({ paid_out: Math.round(((aff?.paid_out ?? 0) + sum) * 100) / 100 })
+            .eq("id", affId);
+        }
+        return NextResponse.json({ success: true, settled: flipped?.length ?? 0 });
+      }
+
+      case "pay_payout": {
+        const { payoutId } = payload as { payoutId: string };
+        const ok = await settlePayoutAsPaid(payoutId, adminUserId);
+        if (!ok) return NextResponse.json({ error: "Payout not found or already processed" }, { status: 404 });
+        return NextResponse.json({ success: true });
+      }
+
+      case "reject_payout": {
+        const { payoutId, note } = payload as { payoutId: string; note?: string };
+        const { data, error } = await supabase
+          .from("affiliate_payouts")
+          .update({
+            status: "rejected",
+            note: note ?? null,
+            processed_at: new Date().toISOString(),
+            processed_by: adminUserId,
+          })
+          .eq("id", payoutId)
+          .in("status", ["requested", "approved"])
+          .select("id");
+        if (error) return NextResponse.json({ error: "Update failed" }, { status: 500 });
+        if (!data || data.length === 0) {
+          return NextResponse.json({ error: "Payout not found or already processed" }, { status: 404 });
         }
         return NextResponse.json({ success: true });
       }

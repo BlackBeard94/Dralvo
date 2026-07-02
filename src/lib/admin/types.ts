@@ -4,8 +4,9 @@ export type AdminRole = "super_admin" | "admin" | "support";
 /** bitmask-style permission flags — stored as JSONB in admin_users.permissions */
 export interface AdminPermissions {
   users: { view: boolean; edit: boolean };
+  license: { manage: boolean };
   finance: { view: boolean };
-  vps: { manage: boolean };
+  marketing: { view: boolean };
   affiliate: { manage: boolean };
   admins: { manage: boolean };
 }
@@ -13,8 +14,9 @@ export interface AdminPermissions {
 export type AdminPermissionAction =
   | "users.view"
   | "users.edit"
+  | "license.manage"
   | "finance.view"
-  | "vps.manage"
+  | "marketing.view"
   | "affiliate.manage"
   | "admins.manage";
 
@@ -33,24 +35,27 @@ export interface AdminUser {
 /** Permissions a super_admin cannot remove from themselves */
 export const SUPER_ADMIN_PERMISSIONS: AdminPermissions = {
   users: { view: true, edit: true },
+  license: { manage: true },
   finance: { view: true },
-  vps: { manage: true },
+  marketing: { view: true },
   affiliate: { manage: true },
   admins: { manage: true },
 };
 
 export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
   users: { view: true, edit: false },
+  license: { manage: false },
   finance: { view: true },
-  vps: { manage: false },
+  marketing: { view: false },
   affiliate: { manage: false },
   admins: { manage: false },
 };
 
 export const DEFAULT_SUPPORT_PERMISSIONS: AdminPermissions = {
   users: { view: true, edit: false },
+  license: { manage: false },
   finance: { view: false },
-  vps: { manage: false },
+  marketing: { view: false },
   affiliate: { manage: false },
   admins: { manage: false },
 };

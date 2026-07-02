@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BarChart3,
   Bell,
   Clock3,
   DatabaseZap,
@@ -12,16 +11,13 @@ import {
   ShieldAlert,
 } from "lucide-react";
 
-import { AlertList } from "@/components/dashboard/alert-list";
-import { AlertNotifications } from "@/components/dashboard/alert-notifications";
-import { AiProviderSettings } from "@/components/dashboard/ai-provider-settings";
+import { AccountSettings } from "@/components/dashboard/account-settings";
 import { BillingPanel } from "@/components/dashboard/billing-panel";
 import { CorrelationMatrix } from "@/components/dashboard/correlation-matrix";
 import { IndicatorDetailCard } from "@/components/dashboard/indicator-detail-card";
 import { MarketHeader } from "@/components/dashboard/market-header";
 import { NotificationPreferences } from "@/components/dashboard/notification-preferences";
 import { ProductAnalyticsPanel } from "@/components/dashboard/product-analytics-panel";
-import { RunLogsPanel } from "@/components/dashboard/run-logs-panel";
 import { XauusdChart } from "@/components/dashboard/xauusd-chart";
 import { DriverHistoryPanel } from "@/components/dashboard/driver-history-panel";
 import { IMPLEMENTED_DRIVER_SOURCE_REGISTRY } from "@/data/driver-registry";
@@ -315,33 +311,6 @@ export function CorrelationPage({ planTier = "Free" }: { planTier?: string }) {
   );
 }
 
-export function AlertsPage({ planTier = "Free" }: { planTier?: string }) {
-  const { locale } = useLocale();
-  const copy = DASHBOARD_COPY[locale].pages;
-  const isPro = isPaidTier(planTier);
-
-  return (
-    <div className="mx-auto max-w-[1440px] space-y-5">
-      <PageHeader
-        eyebrow={copy.alertsEyebrow}
-        title={copy.alertsTitle}
-        description={copy.alertsDescription}
-      />
-      {isPro ? (
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
-          <AlertList />
-          <AlertNotifications />
-        </div>
-      ) : (
-        <UpgradePanel
-          title={copy.alertsLockedTitle}
-          description={copy.alertsLockedDescription}
-        />
-      )}
-    </div>
-  );
-}
-
 export function SettingsPage({
   planTier = "Free",
   planStatus = "free",
@@ -366,6 +335,8 @@ export function SettingsPage({
       />
 
       <div className="grid gap-4">
+        <AccountSettings />
+
         <BillingPanel
           planTier={planTier}
           planStatus={planStatus}
@@ -389,7 +360,6 @@ export function SettingsPage({
           </div>
         )}
 
-        <RunLogsPanel />
         <ProductAnalyticsPanel />
       </div>
     </div>

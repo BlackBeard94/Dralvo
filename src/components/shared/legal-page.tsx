@@ -5,6 +5,8 @@ import { BrandLink } from "@/components/shared/brand";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { COMMON_COPY } from "@/lib/common-copy";
+import type { SupportedLocale } from "@/lib/i18n";
 
 export function PolicySection({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -18,12 +20,14 @@ export function PolicySection({ title, children }: { title: string; children: Re
 }
 
 export function LegalPage({
-  badge, title, accent, updated = "06/2026", backLabel = "Trang chủ", updatedLabel = "Cập nhật", children,
+  locale, badge, title, accent, updated = "06/2026", backLabel = "Trang chủ", updatedLabel = "Cập nhật", children,
 }: {
+  locale: SupportedLocale;
   badge: string; title: string; accent: string;
   updated?: string; backLabel?: string; updatedLabel?: string;
   children: ReactNode;
 }) {
+  const f = COMMON_COPY[locale].footer;
   return (
     <div className="min-h-screen bg-deep text-text-primary overflow-x-hidden">
       <div className="gold-veins" aria-hidden="true">
@@ -32,10 +36,14 @@ export function LegalPage({
       </div>
 
       <nav className="sticky top-0 z-50 bg-deep/85 backdrop-blur-xl border-b border-border shadow-[0_1px_0_rgba(212,168,67,0.04)]">
-        <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-          <BrandLink />
+        <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-2">
+          <BrandLink
+            className="gap-2 sm:gap-4"
+            logoClassName="h-11 w-11 sm:h-[72px] sm:w-[72px]"
+            wordmarkClassName="text-lg sm:text-2xl transition-colors group-hover:text-text-primary"
+          />
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-[13px] tracking-[0.03em] text-text-muted hover:text-gold transition-colors no-underline">{backLabel}</Link>
+            <Link href="/" className="hidden sm:inline text-[13px] tracking-[0.03em] text-text-muted hover:text-gold transition-colors no-underline">{backLabel}</Link>
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
@@ -69,16 +77,16 @@ export function LegalPage({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
             <BrandLink logoSize={28} wordmarkClassName="text-base" />
             <div className="flex flex-wrap items-center gap-5 text-xs text-text-secondary">
-              <Link href="/methodology" className="hover:text-gold transition-colors no-underline">Phương pháp</Link>
-              <Link href="/pricing" className="hover:text-gold transition-colors no-underline">Bảng giá</Link>
-              <Link href="/privacy" className="hover:text-gold transition-colors no-underline">Bảo mật</Link>
-              <Link href="/terms" className="hover:text-gold transition-colors no-underline">Điều khoản</Link>
-              <Link href="/disclaimer" className="hover:text-gold transition-colors no-underline">Miễn trừ trách nhiệm</Link>
+              <Link href="/methodology" className="hover:text-gold transition-colors no-underline">{f.links.methodology}</Link>
+              <Link href="/pricing" className="hover:text-gold transition-colors no-underline">{f.links.pricing}</Link>
+              <Link href="/privacy" className="hover:text-gold transition-colors no-underline">{f.links.privacy}</Link>
+              <Link href="/terms" className="hover:text-gold transition-colors no-underline">{f.links.terms}</Link>
+              <Link href="/disclaimer" className="hover:text-gold transition-colors no-underline">{f.links.disclaimer}</Link>
             </div>
           </div>
           <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-[11px] text-text-muted">© 2026 Dralvo. Không phải lời khuyên đầu tư.</p>
-            <p className="text-[11px] text-text-muted">Past performance ≠ future results.</p>
+            <p className="text-[11px] text-text-muted">{f.notAdvice}</p>
+            <p className="text-[11px] text-text-muted">{f.pastPerformance}</p>
           </div>
         </div>
       </footer>

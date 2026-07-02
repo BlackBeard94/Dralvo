@@ -3,8 +3,7 @@
  *
  * Public endpoint returning the current Dralvo Tier 3A signal for XAUUSD:
  * signal state (long/neutral), per-driver check (CFTC, trend, pullback),
- * entry/SL/TP when long, plus the canonical backtest stats and honest
- * expectation copy.
+ * entry/SL/TP when long, plus the current CFTC positioning.
  *
  * Consumed by the MT5 indicator/EA (WebRequest), the Telegram bot, the web
  * dashboard, and the marketing site. Cached briefly to protect the Twelve Data
@@ -14,7 +13,6 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import type { CandleOHLC } from "@/data/indicators";
 import { rateLimitedTwelveDataFetch } from "@/data/ingestion/twelve-data-limiter";
-import { DRALVO_BACKTEST, DRALVO_EXPECTATIONS } from "@/lib/backtest-stats";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limit";
 import { evaluateTier3A, TIER3A, type SignalResult } from "@/lib/signal";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
@@ -24,6 +22,7 @@ export const dynamic = "force-dynamic";
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes - signal changes at most daily
 const DAILY_OUTPUT_SIZE = 250; // enough history for EMA200
+const STRATEGY = "Tier 3A - CFTC + Trend + Pullback (D1)";
 
 type CftcStatus = { mm_net: number; updated: string };
 
@@ -37,8 +36,6 @@ type SignalPayload = {
   price: SignalResult["price"] & { asOf: string };
   entry: SignalResult["entry"];
   cftc: CftcStatus;
-  backtest: typeof DRALVO_BACKTEST;
-  expectations: typeof DRALVO_EXPECTATIONS;
   generatedAt: string;
 };
 
@@ -175,15 +172,13 @@ export async function GET(request: NextRequest) {
   const payload: SignalPayload = {
     ok: true,
     asset: "XAUUSD",
-    strategy: DRALVO_BACKTEST.strategy,
+    strategy: STRATEGY,
     signal: result.signal,
     regime: result.regime,
     drivers: result.drivers,
     price: { ...result.price, asOf },
     entry: result.entry,
     cftc,
-    backtest: DRALVO_BACKTEST,
-    expectations: DRALVO_EXPECTATIONS,
     generatedAt: new Date().toISOString(),
   };
 

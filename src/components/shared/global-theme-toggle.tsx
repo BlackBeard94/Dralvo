@@ -9,7 +9,7 @@ const pagesWithHeaderToggle = new Set(["/", "/pricing", "/tools/calculator", "/t
 export function GlobalThemeToggle() {
   const pathname = usePathname();
 
-  if (pagesWithHeaderToggle.has(pathname) || pathname.startsWith("/dashboard")) {
+  if (pagesWithHeaderToggle.has(pathname) || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/partner")) {
     return null;
   }
 

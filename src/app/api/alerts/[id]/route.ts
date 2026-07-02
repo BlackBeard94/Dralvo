@@ -28,7 +28,7 @@ export async function GET(
     const tier = await getUserPlanTierByUserId(user.id);
     if (!isPaidTier(tier)) {
       return Response.json(
-        { error: "Custom alerts require Dralvo Unlimited." },
+        { error: "Custom alerts require Dralvo VIP." },
         { status: 403 },
       );
     }
@@ -73,7 +73,7 @@ export async function PATCH(
     const tier = await getUserPlanTierByUserId(user.id);
     if (!isPaidTier(tier)) {
       return Response.json(
-        { error: "Custom alerts require Dralvo Unlimited." },
+        { error: "Custom alerts require Dralvo VIP." },
         { status: 403 },
       );
     }
@@ -115,7 +115,7 @@ export async function DELETE(
     const tier = await getUserPlanTierByUserId(user.id);
     if (!isPaidTier(tier)) {
       return Response.json(
-        { error: "Custom alerts require Dralvo Unlimited." },
+        { error: "Custom alerts require Dralvo VIP." },
         { status: 403 },
       );
     }

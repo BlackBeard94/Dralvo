@@ -8,6 +8,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { convertReferral } from "@/lib/affiliate/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +32,20 @@ export async function POST(request: NextRequest) {
     }
 
     const referral = await convertReferral(visitorId, user.id);
+
+    // Single-owner attribution (affiliate XOR partner): stamp this customer as
+    // affiliate-owned ONLY if no referrer is set yet — first touch wins, the
+    // partner side won't double-claim. Source of truth: profiles.referrer_type.
+    if (referral?.affiliate_id) {
+      const admin = getSupabaseAdminClient();
+      if (admin) {
+        await admin
+          .from("profiles")
+          .update({ referrer_type: "affiliate", referrer_id: referral.affiliate_id })
+          .eq("id", user.id)
+          .is("referrer_type", null);
+      }
+    }
 
     return NextResponse.json({
       converted: !!referral,

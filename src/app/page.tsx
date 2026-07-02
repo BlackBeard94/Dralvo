@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine, Menu, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine } from "lucide-react";
 
 import { BrandLink } from "@/components/shared/brand";
 import { NavBar } from "@/components/shared/nav-bar";
+import { mainNavLinks } from "@/components/shared/nav-links";
+import { MainNavActions } from "@/components/shared/site-nav";
+import { InstallAppButton } from "@/components/shared/install-app-button";
+import { SocialLinks } from "@/components/shared/social-links";
+import { COMMON_COPY } from "@/lib/common-copy";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useLocale } from "@/hooks/use-locale";
 import { LANDING_COPY } from "@/lib/landing-copy";
 import { EA_PRODUCTS, GOLDMASTER, GOLD_SCALP, TIGOLD, type EaProduct } from "@/lib/backtest-stats";
@@ -34,19 +37,13 @@ const PERIODS = [
 ] as const;
 type PeriodId = (typeof PERIODS)[number]["id"];
 
-/* Dralvo Unlimited price by billing period (the Free tier is always $0).
+/* Dralvo VIP price by billing period (the Free tier is always $0).
  * total = charged now for the period · perMo = per-month equivalent · off = % saved. */
 const UNLIMITED_PRICING: Record<PeriodId, { total: number; perMo: number; off: number }> = {
   monthly: { total: 59, perMo: 59, off: 0 },
   sixmo: { total: 319, perMo: 53, off: 10 },
   yearly: { total: 599, perMo: 50, off: 15 },
 };
-
-/* Deterministic equity-curve shape (normalised) — compounding with pullbacks. */
-const EQUITY = [
-  0.02, 0.04, 0.03, 0.06, 0.09, 0.07, 0.12, 0.16, 0.13, 0.2, 0.26, 0.22, 0.3,
-  0.38, 0.33, 0.45, 0.55, 0.49, 0.62, 0.72, 0.65, 0.81, 0.93, 0.86, 1,
-];
 
 /* -------------------------------------------------------------------------- */
 /*  Small parts                                                                */
@@ -82,27 +79,6 @@ function Reveal({ children, className, delay = 0 }: { children: React.ReactNode;
   );
 }
 
-function EquityCurve() {
-  const W = 460, H = 200, P = 8;
-  const max = EQUITY.length - 1;
-  const pts = EQUITY.map((y, i) => [P + (i / max) * (W - 2 * P), H - P - y * (H - 2 * P)]);
-  const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-  const area = `${line} L${W - P} ${H - P} L${P} ${H - P} Z`;
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(240,200,90,0.35)" />
-          <stop offset="100%" stopColor="rgba(240,200,90,0)" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#eq)" />
-      <path className="eq-line" d={line} fill="none" stroke="var(--gold-bright)" strokeWidth={2} strokeLinejoin="round" />
-      {pts.slice(-1).map(([x, y], i) => (<circle key={i} cx={x} cy={y} r={3.5} fill="var(--gold-bright)" />))}
-    </svg>
-  );
-}
-
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -131,8 +107,8 @@ function EaPlate({ ea, copy, onGet, badge }: { ea: EaProduct; copy: (typeof LAND
       {badge && <span className="absolute -top-3 right-4 px-3 py-0.5 rounded-full text-[10px] font-semibold border" style={{ background: accentText(a), color: "#060609", borderColor: accentText(a) }}>{badge}</span>}
       <div className="absolute top-4 right-4 flex items-center gap-2 select-none">
         <span className="text-[9px] font-mono tracking-[0.12em] uppercase" style={{ color: accentText(a) }}>{ea.version}</span>
-        <span className="w-7 h-7 rotate-45 rounded-[3px] border flex items-center justify-center" style={{ borderColor: accent(a, 0.4) }}>
-          <span className="-rotate-45 text-[7px] font-mono" style={{ color: accentText(a) }}>999.9</span>
+        <span aria-hidden="true" title="Au — fine gold hallmark" className="w-7 h-7 rotate-45 rounded-[3px] border flex items-center justify-center" style={{ borderColor: accent(a, 0.4) }}>
+          <span className="-rotate-45 text-[9px] font-serif font-semibold leading-none" style={{ color: accentText(a), fontFamily: SERIF }}>Au</span>
         </span>
       </div>
 
@@ -177,12 +153,12 @@ function EaPlate({ ea, copy, onGet, badge }: { ea: EaProduct; copy: (typeof LAND
 export default function LandingPage() {
   const { locale } = useLocale();
   const t = LANDING_COPY[locale];
+  const c = COMMON_COPY[locale];
   const [scrolled, setScrolled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<EaProduct["id"]>("goldmaster");
   const [period, setPeriod] = useState<PeriodId>("monthly");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -203,14 +179,14 @@ export default function LandingPage() {
         if (res.status === 401) { window.location.href = "/signup?redirect=pricing"; return; }
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.url) { window.location.href = data.url; return; }
-        setCheckoutError(data.error || "Không thể tạo phiên thanh toán. Vui lòng thử lại.");
+        setCheckoutError(data.error || c.errors.checkoutFailed);
         setLoading(false);
       } catch {
-        setCheckoutError("Lỗi kết nối. Vui lòng thử lại.");
+        setCheckoutError(c.errors.connection);
         setLoading(false);
       }
     },
-    [period],
+    [period, c],
   );
 
   const activeEa = tab === "goldmaster" ? GOLDMASTER : tab === "scalp" ? GOLD_SCALP : TIGOLD;
@@ -235,8 +211,13 @@ export default function LandingPage() {
                 url: "https://www.dralvo.com",
                 logo: "https://www.dralvo.com/brand/dralvo-icon-180.png",
                 description:
-                  "Dralvo Capital builds verified automated XAUUSD (gold) trading robots for MetaTrader 5: GoldMaster (D1 swing), GoldScalp (M5 momentum) and the free TiGold engine. No martingale, no grid.",
-                sameAs: ["https://t.me/dralvoea"],
+                  "Dralvo Capital builds verified automated XAUUSD (gold) trading robots for MetaTrader 5: GoldMaster (D1 swing), GoldScalp (M15 momentum) and the free TiGold engine. No martingale, no grid.",
+                sameAs: [
+                  "https://t.me/dralvoea",
+                  "https://www.facebook.com/dralvo.ea/",
+                  "https://www.youtube.com/@dralvo-ea",
+                  "https://x.com/dralvo_ea",
+                ],
               },
               {
                 "@type": "WebSite",
@@ -244,16 +225,16 @@ export default function LandingPage() {
                 url: "https://www.dralvo.com",
                 name: "Dralvo",
                 publisher: { "@id": "https://www.dralvo.com/#org" },
-                inLanguage: ["en", "vi", "pt-BR", "zh", "es", "hi", "id", "ru"],
+                inLanguage: ["en", "vi", "pt-BR", "es", "id", "ar"],
               },
               {
                 "@type": "Product",
-                name: "Dralvo Unlimited",
+                name: "Dralvo VIP",
                 brand: { "@id": "https://www.dralvo.com/#org" },
                 category: "Automated trading software (MetaTrader 5 Expert Advisor)",
                 operatingSystem: "Windows (MetaTrader 5)",
                 description:
-                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M5 momentum) and TiGold robots for XAUUSD. No martingale, no grid.",
+                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M15 momentum) and TiGold robots for XAUUSD. No martingale, no grid.",
                 offers: {
                   "@type": "Offer",
                   priceCurrency: "USD",
@@ -296,21 +277,8 @@ export default function LandingPage() {
             navClassName="bg-deep/85 backdrop-blur-xl border-b border-border"
             wordmarkClassName="text-2xl font-black transition-colors group-hover:text-text-primary"
             containerClassName="px-6"
-            links={[
-              { label: "Sản phẩm", href: "#products", showFrom: "sm" as const },
-              { label: "Hiệu suất", href: "#evidence", showFrom: "sm" as const },
-              { label: "Công cụ", href: "#fx-tool", showFrom: "md" as const },
-              { label: "TiGold", href: "/tigold", showFrom: "md" as const, className: "font-semibold", style: { color: "#00c98d" } },
-              { label: "Bảng giá", href: "#pricing", showFrom: "sm" as const },
-              { label: "Affiliate", href: "/affiliate", showFrom: "sm" as const },
-            ]}
-            actions={
-              <>
-                <Link href="#pricing" className="rounded-md bg-gold-action px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Dùng thử miễn phí</Link>
-                <Link href="/signup" className="rounded-md bg-gold-bright px-2 py-1 text-[12px] font-semibold text-[#060609] no-underline transition-all duration-200 hover:bg-gold-actionHover">Đăng ký</Link>
-                <Link href="/login" className="rounded-md border border-border px-2 py-1 text-[12px] font-semibold text-text-primary hover:border-gold/40 hover:text-gold transition-all no-underline">Đăng nhập</Link>
-              </>
-            }
+            links={mainNavLinks(locale)}
+            actions={<MainNavActions locale={locale} />}
           />
         </div>
       </div>
@@ -335,15 +303,23 @@ export default function LandingPage() {
               <p className="hero-rise mt-6 font-mono text-[10.5px] tracking-[0.1em] uppercase text-text-muted" style={{ animationDelay: "320ms" }}>{t.hero.metalNote}</p>
             </div>
 
-            {/* Equity curve + dual readout */}
+            {/* Live demo clip + dual readout */}
             <div className="hero-rise rounded-2xl border border-border bg-card overflow-hidden" style={{ boxShadow: "0 30px 70px -50px rgba(240,200,90,0.6)", animationDelay: "220ms" }}>
               <div className="flex items-center justify-between px-5 pt-4 pb-2">
                 <span className="font-mono text-[11px]" style={{ color: "var(--gold-bright)" }}>{t.hero.equityLabel}</span>
                 <span className="font-mono text-[10px] text-text-muted">{t.hero.equityRisk}</span>
               </div>
-              <div className="px-3"><EquityCurve /></div>
-              <div className="flex items-center justify-between px-5 pb-3 font-mono text-[11px] text-text-muted">
-                <span>$100K</span><span className="text-green">→ $1.6M</span>
+              <div className="px-3 pb-3">
+                <video
+                  className="w-full h-auto rounded-lg"
+                  style={{ aspectRatio: "720 / 802" }}
+                  src="/videos/tigold-demo.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 border-t border-border">
                 {EA_PRODUCTS.map((ea, i) => (
@@ -601,6 +577,10 @@ export default function LandingPage() {
             <div>
               <BrandLink logoSize={32} wordmarkClassName="text-lg" />
               <p className="text-sm text-text-muted leading-relaxed max-w-[240px] mt-4">{t.footer.tagline}</p>
+              <div className="mt-4 flex flex-nowrap items-center gap-3">
+                <InstallAppButton locale={locale} compact />
+                <SocialLinks />
+              </div>
             </div>
             <div>
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.product}</div>
@@ -611,6 +591,8 @@ export default function LandingPage() {
                 <Link href="/tools/calculator" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.tools}</Link>
                 <Link href="/track-record" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.trackRecord}</Link>
                 <Link href="/compare" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.compare}</Link>
+                <Link href="/methodology" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Methodology</Link>
+                <Link href="/blog" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Blog</Link>
                 <Link href="/affiliate" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">Affiliate</Link>
               </div>
             </div>

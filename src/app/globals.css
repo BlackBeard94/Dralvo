@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+/* Fonts are loaded via <link rel="stylesheet"> in layout.tsx <head> (with
+   preconnect) instead of a CSS @import — a stylesheet link is discovered in the
+   initial HTML and isn't gated behind parsing this CSS file, so it's far less
+   render-blocking. Playfair was dropped (it only ever sat behind DM Serif as a
+   fallback that never rendered). */
 
 @tailwind base;
 @tailwind components;
@@ -39,29 +43,44 @@
     --red: #F6465D;
     --green: #0ECB81;
     --ring: var(--gold-primary);
+    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 8px 24px -10px rgba(0, 0, 0, 0.5);
   }
 
-  /* ── LIGHT THEME ── */
+  /* ── LIGHT THEME — Binance-style ──
+     Clean neutral whites/grays (no slate-blue tint) with the brand yellow
+     #F0B90B as the accent, matching Binance's light UI.
+     Elevation: bg-deep = soft off-white page (#FAFAFA); bg-surface/bg-card =
+     pure white panels separated by the light #EAECEF divider.
+     Neutral text ramp from Binance: #1E2329 / #474D57 / #707A8A.
+     Gold: #F0B90B for fills (near-black text on top) and accents; gold used as
+     small text/icons is nudged to a richer, legible gold so it doesn't vibrate
+     on white. Buy/sell use Binance green #2EBD85 / red #F6465D. */
   [data-theme="light"] {
-    --bg-deep: #FAFAFA;
-    --bg-surface: #FFFFFF;
-    --bg-card: #FFFFFF;
-    --bg-border: #EAECEF;
+    --bg-deep: #FAFAFA;     /* page background — Binance off-white */
+    --bg-surface: #FFFFFF;  /* raised surface — white */
+    --bg-card: #FFFFFF;     /* card — white, separated by the divider */
+    --bg-border: #C2C7D0;   /* stronger divider so cards read clearly */
+    /* One text colour for the whole ramp — hierarchy comes from font size,
+       not colour. Primary/secondary/muted all use #1E2329 (~14:1 on white). */
     --text-primary: #1E2329;
-    --text-secondary: #707A8A;
-    --text-muted: #AEB4BC;
-    --gold-primary: #F0B90B;
-    --gold-bright: #C99A08;
-    --gold-action: #F0B90B;
-    --gold-action-hover: #FCD535;
-    --gold-pale: #E6B205;
-    --gold-dim: #C99A08;
-    --gold-ghost: rgba(240, 185, 11, 0.06);
-    --gold-glow: rgba(240, 185, 11, 0.12);
-    --border-gold: rgba(240, 185, 11, 0.2);
-    --red: #F6465D;
-    --green: #0ECB81;
-    --ring: var(--gold-primary);
+    --text-secondary: #1E2329;
+    --text-muted: #1E2329;
+    --gold-primary: #9A7400;        /* gold text/icon — deep gold, pops on white */
+    --gold-bright: #B8860B;         /* rich gold text/icon, legible on white */
+    --gold-action: #F0B90B;         /* fill button (near-black text on top) */
+    --gold-action-hover: #FCD535;   /* Binance bright yellow hover */
+    --gold-pale: #8A6700;           /* secondary gold text — deep */
+    --gold-dim: #6F5200;            /* deepest gold text */
+    --gold-ghost: rgba(154, 116, 0, 0.08);
+    --gold-glow: rgba(154, 116, 0, 0.16);
+    --border-gold: rgba(154, 116, 0, 0.45);  /* visible gold edge on light */
+    --red: #F6465D;    /* Binance sell red */
+    --green: #2EBD85;  /* Binance buy green */
+    --ring: var(--gold-action);
+    /* Elevation — cards lift off the light page with a soft shadow. */
+    --card-shadow: 0 1px 3px rgba(20, 28, 38, 0.08), 0 10px 24px -8px rgba(20, 28, 38, 0.14);
+    --card-shadow-hover: 0 2px 6px rgba(20, 28, 38, 0.10), 0 18px 38px -12px rgba(20, 28, 38, 0.20);
   }
 
   body {
@@ -117,6 +136,12 @@
     }
     body::after {
       animation: none;
+    }
+    /* The notification ticker is an intentional, informational scroll — keep it
+       moving even under reduced-motion (it conveys content, not decoration). */
+    .animate-marquee {
+      animation-duration: 32s !important;
+      animation-iteration-count: infinite !important;
     }
   }
 
@@ -237,3 +262,122 @@
 /* Icon tile pop on card hover */
 .icon-pop { transition: transform 0.3s ease, background-color 0.3s ease; }
 .group:hover .icon-pop { transform: scale(1.08); }
+
+/* Elevated card — soft shadow that lifts off the page, stronger on hover.
+   Theme-aware via --card-shadow (subtle on dark, prominent on light). */
+.card-elevate {
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card-elevate:hover {
+  box-shadow: var(--card-shadow-hover, var(--card-shadow));
+}
+
+/* Marquee ticker — scrolls content right→left; two identical halves loop at -50%. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+  will-change: transform;
+}
+
+/* Marquee edge fade — text dissolves into the strip as it enters/exits, so the
+   ends never look hard-clipped. Applied to the scroll viewport; the mask is
+   colour-agnostic (alpha only) so it works on both dark and light themes. */
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 1.25rem,
+    #000 calc(100% - 1.25rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 1.25rem,
+    #000 calc(100% - 1.25rem),
+    transparent 100%
+  );
+}
+
+/* ── Blog article body (rendered from Markdown) ────────────────────────── */
+.prose-blog {
+  color: var(--text-secondary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+.prose-blog > * + * { margin-top: 1.15em; }
+.prose-blog h2 {
+  color: var(--text-primary);
+  font-family: 'DM Serif Display', 'Times New Roman', serif;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
+  scroll-margin-top: 5rem;
+}
+.prose-blog h3 {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+  scroll-margin-top: 5rem;
+}
+.prose-blog p { color: var(--text-secondary); }
+.prose-blog a { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px; }
+.prose-blog a:hover { color: var(--gold-primary); }
+.prose-blog strong { color: var(--text-primary); font-weight: 600; }
+.prose-blog ul, .prose-blog ol { padding-left: 1.4em; }
+.prose-blog ul { list-style: disc; }
+.prose-blog ol { list-style: decimal; }
+.prose-blog li { margin-top: 0.4em; }
+.prose-blog li::marker { color: var(--gold-primary); }
+.prose-blog blockquote {
+  border-left: 3px solid var(--border-gold, rgba(212,168,67,0.5));
+  padding-left: 1.1em;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.prose-blog code {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: 5px;
+  padding: 0.12em 0.4em;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  color: var(--text-primary);
+}
+.prose-blog pre {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: 12px;
+  padding: 1.1em 1.25em;
+  overflow-x: auto;
+}
+.prose-blog pre code { background: none; border: none; padding: 0; }
+.prose-blog img { border-radius: 12px; border: 1px solid var(--bg-border); }
+.prose-blog hr { border-color: var(--bg-border); margin: 2.4em 0; }
+.prose-blog table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.prose-blog th, .prose-blog td { border: 1px solid var(--bg-border); padding: 0.55em 0.8em; text-align: left; }
+.prose-blog th { background: var(--bg-surface); color: var(--text-primary); }
+
+/* --- Active-nav "lamp" glow — shared by the admin + dashboard sidebars --- */
+.nav-lamp {
+  box-shadow: 0 0 0 1px rgba(252, 213, 53, 0.14), 0 0 16px -4px rgba(252, 213, 53, 0.42);
+  animation: navLampPulse 0.55s ease-out;
+}
+.nav-lamp-bar {
+  box-shadow: 0 0 9px 1px rgba(252, 213, 53, 0.9);
+}
+@keyframes navLampPulse {
+  0%   { box-shadow: 0 0 0 1px rgba(252, 213, 53, 0.14), 0 0 0 0 rgba(252, 213, 53, 0); }
+  45%  { box-shadow: 0 0 0 1px rgba(252, 213, 53, 0.40), 0 0 26px 1px rgba(252, 213, 53, 0.65); }
+  100% { box-shadow: 0 0 0 1px rgba(252, 213, 53, 0.14), 0 0 16px -4px rgba(252, 213, 53, 0.42); }
+}
+@media (prefers-reduced-motion: reduce) { .nav-lamp { animation: none; } }

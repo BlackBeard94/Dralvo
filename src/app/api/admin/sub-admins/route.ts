@@ -5,14 +5,14 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import { getAdmin, can, listSubAdmins } from "@/lib/admin/auth";
+import { getAdmin, listSubAdmins } from "@/lib/admin/auth";
 import type { AdminPermissions } from "@/lib/admin/types";
 import { DEFAULT_ADMIN_PERMISSIONS, DEFAULT_SUPPORT_PERMISSIONS } from "@/lib/admin/types";
 
 export async function GET(_request: NextRequest) {
   const admin = await getAdmin();
-  if (!admin || !can(admin, "admins.manage")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!admin || admin.role !== "super_admin") {
+    return NextResponse.json({ error: "Chỉ super admin mới quản lý được quản trị viên." }, { status: 403 });
   }
   const subAdmins = await listSubAdmins();
   return NextResponse.json({ subAdmins });
@@ -20,8 +20,8 @@ export async function GET(_request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const admin = await getAdmin();
-  if (!admin || !can(admin, "admins.manage")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!admin || admin.role !== "super_admin") {
+    return NextResponse.json({ error: "Chỉ super admin mới quản lý được quản trị viên." }, { status: 403 });
   }
 
   const client = getSupabaseAdminClient();
@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
         };
 
         // Find user by email in auth.users
-        const { data: existing } = await client.auth.admin.listUsers({ page: 1, perPage: 1 });
         // ponytail: Supabase admin API doesn't support lookup-by-email directly.
         // We search the first page; for production, iterate pages.
         const allUsers = await client.auth.admin.listUsers({ page: 1, perPage: 100 });

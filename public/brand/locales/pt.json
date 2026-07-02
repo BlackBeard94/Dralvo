@@ -1,0 +1,35 @@
+{
+  "dir": "ltr",
+  "label": "Português (BR)",
+  "fontUI": "Inter, 'Segoe UI', Arial, sans-serif",
+  "fontDisp": "'Playfair Display', Georgia, serif",
+  "tagline": "OURO COM DISCIPLINA · SEM DADOS FALSOS",
+  "site": "dralvo.com",
+  "disclaimer": "Resultados de backtest passados não garantem resultados futuros. Operar envolve risco de perda.",
+  "cta": { "free": "Baixe o TiGold grátis", "try": "Testar", "start": "Começar", "vip": "Assinar VIP" },
+  "img": {
+    "ig":   { "h": ["Robô de trading", "de ouro XAUUSD"], "stats": "Net +139% · PF 1,89 · Max DD 18,8% · 33 meses" },
+    "story":{ "h": ["Ouro, mas", "com disciplina"], "sub": "EA de XAUUSD para MetaTrader 5" },
+    "cover":{ "h": "Domine o ouro.", "sub": "Robô de trading de ouro XAUUSD · MT5 · Dados reais" },
+    "yt":   { "h": ["BACKTEST", "SEM FARSA"], "sub": "Net +139% · Max DD 18,8%" },
+    "quote":{ "a": "“Não olhe a taxa de acerto,", "b": "olhe a esperança matemática.”", "attr": "R:R × taxa de acerto — Dralvo" },
+    "ads": {
+      "leaderboard": { "h": "Robô de ouro XAUUSD", "s": "Dados reais · MT5" },
+      "rectangle":   { "h": "Domine o ouro", "s": "EA de XAUUSD · MT5" },
+      "skyscraper":  { "h": "Ouro|com disciplina", "s": "MT5 · Dados reais" },
+      "mobile":      { "h": "Robô de ouro", "s": "XAUUSD · Dados reais" }
+    },
+    "emailTag": "OURO COM DISCIPLINA · SEM DADOS FALSOS"
+  },
+  "web": {
+    "navRobots": "Robôs", "navWhy": "Dados Reais", "navPricing": "Preços", "navStart": "Começar",
+    "heroEyebrow": "Domine o ouro · Sem dados falsos",
+    "heroH": ["Robôs de", "ouro XAUUSD", "automáticos"],
+    "heroSub": "Expert Advisors para MetaTrader 5, comprovados pelos próprios backtests verificados — drawdown e meses de perda divulgados.",
+    "ctaFree": "Baixe o TiGold grátis", "ctaBacktest": "Ver o backtest",
+    "secProdEyebrow": "Produtos", "secProdTitle": "3 robôs, 1 filosofia",
+    "whyEyebrow": "Por que somos diferentes", "whyTitle": "“Dados Reais”",
+    "whyLede": "A maioria dos grupos de EA promete “100%/mês” e apaga tudo quando as contas quebram. A Dralvo faz o oposto: cada robô publica seu backtest real — com drawdown e meses de perda.",
+    "pricingEyebrow": "Preços VIP", "pricingTitle": "Desbloqueie todos os robôs"
+  }
+}

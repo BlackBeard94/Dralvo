@@ -1,0 +1,15 @@
+<svg width="318" height="88" viewBox="0 0 318 88" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dralvo">
+  <title>Dralvo</title>
+  <desc>Dralvo horizontal logo lockup for dark backgrounds: gold token beside the DRALVO wordmark.</desc>
+  <g transform="translate(6 12)">
+    <defs><clipPath id="dtl"><polygon points="0,0 76,0 0,76"/></clipPath></defs>
+    <circle cx="32" cy="32" r="30" fill="#15181E"/>
+    <circle cx="32" cy="32" r="29.3" fill="none" stroke="#8B6914" stroke-width="1.2"/>
+    <circle cx="32" cy="32" r="25.8" fill="none" stroke="#F0B90B" stroke-width="2.6"/>
+    <g transform="translate(11.5 11.5) scale(0.64)">
+      <path d="M14 10 H30 A22 22 0 0 1 30 54 H14 Z M22 18 H30 A14 14 0 0 1 30 46 H22 Z" fill="#F0B90B" fill-rule="evenodd"/>
+      <path d="M14 10 H30 A22 22 0 0 1 30 54 H14 Z M22 18 H30 A14 14 0 0 1 30 46 H22 Z" fill="#FCD535" fill-rule="evenodd" clip-path="url(#dtl)"/>
+    </g>
+  </g>
+  <text x="86" y="58" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-weight="700" font-size="40" letter-spacing="4.5" fill="#EAECEF">DRA<tspan fill="#F0B90B">L</tspan>VO</text>
+</svg>

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   const tier = await getUserPlanTierByUserId(user.id);
   if (!isPaidTier(tier)) {
     return NextResponse.json(
-      { error: "Historical thesis replay requires Dralvo Unlimited." },
+      { error: "Historical thesis replay requires Dralvo VIP." },
       { status: 403 },
     );
   }

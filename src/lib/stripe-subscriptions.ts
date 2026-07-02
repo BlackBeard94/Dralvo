@@ -151,6 +151,8 @@ export async function upsertProSubscriptionFromCheckoutSession(
       stripe_subscription_id: subscriptionId,
       status,
       current_period_end: currentPeriodEnd,
+      // Real paid price (cents→USD), so revenue reads don't rely on a flat proxy.
+      amount_usd: (session.amount_total ?? 0) / 100,
     },
     {
       onConflict: "user_id",
@@ -159,6 +161,31 @@ export async function upsertProSubscriptionFromCheckoutSession(
 
   if (error) {
     throw new Error(`Failed to upsert subscription: ${error.message}`);
+  }
+
+  // VIP grants one license key per EA (idempotent). Provisioned HERE so BOTH
+  // the Stripe webhook and the checkout-success redirect create the keys — the
+  // redirect path is what makes upgrades work when the webhook isn't wired
+  // (e.g. Stripe test mode without a forwarded endpoint).
+  const expiresAt = currentPeriodEnd ?? periodEndFromPlan(session.metadata?.period);
+  const VIP_PRODUCTS: { product: string; max_accounts: number }[] = [
+    { product: "goldmaster", max_accounts: 2 },
+    { product: "goldscalp", max_accounts: 2 },
+    { product: "tigold", max_accounts: 1 },
+  ];
+  const { error: licenseError } = await supabase.from("license_keys").upsert(
+    VIP_PRODUCTS.map((p) => ({
+      user_id: userId,
+      product: p.product,
+      plan: "unlimited",
+      is_lifetime: false,
+      expires_at: expiresAt,
+      max_accounts: p.max_accounts,
+    })),
+    { onConflict: "user_id,product" },
+  );
+  if (licenseError) {
+    throw new Error(`Failed to provision VIP licenses: ${licenseError.message}`);
   }
 }
 

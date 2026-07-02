@@ -59,7 +59,7 @@ describe("/api/alerts plan gating", () => {
 
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual({
-      error: "Custom alerts require Dralvo Unlimited.",
+      error: "Custom alerts require Dralvo VIP.",
     });
     expect(mocks.getAlertsByUserId).not.toHaveBeenCalled();
   });

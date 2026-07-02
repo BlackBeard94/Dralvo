@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { DriversPage } from "@/components/dashboard/dashboard-pages";
-
-export const metadata: Metadata = {
-  title: "Drivers | Dralvo",
-};
-
+// V1 market-analysis surface — not part of the V2 EA product and not in nav.
 export default function DashboardDriversRoute() {
-  return <DriversPage />;
+  redirect("/dashboard");
 }
