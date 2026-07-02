@@ -122,7 +122,8 @@ export async function GET(request: NextRequest) {
     return html("Lỗi cấp license", `${who}\nKhông cấp được (${grant.error}). Nếu MT5 đã gắn license khác, kiểm tra lại; hoặc thử lại sau.`, false);
   }
 
-  // Fetch the granted key (mt5_account is unique) to DM the customer.
+  // Security: the key is NOT sent over Telegram — the customer reads it in the
+  // authenticated dashboard only. Fetch just for the audit log.
   const supabase = getSupabaseAdminClient();
   let licenseKey: string | null = null;
   if (supabase) {
@@ -133,7 +134,7 @@ export async function GET(request: NextRequest) {
 
   const sent = await sendTelegramMessage(
     chat,
-    `🎉 <b>License TiGold đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n👤 Tài khoản Dralvo: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n${licenseKey ? `🔑 License key: <code>${licenseKey}</code>\n` : ""}\n📥 Đăng nhập <b>${SITE}/dashboard</b> để xem license + tải EA, hoặc tải trực tiếp:\n• EA: ${SITE}/downloads/tigold/Dralvo%20TiGold.ex5\n• Preset: ${SITE}/downloads/tigold/Dralvo%20tigold%20v1.set\n• Hướng dẫn: ${SITE}/downloads/tigold/Huong_dan_su_dung.html\n\n⚙️ Cài EA vào MT5 → nhập license key → chạy XAUUSD M1.\n❓ Hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
+    `🎉 <b>License TiGold đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n👤 Tài khoản: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n\n🔐 Vì bảo mật, <b>license key KHÔNG gửi qua chat</b>. Bạn vui lòng:\n1️⃣ Đăng nhập <b>${SITE}/dashboard</b>\n2️⃣ Mở thẻ <b>TiGold Free</b> → <b>copy license key</b> + tải EA & preset\n3️⃣ Cài EA vào MT5 → nhập key → chạy XAUUSD M1\n\n❓ Cần hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
   );
   console.warn(`[AUDIT license-approve] APPROVED email=${email} mt5=${mt5} chat=${chat} key=${(licenseKey ?? "?").slice(0, 8)}… dm_sent=${sent}`);
   return html(
