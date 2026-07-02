@@ -50,18 +50,34 @@ export function parseXauusdCandles(data: TwelveDataResponse) {
   return candles;
 }
 
+/**
+ * Last good response, cached in module memory (per warm serverless instance).
+ * Serves two jobs:
+ *   1. Within FRESH_MS, answer straight from cache so many polling dashboards
+ *      share one upstream call — this is what keeps Twelve Data under its
+ *      free-tier burst limit and prevents 429s in the first place.
+ *   2. On any upstream failure (429, timeout, bad payload) we return the last
+ *      good data marked `stale` instead of blanking the card with a raw
+ *      provider error. Real error is logged server-side, never sent to the UI.
+ */
+let cache: { spot: number; candles: CandleOHLC[]; at: number } | null = null;
+const FRESH_MS = 45_000; // dashboards poll every 60s; serve cache below this age
+
 export async function GET() {
   const apiKey = process.env.TWELVE_DATA_API_KEY;
   if (!apiKey) {
+    if (cache) {
+      return NextResponse.json({ ok: true, source: "cache", stale: true, spot: cache.spot, candles: cache.candles });
+    }
     return NextResponse.json(
-      {
-        ok: false,
-        source: "unavailable",
-        error: "TWELVE_DATA_API_KEY not set",
-        candles: [],
-      },
+      { ok: false, source: "unavailable", error: "market_data_unavailable", candles: [] },
       { status: 503 },
     );
+  }
+
+  // Fresh enough — skip the upstream call entirely.
+  if (cache && Date.now() - cache.at < FRESH_MS) {
+    return NextResponse.json({ ok: true, source: "cache", spot: cache.spot, candles: cache.candles });
   }
 
   try {
@@ -75,22 +91,22 @@ export async function GET() {
     const candles = parseXauusdCandles(
       (await response.json()) as TwelveDataResponse,
     );
+    const spot = candles.at(-1)!.close;
+    cache = { spot, candles, at: Date.now() };
 
-    return NextResponse.json({
-      ok: true,
-      source: "twelve-data",
-      spot: candles.at(-1)!.close,
-      candles,
-    });
+    return NextResponse.json({ ok: true, source: "twelve-data", spot, candles });
   } catch (error) {
+    // Log the real cause for ops; never surface provider internals to users.
+    console.warn("[/api/xauusd] upstream failed:", error instanceof Error ? error.message : String(error));
+
+    // Prefer last good data over an error — the card stays populated.
+    if (cache) {
+      return NextResponse.json({ ok: true, source: "twelve-data", stale: true, spot: cache.spot, candles: cache.candles });
+    }
+
     return NextResponse.json(
-      {
-        ok: false,
-        source: "unavailable",
-        error: error instanceof Error ? error.message : String(error),
-        candles: [],
-      },
-      { status: 502 },
+      { ok: false, source: "unavailable", error: "market_data_unavailable", candles: [] },
+      { status: 200 },
     );
   }
 }

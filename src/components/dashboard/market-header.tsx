@@ -34,7 +34,6 @@ function currentSession(hour: number) {
 export function MarketHeader() {
   const [candles, setCandles] = useState<CandleOHLC[]>([]);
   const [spot, setSpot] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -55,12 +54,10 @@ export function MarketHeader() {
 
       setCandles(data.candles);
       setSpot(data.spot);
-      setError(null);
-    } catch (fetchError) {
+    } catch {
+      // Keep the last good data on screen; the server already falls back to a
+      // cached quote and never returns raw provider errors to expose here.
       if (controller.signal.aborted) return;
-      setError(
-        fetchError instanceof Error ? fetchError.message : "Data unavailable",
-      );
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
@@ -97,10 +94,15 @@ export function MarketHeader() {
             XAUUSD market context
           </p>
           <p className="mt-1 text-sm text-text-secondary">
-            {loading ? "Loading verified market data..." : "Market data unavailable"}
+            {loading ? "Loading verified market data..." : "Market data is updating — check back shortly."}
           </p>
         </div>
-        <span className="text-xs text-red">{error}</span>
+        {!loading && (
+          <span className="flex items-center gap-2 text-xs text-text-muted">
+            <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />
+            Refreshing
+          </span>
+        )}
       </div>
     );
   }

@@ -38,7 +38,6 @@ function gridPrices(min: number, max: number) {
 export function XauusdChart() {
   const [candles, setCandles] = useState<CandleOHLC[]>([]);
   const [spot, setSpot] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -60,12 +59,10 @@ export function XauusdChart() {
 
       setCandles(data.candles);
       setSpot(data.spot);
-      setError(null);
-    } catch (fetchError) {
+    } catch {
+      // Keep last good bars; server already serves a cached fallback and never
+      // returns raw provider errors to surface here.
       if (controller.signal.aborted) return;
-      setError(
-        fetchError instanceof Error ? fetchError.message : "Data unavailable",
-      );
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
@@ -105,10 +102,9 @@ export function XauusdChart() {
             {loading ? "Loading verified XAUUSD bars" : "Chart data unavailable"}
           </h2>
           <p className="mt-2 text-sm leading-6 text-text-muted">
-            Dralvo does not display simulated candles when Twelve Data cannot
-            provide the requested series.
+            Live bars are updating. Dralvo only shows verified candles, so this
+            refreshes automatically in a moment.
           </p>
-          {error && <p className="mt-3 font-mono text-xs text-red">{error}</p>}
           <button
             type="button"
             onClick={() => void fetchChart()}
