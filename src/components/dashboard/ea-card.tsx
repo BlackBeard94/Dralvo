@@ -4,12 +4,15 @@ import { useCallback, useState } from "react";
 import {
   Check,
   ChevronDown,
+  ChevronsDown,
   Copy,
   Loader2,
   MonitorSmartphone,
   Pencil,
   Plus,
+  Send,
   ShieldCheck,
+  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
@@ -30,6 +33,17 @@ type DevicesState = {
   maxAccounts: number;
   preBound: string | null;
   devices: Device[];
+};
+
+// Inline copy for the TiGold "activate via bot" CTA (kept out of the big i18n
+// file since it's a single self-contained widget).
+const ACTIVATE_COPY: Record<string, { hint: string; btn: string; opening: string; err: string }> = {
+  vi: { hint: "Bấm để chat với bot Dralvo & nhận license miễn phí. Key sẽ hiện tại đây sau khi admin duyệt.", btn: "Kích hoạt qua Telegram", opening: "Đang mở…", err: "Không tạo được link, thử lại." },
+  en: { hint: "Tap to chat with the Dralvo bot & get your free license. The key appears here once approved.", btn: "Activate via Telegram", opening: "Opening…", err: "Couldn't create the link, try again." },
+  "pt-BR": { hint: "Toque para falar com o bot da Dralvo e receber sua licença grátis. A chave aparece aqui após a aprovação.", btn: "Ativar via Telegram", opening: "Abrindo…", err: "Não foi possível criar o link, tente de novo." },
+  es: { hint: "Toca para chatear con el bot de Dralvo y obtener tu licencia gratis. La clave aparece aquí tras la aprobación.", btn: "Activar por Telegram", opening: "Abriendo…", err: "No se pudo crear el enlace, inténtalo de nuevo." },
+  id: { hint: "Ketuk untuk chat dengan bot Dralvo & dapatkan lisensi gratis. Kunci muncul di sini setelah disetujui.", btn: "Aktifkan via Telegram", opening: "Membuka…", err: "Gagal membuat tautan, coba lagi." },
+  ar: { hint: "اضغط للدردشة مع بوت Dralvo والحصول على ترخيصك المجاني. يظهر المفتاح هنا بعد الموافقة.", btn: "تفعيل عبر تيليجرام", opening: "جارٍ الفتح…", err: "تعذّر إنشاء الرابط، حاول مجدداً." },
 };
 
 export interface EaCardProps {
@@ -66,6 +80,27 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
   const [editing, setEditing] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [busy, setBusy] = useState(false);
+  const [activating, setActivating] = useState(false);
+  const [actErr, setActErr] = useState<string | null>(null);
+  const act = ACTIVATE_COPY[locale] ?? ACTIVATE_COPY.en;
+
+  // TiGold free activation: mint a per-account connect code, then open the bot
+  // deep-link so the bot binds the license to THIS account (no email typing).
+  const activate = useCallback(async () => {
+    setActivating(true);
+    setActErr(null);
+    try {
+      const res = await fetch("/api/telegram/connect", { cache: "no-store" });
+      const body = await res.json();
+      if (!res.ok || !body?.connectCode) throw new Error();
+      const bot = String(body.botUsername || "@dralvo_bot").replace(/^@/, "");
+      window.open(`https://t.me/${bot}?start=${body.connectCode}`, "_blank", "noopener,noreferrer");
+    } catch {
+      setActErr(act.err);
+    } finally {
+      setActivating(false);
+    }
+  }, [act.err]);
 
   const copyKey = useCallback(() => {
     if (!license) return;
@@ -189,6 +224,37 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
           <p className="text-[11px] text-text-muted mt-1.5">
             {c.expires}: {license.expiresAt ? new Date(license.expiresAt).toLocaleDateString(locale) : c.forever}
           </p>
+        </div>
+      ) : id === "tigold" ? (
+        <div
+          className="mb-3 rounded-xl border px-3 py-3"
+          style={{
+            borderColor: `${accent}66`,
+            background: `${accent}0d`,
+            boxShadow: `0 0 0 1px ${accent}22, 0 10px 34px -14px ${accent}77`,
+          }}
+        >
+          <div className="flex items-start gap-2">
+            <Sparkles className="h-4 w-4 mt-0.5 shrink-0" style={{ color: accent }} />
+            <div className="min-w-0">
+              <p className="text-[13px] font-semibold text-text-primary">{c.noKey}</p>
+              <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">{act.hint}</p>
+            </div>
+          </div>
+          <div className="flex justify-center my-1">
+            <ChevronsDown className="h-4 w-4 animate-bounce" style={{ color: accent }} aria-hidden />
+          </div>
+          <button
+            type="button"
+            onClick={() => void activate()}
+            disabled={activating}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#060609] disabled:opacity-60 transition-transform hover:scale-[1.02]"
+            style={{ background: accent }}
+          >
+            {activating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {activating ? act.opening : act.btn}
+          </button>
+          {actErr && <p className="text-[11px] text-red mt-1.5 text-center">{actErr}</p>}
         </div>
       ) : (
         <div className="mb-3 rounded-xl border border-dashed border-border bg-deep/20 px-3 py-2.5">
