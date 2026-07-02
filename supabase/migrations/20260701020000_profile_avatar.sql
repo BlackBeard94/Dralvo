@@ -1,0 +1,4 @@
+-- User self-service: avatar. (full_name already exists on profiles.)
+alter table public.profiles add column if not exists avatar_url text;
+
+notify pgrst, 'reload schema';
