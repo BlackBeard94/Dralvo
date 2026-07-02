@@ -24,6 +24,16 @@ const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto 
 const GOLD_BRIGHT = "#f0cf5a";
 const alpha = (a: number) => `rgba(212,169,45,${a})`;
 
+// Step 1 (account-first) copy — inline, self-contained. Signup returns to /tigold.
+const ACCOUNT_COPY: Record<string, { eyebrow: string; title: string; sub: string; desc: string; btn: string; have: string; login: string }> = {
+  vi: { eyebrow: "Bắt đầu", title: "Tạo tài khoản Dralvo", sub: "License TiGold sẽ được cấp vào tài khoản Dralvo của bạn.", desc: "Tạo tài khoản Dralvo miễn phí (30 giây) — đây là nơi bạn nhận license key và tải EA. Xong bạn quay lại đúng trang này để tiếp tục.", btn: "Tạo tài khoản Dralvo", have: "Đã có tài khoản?", login: "Đăng nhập" },
+  en: { eyebrow: "Start here", title: "Create your Dralvo account", sub: "Your TiGold license is granted into your Dralvo account.", desc: "Create a free Dralvo account (30s) — this is where you'll get your license key and download the EA. Then come back to this page to continue.", btn: "Create Dralvo account", have: "Already have one?", login: "Log in" },
+  "pt-BR": { eyebrow: "Comece aqui", title: "Crie sua conta Dralvo", sub: "Sua licença TiGold é concedida na sua conta Dralvo.", desc: "Crie uma conta Dralvo grátis (30s) — é onde você receberá sua chave de licença e baixará o EA. Depois volte a esta página para continuar.", btn: "Criar conta Dralvo", have: "Já tem uma?", login: "Entrar" },
+  es: { eyebrow: "Empieza aquí", title: "Crea tu cuenta Dralvo", sub: "Tu licencia TiGold se otorga en tu cuenta Dralvo.", desc: "Crea una cuenta Dralvo gratis (30s) — ahí recibirás tu clave de licencia y descargarás el EA. Luego vuelve a esta página para continuar.", btn: "Crear cuenta Dralvo", have: "¿Ya tienes una?", login: "Iniciar sesión" },
+  id: { eyebrow: "Mulai di sini", title: "Buat akun Dralvo", sub: "Lisensi TiGold diberikan ke akun Dralvo Anda.", desc: "Buat akun Dralvo gratis (30 detik) — di sinilah Anda menerima kunci lisensi dan mengunduh EA. Lalu kembali ke halaman ini untuk melanjutkan.", btn: "Buat akun Dralvo", have: "Sudah punya?", login: "Masuk" },
+  ar: { eyebrow: "ابدأ من هنا", title: "أنشئ حساب Dralvo", sub: "يُمنح ترخيص TiGold إلى حساب Dralvo الخاص بك.", desc: "أنشئ حساب Dralvo مجانًا (30 ثانية) — هنا تحصل على مفتاح الترخيص وتنزّل الـ EA. ثم عُد إلى هذه الصفحة للمتابعة.", btn: "إنشاء حساب Dralvo", have: "لديك حساب؟", login: "تسجيل الدخول" },
+};
+
 /** Hero demo clip — self-hosted (not the YouTube Shorts embed, which pads the
  *  1080x1202 source into a fixed 9:16 canvas and shows player chrome/letterboxing).
  *  Empty string hides the video slot and the hero falls back to a single
@@ -67,6 +77,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 export default function TiGoldPage() {
   const { locale } = useLocale();
+  const ac = ACCOUNT_COPY[locale] ?? ACCOUNT_COPY.en;
   const t = TIGOLD_COPY[locale];
   const lc = LANDING_COPY[locale];
 
@@ -188,7 +199,31 @@ export default function TiGoldPage() {
           </div>
         </section>
 
-        {/* Step 1: account */}
+        {/* Step 1: create Dralvo account (account-first) */}
+        <section className="relative py-16 px-6">
+          <div className="max-w-[960px] mx-auto">
+            <Reveal className="text-center mb-8">
+              <Eyebrow>{ac.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.015em] mt-5 mb-3 text-balance" style={{ fontFamily: SERIF }}>{ac.title}</h2>
+              <p className="text-text-secondary max-w-[560px] mx-auto">{ac.sub}</p>
+            </Reveal>
+            <Reveal delay={60}>
+              <div className="rounded-2xl border p-7 flex flex-col sm:flex-row sm:items-center gap-5" style={{ borderColor: alpha(0.25), background: `linear-gradient(168deg, ${alpha(0.06)}, var(--bg-card) 55%)` }}>
+                <p className="flex-1 text-sm text-text-secondary leading-relaxed">{ac.desc}</p>
+                <a href="/signup?redirect=/tigold" className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-[#060609] no-underline transition-transform duration-200 hover:scale-[1.03]" style={{ background: GOLD_BRIGHT }}>
+                  {ac.btn} <ArrowRight size={15} />
+                </a>
+              </div>
+              <p className="mt-4 text-center text-[12px] text-text-muted">
+                {ac.have}{" "}
+                <a href="/login?redirect=/tigold" className="text-gold hover:underline">{ac.login}</a>
+              </p>
+              <div className="flex justify-center mt-5"><ArrowDown className="h-5 w-5 text-gold/50 animate-bounce" aria-hidden /></div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* Step 2: open GTC account */}
         <section className="relative py-20 px-6 bg-surface overflow-hidden">
           <GlowOrb className="w-[500px] h-[400px] -bottom-32 right-0 opacity-25" />
           <div className="max-w-[960px] mx-auto relative z-10">

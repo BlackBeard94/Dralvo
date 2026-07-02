@@ -520,7 +520,7 @@ export default function LandingPage() {
                     <ul className="space-y-2.5 mb-7 flex-1">
                       {tier.features.map((f) => (<li key={f} className="flex items-start gap-2 text-[13px] text-text-secondary"><Check size={14} className={cn("shrink-0 mt-0.5", popular ? "text-gold-bright" : "text-green")} /><span>{f}</span></li>))}
                     </ul>
-                    <button type="button" onClick={isFree ? () => { window.location.href = "/tigold"; } : () => checkout("unlimited")} disabled={loading} className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50", popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>{tier.cta}</button>
+                    <button type="button" onClick={isFree ? () => { window.location.href = "/signup?redirect=/dashboard"; } : () => checkout("unlimited")} disabled={loading} className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50", popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>{tier.cta}</button>
                   </div>
                 );
               })}
