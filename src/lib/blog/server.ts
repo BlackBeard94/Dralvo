@@ -43,7 +43,12 @@ function preferLocale(rows: BlogPost[], locale: SupportedLocale): BlogPost {
   );
 }
 
-/** Published posts for the blog index — one card per slug in the best locale. */
+/**
+ * Published posts for the blog index — STRICT to the requested locale.
+ * A post only appears in the language it was written in; there is no
+ * cross-locale fallback, so switching to a language with no posts shows the
+ * empty state rather than posts from another language.
+ */
 export async function getPublishedCards(locale: SupportedLocale): Promise<BlogPostCard[]> {
   const sb = getSupabaseAdminClient();
   if (!sb) return [];
@@ -51,26 +56,24 @@ export async function getPublishedCards(locale: SupportedLocale): Promise<BlogPo
     .from("blog_posts")
     .select(SELECT)
     .eq("status", "published")
+    .eq("locale", locale)
     .order("published_at", { ascending: false });
 
-  const bySlug = new Map<string, BlogPost[]>();
-  for (const r of (data ?? []) as Row[]) {
-    const p = rowToPost(r);
-    (bySlug.get(p.slug) ?? bySlug.set(p.slug, []).get(p.slug)!).push(p);
-  }
-  const cards = [...bySlug.values()].map((rows) => preferLocale(rows, locale));
-  cards.sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? ""));
-  return cards.map((p) => ({
-    slug: p.slug,
-    locale: p.locale,
-    title: p.title,
-    excerpt: p.excerpt,
-    cover_image_url: p.cover_image_url,
-    tags: p.tags,
-    reading_minutes: p.reading_minutes,
-    published_at: p.published_at,
-    author: p.author,
-  }));
+  // (slug, locale) is unique, so each slug appears at most once here.
+  return (data ?? []).map((r) => {
+    const p = rowToPost(r as Row);
+    return {
+      slug: p.slug,
+      locale: p.locale,
+      title: p.title,
+      excerpt: p.excerpt,
+      cover_image_url: p.cover_image_url,
+      tags: p.tags,
+      reading_minutes: p.reading_minutes,
+      published_at: p.published_at,
+      author: p.author,
+    };
+  });
 }
 
 /** A published post by slug in the best available locale (or null). */
