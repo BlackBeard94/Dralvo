@@ -10,6 +10,7 @@ export const AGENT_SCOPES = [
   { key: "ops:customers", label: "Ops — khách & thanh toán", desc: "Feed khách mới đăng ký + thanh toán mới (email, gói, ngày)." },
   { key: "ops:marketing", label: "Ops — marketing", desc: "Số liệu marketing: nguồn traffic, chiến dịch, conversion." },
   { key: "ops:grant_key", label: "Ops — cấp key free", desc: "Cấp license cho user theo email. Quyền GHI nhạy cảm." },
+  { key: "ops:media", label: "Ops — kho media", desc: "Upload ảnh/video/audio vào Supabase Storage (/api/agent/ops/media-upload)." },
 ] as const;
 
 export type AgentScope = (typeof AGENT_SCOPES)[number]["key"];
