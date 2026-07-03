@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/shared/site-footer";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { getServerLocale } from "@/lib/server-locale";
 import { isSupportedLocale, localeDir, type SupportedLocale } from "@/lib/i18n";
-import { getPostForSlug, getPublishedLocalesForSlug } from "@/lib/blog/server";
+import { getPostForSlug, getPublishedLocalesForSlug, getPublishedCards } from "@/lib/blog/server";
 import { renderMarkdown, extractHeadings, toPlainText } from "@/lib/blog/markdown";
 import { BLOG_UI } from "@/lib/blog/ui-copy";
 import type { BlogPost } from "@/lib/blog/types";
@@ -141,6 +141,9 @@ export default async function BlogArticlePage({
   const dateFmt = (iso: string | null) =>
     iso ? new Date(iso).toLocaleDateString(post.locale, { year: "numeric", month: "long", day: "numeric" }) : "";
 
+  // Other published posts (best locale), newest first, excluding this one.
+  const others = (await getPublishedCards(post.locale)).filter((c) => c.slug !== post.slug).slice(0, 6);
+
   return (
     <div dir={localeDir(post.locale)} className="min-h-dvh bg-deep">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(post, url, ui) }} />
@@ -151,7 +154,14 @@ export default async function BlogArticlePage({
         <GridPattern />
         <GlowOrb className="w-[520px] h-[520px] -right-40 -top-40 opacity-30" />
 
-        <article className="relative z-10 mx-auto max-w-[760px] px-6 pt-16 pb-10">
+        <div
+          className={
+            others.length > 0
+              ? "relative z-10 mx-auto grid max-w-[1120px] grid-cols-1 gap-12 px-6 pt-16 pb-10 lg:grid-cols-[minmax(0,760px)_300px] lg:justify-center"
+              : "relative z-10 mx-auto max-w-[760px] px-6 pt-16 pb-10"
+          }
+        >
+        <article className="min-w-0">
           <Link href="/blog" className="text-[13px] text-text-muted no-underline hover:text-gold">
             {ui.backToBlog}
           </Link>
@@ -242,6 +252,46 @@ export default async function BlogArticlePage({
             </Link>
           </aside>
         </article>
+
+        {/* Sidebar — other articles (sticky on desktop, stacks below on mobile) */}
+        {others.length > 0 && (
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold">
+              {ui.moreArticles}
+            </p>
+            <ul className="space-y-3">
+              {others.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/blog/${c.slug}`}
+                    className="group flex gap-3 rounded-xl border border-border bg-card/60 p-3 no-underline transition-colors hover:border-border-gold"
+                  >
+                    {c.cover_image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={c.cover_image_url}
+                        alt={c.title}
+                        className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="h-14 w-14 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-surface" />
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-text-primary group-hover:text-gold">
+                        {c.title}
+                      </h3>
+                      <p className="mt-1 text-[11px] text-text-muted">
+                        {c.reading_minutes} {ui.minRead}
+                      </p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
+        </div>
       </main>
 
       <SiteFooter locale={post.locale} />
