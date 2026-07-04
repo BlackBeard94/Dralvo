@@ -115,7 +115,7 @@ export function MarketHeader() {
       <div>
         <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] text-text-muted">
           <span className="h-2 w-2 rounded-full bg-green" />
-          Twelve Data · 4H bars
+          XAU · live · 1H
         </div>
         <div className="mt-1 flex items-baseline gap-3">
           <span className="font-display text-3xl text-text-primary">
