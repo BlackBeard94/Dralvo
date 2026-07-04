@@ -25,7 +25,16 @@ function Flag({ locale, size = 18 }: { locale: SupportedLocale; size?: number })
   );
 }
 
-export function LanguageSwitcher({ className }: { className?: string }) {
+export function LanguageSwitcher({
+  className,
+  align = "right",
+}: {
+  className?: string;
+  /** Which edge the dropdown anchors to. Use "left" where the button sits near
+   *  the left edge (e.g. the mobile menu) so the menu grows into view instead
+   *  of off-screen. */
+  align?: "left" | "right";
+}) {
   const { locale, setLocale, mounted } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -70,7 +79,10 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       {open && (
         <ul
           role="listbox"
-          className="absolute right-0 mt-2 w-48 max-h-[70vh] overflow-auto rounded-lg border border-border bg-card p-1 z-[60]"
+          className={cn(
+            "absolute mt-2 w-48 max-h-[70vh] overflow-auto rounded-lg border border-border bg-card p-1 z-[60]",
+            align === "left" ? "left-0" : "right-0",
+          )}
           style={{ boxShadow: "0 16px 40px -12px rgba(0,0,0,0.5)" }}
         >
           {SUPPORTED_LOCALES.map((loc) => {

@@ -163,7 +163,7 @@ export function NavBar({
             ))}
             {/* Mobile language + theme */}
             <div className="flex items-center gap-2 pt-2 mt-1 border-t border-border">
-              {showLanguage && <LanguageSwitcher />}
+              {showLanguage && <LanguageSwitcher align="left" />}
               {showTheme && <ThemeToggle />}
             </div>
             {/* Mobile CTA actions — full-width touch targets */}
