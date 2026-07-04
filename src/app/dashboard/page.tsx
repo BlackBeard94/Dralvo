@@ -33,7 +33,7 @@ const EA_DOWNLOADS = {
     tf: "M1 Adaptive",
     accent: "#00c98d",
     ex5: "/downloads/tigold/Dralvo TiGold.ex5",
-    set: "/downloads/tigold/Dralvo tigold v1.set",
+    set: "/downloads/tigold/Dralvo TiGold - Presets.zip",
   },
 } as const;
 

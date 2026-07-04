@@ -9,7 +9,7 @@ const IB_LINKS: Record<string, string> = {
 
 const DOWNLOADS = {
   ex5: "/downloads/tigold/Dralvo TiGold.ex5",
-  set: "/downloads/tigold/Dralvo tigold v1.set",
+  set: "/downloads/tigold/Dralvo TiGold - Presets.zip",
   guide: "/downloads/tigold/Huong_dan_su_dung.html",
 };
 
