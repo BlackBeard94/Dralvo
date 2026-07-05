@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profile, error } = await sb
     .from("profiles")
-    .select("id, notification_prefs")
+    .select("id, notification_prefs, referrer_type, referrer_id")
     .filter("notification_prefs->>telegram_connect_code", "eq", code)
     .limit(1)
     .maybeSingle();
@@ -54,6 +54,25 @@ export async function GET(request: NextRequest) {
   const email = u?.user?.email ?? null;
   if (!email) return NextResponse.json({ error: "no_email" }, { status: 404 });
 
+  // Referral attribution — which affiliate/partner link this customer came from.
+  // Single-owner source of truth: profiles.referrer_type + referrer_id.
+  // Lets the bot tell the owner who to credit when granting the key.
+  let referredBy: { type: "affiliate" | "partner"; email: string | null } | null = null;
+  const refType = profile.referrer_type as string | null;
+  const refId = profile.referrer_id as string | null;
+  if (refId && (refType === "affiliate" || refType === "partner")) {
+    const { data: ref } = await sb
+      .from(refType === "partner" ? "partners" : "affiliates")
+      .select("user_id")
+      .eq("id", refId)
+      .maybeSingle();
+    const refUserId = ref?.user_id as string | undefined;
+    if (refUserId) {
+      const { data: refUser } = await sb.auth.admin.getUserById(refUserId);
+      referredBy = { type: refType, email: refUser?.user?.email ?? null };
+    }
+  }
+
   // Best-effort: link the Telegram chat to this profile (enables notifications).
   if (/^-?\d+$/.test(chat)) {
     void sb
@@ -63,5 +82,5 @@ export async function GET(request: NextRequest) {
       .then(() => undefined, () => undefined);
   }
 
-  return NextResponse.json({ ok: true, user_id: profile.id, email });
+  return NextResponse.json({ ok: true, user_id: profile.id, email, referredBy });
 }
