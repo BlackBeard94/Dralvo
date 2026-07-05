@@ -8,9 +8,13 @@ function botToken(): string {
   return token;
 }
 
+/** Inline URL button rows for sendTelegramMessage (each inner array = one row). */
+export type InlineUrlButton = { text: string; url: string };
+
 export async function sendTelegramMessage(
   chatId: string,
   text: string,
+  buttons?: InlineUrlButton[][],
 ): Promise<boolean> {
   try {
     const url = `${TELEGRAM_API}/bot${botToken()}/sendMessage`;
@@ -22,6 +26,9 @@ export async function sendTelegramMessage(
         text,
         parse_mode: "HTML",
         disable_web_page_preview: true,
+        ...(buttons && buttons.length
+          ? { reply_markup: { inline_keyboard: buttons } }
+          : {}),
       }),
     });
 
