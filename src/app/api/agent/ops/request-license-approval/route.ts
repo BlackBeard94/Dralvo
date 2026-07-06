@@ -93,9 +93,14 @@ export async function POST(request: NextRequest) {
     `Bấm nút bên dưới để cấp license <b>${eaName}</b> vào đúng tài khoản Dralvo của khách. Khách sẽ nhận key + link tải ngay trong chat.`,
   ].join("\n");
 
-  const sent = await sendTelegramMessage(ownerChat, message, [
-    [{ text: `✅ Duyệt & cấp key ${eaName}`, url: approveUrl }],
-  ]);
+  // Send via the owner-notification bot (same one TiGold approvals use) so the
+  // message reaches the owner even if they never started the customer bot.
+  const sent = await sendTelegramMessage(
+    ownerChat,
+    message,
+    [[{ text: `✅ Duyệt & cấp key ${eaName}`, url: approveUrl }]],
+    process.env.OWNER_BOT_TOKEN || undefined,
+  );
 
   return NextResponse.json({ ok: sent, notifiedOwner: sent, product, referredBy });
 }

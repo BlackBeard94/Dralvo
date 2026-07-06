@@ -15,9 +15,13 @@ export async function sendTelegramMessage(
   chatId: string,
   text: string,
   buttons?: InlineUrlButton[][],
+  /** Send via a specific bot token instead of the default customer bot — e.g.
+   *  the owner-notification bot for license-approval messages. */
+  tokenOverride?: string,
 ): Promise<boolean> {
   try {
-    const url = `${TELEGRAM_API}/bot${botToken()}/sendMessage`;
+    const token = tokenOverride || botToken();
+    const url = `${TELEGRAM_API}/bot${token}/sendMessage`;
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
