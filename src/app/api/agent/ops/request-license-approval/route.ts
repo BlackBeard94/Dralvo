@@ -18,6 +18,8 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getReferralSource } from "@/lib/referral-source";
 import { signGrantToken } from "@/lib/license-approval-token";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
+import { isGrantProduct, type GrantProduct } from "@/lib/admin/license-grant";
+import { EA_CATALOG } from "@/lib/ea-catalog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
   if (!secret) return NextResponse.json({ error: "approval_secret_not_set" }, { status: 500 });
   if (!ownerChat) return NextResponse.json({ error: "owner_chat_not_set" }, { status: 500 });
 
-  let body: { email?: unknown };
+  let body: { email?: unknown; product?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -59,28 +61,41 @@ export async function POST(request: NextRequest) {
   const user = await findUserByEmail(sb, email);
   if (!user) return NextResponse.json({ error: "user_not_found" }, { status: 404 });
 
+  // Which EA to grant: explicit body.product → the stored connect-product on the
+  // profile → default tigold. Determines the key granted AND how it's named.
+  let product: GrantProduct = "tigold";
+  if (isGrantProduct(body.product)) {
+    product = body.product;
+  } else {
+    const { data: prof } = await sb.from("profiles").select("notification_prefs").eq("id", user.id).maybeSingle();
+    const stored = (prof?.notification_prefs as { telegram_connect_product?: unknown } | null)?.telegram_connect_product;
+    if (isGrantProduct(stored)) product = stored;
+  }
+  const eaName = EA_CATALOG[product].name;
+
   const referredBy = await getReferralSource(sb, user.id);
 
   const exp = Math.floor(Date.now() / 1000) + APPROVE_TTL_SEC;
-  const sig = signGrantToken(secret, user.id, exp);
-  const approveUrl = `${SITE}/api/agent/ops/license-grant-approve?uid=${encodeURIComponent(user.id)}&exp=${exp}&sig=${sig}`;
+  const sig = signGrantToken(secret, user.id, product, exp);
+  const approveUrl = `${SITE}/api/agent/ops/license-grant-approve?uid=${encodeURIComponent(user.id)}&product=${encodeURIComponent(product)}&exp=${exp}&sig=${sig}`;
 
   const src = referredBy
     ? `👥 Đến từ: <b>${referredBy.type === "partner" ? "partner" : "affiliate"}</b> — ${referredBy.email ?? "(không rõ email)"}`
     : `👥 Đăng ký trực tiếp (không qua link giới thiệu)`;
 
   const message = [
-    `🔑 <b>YÊU CẦU CẤP LICENSE (TiGold miễn phí)</b>`,
+    `🔑 <b>YÊU CẦU CẤP LICENSE — ${eaName}</b>`,
     ``,
     `👤 Khách: <code>${email}</code>`,
+    `🤖 EA: <b>${eaName}</b>`,
     src,
     ``,
-    `Bấm nút bên dưới để cấp license vào đúng tài khoản Dralvo của khách. Khách sẽ nhận key + link tải ngay trong chat.`,
+    `Bấm nút bên dưới để cấp license <b>${eaName}</b> vào đúng tài khoản Dralvo của khách. Khách sẽ nhận key + link tải ngay trong chat.`,
   ].join("\n");
 
   const sent = await sendTelegramMessage(ownerChat, message, [
-    [{ text: "✅ Duyệt & cấp key", url: approveUrl }],
+    [{ text: `✅ Duyệt & cấp key ${eaName}`, url: approveUrl }],
   ]);
 
-  return NextResponse.json({ ok: sent, notifiedOwner: sent, referredBy });
+  return NextResponse.json({ ok: sent, notifiedOwner: sent, product, referredBy });
 }

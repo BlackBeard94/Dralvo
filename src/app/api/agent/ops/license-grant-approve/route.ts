@@ -12,7 +12,8 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { verifyGrantToken } from "@/lib/license-approval-token";
-import { grantLicense } from "@/lib/admin/license-grant";
+import { grantLicense, isGrantProduct, type GrantProduct } from "@/lib/admin/license-grant";
+import { EA_CATALOG } from "@/lib/ea-catalog";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
 
 export const runtime = "nodejs";
@@ -36,10 +37,12 @@ export async function GET(request: NextRequest) {
 
   const q = request.nextUrl.searchParams;
   const uid = (q.get("uid") ?? "").trim();
+  const productParam = q.get("product");
+  const product: GrantProduct = isGrantProduct(productParam) ? productParam : "tigold";
   const exp = Number(q.get("exp") ?? 0);
   const sig = (q.get("sig") ?? "").trim();
 
-  if (!uid || !exp || !sig || !verifyGrantToken(secret, uid, exp, sig)) {
+  if (!uid || !exp || !sig || !verifyGrantToken(secret, uid, product, exp, sig)) {
     return html("Link không hợp lệ", "Chữ ký sai hoặc thiếu tham số. Dùng đúng nút trong tin nhắn Telegram.", false);
   }
   if (Date.now() / 1000 > exp) {
@@ -54,8 +57,12 @@ export async function GET(request: NextRequest) {
   const email = u?.user?.email ?? null;
   if (!email) return html("Không tìm thấy khách", "Tài khoản không còn tồn tại.", false);
 
-  // Grant the free TiGold license into this Dralvo account (idempotent).
-  const result = await grantLicense({ email, plan: "tigold", product: "tigold" });
+  const ea = EA_CATALOG[product];
+
+  // Grant the requested EA into this Dralvo account (idempotent). plan="tigold"
+  // marks it a free-tier single-EA license — NOT "unlimited", so this admin
+  // grant never accidentally flips the customer to full VIP.
+  const result = await grantLicense({ email, plan: "tigold", product });
   if (!result.ok) {
     return html("Lỗi cấp license", `Không cấp được license (${result.error}). Thử lại sau.`, false);
   }
@@ -65,7 +72,7 @@ export async function GET(request: NextRequest) {
     .from("license_keys")
     .select("key")
     .eq("user_id", uid)
-    .eq("product", "tigold")
+    .eq("product", product)
     .maybeSingle();
   const licenseKey = (lic?.key as string | undefined) ?? null;
 
@@ -77,35 +84,37 @@ export async function GET(request: NextRequest) {
     .eq("id", uid)
     .maybeSingle();
   const chat = profile?.telegram_chat_id as string | null;
+  const enc = (p: string) => encodeURI(SITE + p);
   if (chat && licenseKey) {
     dmSent = await sendTelegramMessage(
       chat,
       [
-        `🎉 <b>License TiGold của bạn đã được kích hoạt!</b>`,
+        `🎉 <b>License ${ea.name} của bạn đã được kích hoạt!</b>`,
         ``,
+        `🤖 EA: <b>${ea.name}</b>`,
         `🔑 License key: <code>${licenseKey}</code>`,
         `👤 Gắn với tài khoản Dralvo: <code>${email}</code>`,
         ``,
         `📥 <b>Tải về:</b>`,
-        `• EA: ${SITE}/downloads/tigold/Dralvo%20TiGold.ex5`,
-        `• Preset: ${SITE}/downloads/tigold/Dralvo%20tigold%20v1.set`,
-        `• Hướng dẫn: ${SITE}/downloads/tigold/Huong_dan_su_dung.html`,
+        `• EA: ${enc(ea.ex5)}`,
+        `• Preset: ${enc(ea.set)}`,
+        `• Hướng dẫn: ${enc(ea.guide)}`,
         ``,
-        `⚙️ Cài EA vào MT5 → cho phép WebRequest tới dralvo.com → nhập license key → chạy XAUUSD M1.`,
+        `⚙️ Cài EA vào MT5 → cho phép WebRequest tới dralvo.com → nhập license key → chạy theo hướng dẫn.`,
         `❓ Cần hỗ trợ: @dralvoea`,
       ].join("\n"),
     );
   }
 
-  console.warn(`[license-grant-approve] APPROVED uid=${uid} email=${email} key=${licenseKey?.slice(0, 8)}… dm=${dmSent}`);
+  console.warn(`[license-grant-approve] APPROVED uid=${uid} product=${product} email=${email} key=${licenseKey?.slice(0, 8)}… dm=${dmSent}`);
   return html(
     "Đã cấp license ✅",
-    `Đã cấp TiGold cho <b>${email}</b>${
+    `Đã cấp <b>${ea.name}</b> cho <b>${email}</b>${
       dmSent
-        ? " và đã nhắn key + link tải cho khách qua @dralvo_bot."
+        ? ` và đã nhắn key + link tải cho khách qua @dralvo_bot.`
         : licenseKey
-          ? ". Khách chưa liên kết Telegram — key đã có trong dashboard của họ."
-          : "."
+          ? `. Khách chưa liên kết Telegram — key đã có trong dashboard của họ.`
+          : `.`
     }`,
     true,
   );

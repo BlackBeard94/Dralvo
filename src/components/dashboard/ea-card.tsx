@@ -90,7 +90,7 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
     setActivating(true);
     setActErr(null);
     try {
-      const res = await fetch("/api/telegram/connect", { cache: "no-store" });
+      const res = await fetch(`/api/telegram/connect?product=${encodeURIComponent(id)}`, { cache: "no-store" });
       const body = await res.json();
       if (!res.ok || !body?.connectCode) throw new Error();
       const bot = String(body.botUsername || "@dralvo_bot").replace(/^@/, "");
@@ -100,7 +100,7 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
     } finally {
       setActivating(false);
     }
-  }, [act.err]);
+  }, [act.err, id]);
 
   const copyKey = useCallback(() => {
     if (!license) return;

@@ -16,6 +16,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { verifyAgentKey } from "@/lib/agent/keys";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getReferralSource } from "@/lib/referral-source";
+import { isGrantProduct } from "@/lib/admin/license-grant";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,6 +59,9 @@ export async function GET(request: NextRequest) {
   // Referral attribution — which affiliate/partner link this customer came from.
   const referredBy = await getReferralSource(sb, profile.id);
 
+  // Which EA the customer clicked "Activate" on (from the dashboard card).
+  const product = isGrantProduct(prefs.telegram_connect_product) ? prefs.telegram_connect_product : null;
+
   // Best-effort: link the Telegram chat to this profile (enables notifications).
   if (/^-?\d+$/.test(chat)) {
     void sb
@@ -67,5 +71,5 @@ export async function GET(request: NextRequest) {
       .then(() => undefined, () => undefined);
   }
 
-  return NextResponse.json({ ok: true, user_id: profile.id, email, referredBy });
+  return NextResponse.json({ ok: true, user_id: profile.id, email, referredBy, product });
 }

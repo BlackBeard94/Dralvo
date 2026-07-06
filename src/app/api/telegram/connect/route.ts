@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/rate-limit";
 import { getAuthenticatedUser } from "@/lib/supabase/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { isGrantProduct } from "@/lib/admin/license-grant";
 
 type NotificationPrefs = {
   email?: boolean;
@@ -12,6 +13,9 @@ type NotificationPrefs = {
   in_app?: boolean;
   telegram_connect_code?: string;
   telegram_connect_expires_at?: string;
+  /** Which EA the customer clicked "Activate" on — so the bot/owner grants the
+   *  right license and names it in the message. */
+  telegram_connect_product?: string;
 };
 
 const DEFAULT_PREFS = {
@@ -66,11 +70,17 @@ export async function GET(request: Request) {
       ? prefs.telegram_connect_code
       : createConnectCode();
 
+  // Which EA the customer is activating (from the dashboard card). Always take
+  // the latest click so the bot grants/names the right EA.
+  const productParam = new URL(request.url).searchParams.get("product");
+  const product = isGrantProduct(productParam) ? productParam : prefs.telegram_connect_product;
+
   const nextPrefs = {
     ...DEFAULT_PREFS,
     ...prefs,
     telegram_connect_code: connectCode,
     telegram_connect_expires_at: new Date(now + 10 * 60 * 1000).toISOString(),
+    ...(product ? { telegram_connect_product: product } : {}),
   };
 
   await supabase
