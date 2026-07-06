@@ -225,7 +225,7 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
             {c.expires}: {license.expiresAt ? new Date(license.expiresAt).toLocaleDateString(locale) : c.forever}
           </p>
         </div>
-      ) : id === "tigold" ? (
+      ) : id === "tigold" || id === "goldwave" ? (
         <div
           className="mb-3 rounded-xl border px-3 py-3"
           style={{

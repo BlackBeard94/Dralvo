@@ -112,9 +112,10 @@ export default async function DashboardPage() {
   } catch { /* table may not exist — show free UI */ }
 
   // Show every EA the user has a key for; free EAs (TiGold, GoldWave) always show.
-  const eaList = (Object.keys(EA_DOWNLOADS) as EaKey[]).filter(
-    (id) => keysByProduct[id] || id === "tigold" || id === "goldwave",
-  );
+  // GoldWave is pinned first (featured EA).
+  const eaList = (Object.keys(EA_DOWNLOADS) as EaKey[])
+    .filter((id) => keysByProduct[id] || id === "tigold" || id === "goldwave")
+    .sort((a, b) => (a === "goldwave" ? -1 : b === "goldwave" ? 1 : 0));
 
   return (
     <div className="space-y-6">
