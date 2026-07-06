@@ -172,6 +172,7 @@ export async function upsertProSubscriptionFromCheckoutSession(
     { product: "goldmaster", max_accounts: 2 },
     { product: "goldscalp", max_accounts: 2 },
     { product: "tigold", max_accounts: 1 },
+    { product: "goldwave", max_accounts: 1 },
   ];
   const { error: licenseError } = await supabase.from("license_keys").upsert(
     VIP_PRODUCTS.map((p) => ({
