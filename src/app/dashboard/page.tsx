@@ -35,6 +35,13 @@ const EA_DOWNLOADS = {
     ex5: "/downloads/tigold/Dralvo TiGold.ex5",
     set: "/downloads/tigold/Dralvo TiGold - Presets.zip",
   },
+  goldwave: {
+    name: "GoldWave",
+    tf: "Sideway · 2 preset (Safe / HighProfit)",
+    accent: "#2b7fbf",
+    ex5: "/downloads/goldwave/Dralvo GoldWave.ex5",
+    set: "/downloads/goldwave/Dralvo GoldWave - Presets.zip",
+  },
 } as const;
 
 type EaKey = keyof typeof EA_DOWNLOADS;
@@ -48,6 +55,7 @@ const GUIDE_LOCALES: Partial<Record<EaKey, SupportedLocale[]>> = {
   goldmaster: ["vi", "en", "pt-BR", "es", "id", "ar"],
   goldscalp: ["vi", "en", "pt-BR", "es", "id", "ar"],
   tigold: ["vi", "en", "pt-BR", "es", "id", "ar"],
+  goldwave: ["vi"],
 };
 
 function resolveGuide(id: EaKey, locale: SupportedLocale): string | undefined {
@@ -103,9 +111,9 @@ export default async function DashboardPage() {
     }
   } catch { /* table may not exist — show free UI */ }
 
-  // Show every EA the user has a key for; tigold-free users still see TiGold.
+  // Show every EA the user has a key for; free EAs (TiGold, GoldWave) always show.
   const eaList = (Object.keys(EA_DOWNLOADS) as EaKey[]).filter(
-    (id) => keysByProduct[id] || id === "tigold",
+    (id) => keysByProduct[id] || id === "tigold" || id === "goldwave",
   );
 
   return (

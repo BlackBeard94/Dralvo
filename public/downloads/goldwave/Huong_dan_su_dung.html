@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>GoldWave — Hướng dẫn sử dụng</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1f2733;--muted:#5b6675;--line:#e4e8ef;
+--accent:#2b7fbf;--good:#0e7c66;--warn:#b4341f;--chipbg:#e7f0f7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px}
+header.top{background:linear-gradient(135deg,#123a5a,#1f6aa5);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+header.top .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8fd0ff;font-weight:700}
+header.top h1{margin:6px 0 4px;font-size:26px}
+header.top .sub{color:#cfe3f2;font-size:14px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:600}
+.badge.good{background:rgba(16,124,102,.9);border-color:transparent}
+.badge.warn{background:rgba(180,52,31,.92);border-color:transparent}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0}
+h2{font-size:18px;margin:2px 0 14px;display:flex;align-items:center;gap:9px}
+h2 .n{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;background:var(--chipbg);color:#1f6aa5;border-radius:8px;font-size:13px;font-weight:800}
+h3{font-size:15px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#eef3f8;font-weight:700}
+td.r,th.r{text-align:right}
+tr.hl td{background:#eef7f4;font-weight:700}
+code{background:#eef1f5;padding:1.5px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+ul,ol{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.callout{border-left:4px solid var(--accent);background:#eef5fb;padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+.callout.warn{border-color:var(--warn);background:#fdf1ee}
+.callout.good{border-color:var(--good);background:#eef7f4}
+.disc{color:var(--muted);font-size:12.5px;margin-top:18px;text-align:center}
+</style></head><body><div class="wrap">
+<header class="top"><span class="tag">Dralvo GoldWave</span><h1>GoldWave — Hướng dẫn sử dụng</h1><div class="sub">Sideway scalp Vàng + SAR-martingale · MT5</div>
+<div class="badges"><span class="badge good">Sideway M1</span><span class="badge good">XAUUSD</span><span class="badge ">2 preset: Safe / HighProfit</span><span class="badge warn">Martingale — rủi ro đuôi</span></div></header>
+
+<section><h2><span class="n">1</span>Tổng quan</h2>
+<p><b>Dralvo GoldWave</b> là EA scalp <b>XAUUSD (Vàng)</b> trên MetaTrader 5, chạy trên tick thật. Ý tưởng: chiến lược gỡ chuỗi (martingale đảo chiều) <b>ăn tiền khi thị trường đi ngang</b> và <b>chết khi trend mạnh</b> — nên GoldWave <b>chỉ vào lệnh khi phát hiện SIDEWAY trên khung M1</b>.</p>
+<ul>
+<li><b>Symbol/Khung:</b> XAUUSD, tính tín hiệu trên M1.</li>
+<li><b>Loại:</b> Sideway scalp + SAR-martingale (1 lệnh/thời điểm).</li>
+<li><b>Lá chắn:</b> cap số bước (chặn đuôi) + equity-guard (phanh cứng).</li>
+</ul></section>
+
+<section><h2><span class="n">2</span>Cơ chế vào lệnh</h2>
+<ol>
+<li><b>Phát hiện sideway (M1):</b> ADX &lt; ngưỡng (không trend) + giá nằm gọn trong range N nến. Ngoài sideway → KHÔNG vào.</li>
+<li><b>Vào lệnh mean-reversion tại biên:</b> giá chạm <b>đáy</b> range → BUY, chạm <b>đỉnh</b> → SELL. Lot = base.</li>
+<li><b>Gỡ chuỗi (SAR-martingale):</b> nếu dính SL → <b>đảo chiều + nhân lot</b> (×2.0 hoặc ×2.75) vào lại ngay. Lặp tới khi thắng.</li>
+<li><b>Thắng → reset</b> lot về base, chờ tín hiệu sideway mới.</li>
+<li><b>Chạm cap bước → CẮT chuỗi</b> (chịu lỗ, reset) — chặn đuôi rủi ro.</li>
+</ol>
+<div class="callout">Vì sao KHÔNG có trailing / cắt-theo-trend? Đã backtest: chúng <b>phá toán gỡ chuỗi</b> của martingale (lệnh thắng phải chạm đúng TP mới gỡ đủ) → làm xấu kết quả. Bảo vệ vốn đúng cách = cap bước + equity-guard + đủ vốn.</div>
+</section>
+
+<section><h2><span class="n">3</span>Cài đặt &amp; chọn setfile theo VỐN</h2>
+<p>Đây là điểm SỐNG CÒN của martingale: <b>vốn phải đủ ôm lot ở bước đuôi</b>. Chọn setfile đúng mức vốn của bạn.</p>
+<h3>🟢 GoldWave Safe — an toàn (khuyên dùng)</h3>
+<table><tr><th>Vốn tối thiểu</th><th>Setfile</th><th class="r">Base lot</th></tr>
+<tr><td>$43.000</td><td><code>setfiles/GoldWave_Safe_43k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$86.000</td><td><code>GoldWave_Safe_86k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$130.000</td><td><code>GoldWave_Safe_130k.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$215.000</td><td><code>GoldWave_Safe_215k.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$430.000</td><td><code>GoldWave_Safe_430k.set</code></td><td class="r">0.10</td></tr>
+<tr><td>$860.000</td><td><code>GoldWave_Safe_860k.set</code></td><td class="r">0.20</td></tr></table>
+<h3>🔴 GoldWave HighProfit — lãi cao (chỉ vốn RẤT lớn)</h3>
+<table><tr><th>Vốn tối thiểu</th><th>Setfile</th><th class="r">Base lot</th></tr>
+<tr><td>$434.000</td><td><code>GoldWave_HighProfit_434k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$870.000</td><td><code>GoldWave_HighProfit_870k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$1.300.000</td><td><code>GoldWave_HighProfit_1.3M.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$2.170.000</td><td><code>GoldWave_HighProfit_2.2M.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$4.340.000</td><td><code>GoldWave_HighProfit_4.3M.set</code></td><td class="r">0.10</td></tr></table>
+<div class="callout warn"><b>KHÔNG đủ vốn cho HighProfit thì ĐỪNG dùng.</b> HighProfit ôm tới <b>90 lot</b> ở bước đuôi → thiếu vốn = margin call = cháy. Backtest chạy vốn lớn nên đã "giấu" điều này.</div>
+<h3>Các bước gắn EA</h3>
+<ol>
+<li>Copy <code>Dralvo_GoldWave.ex5</code> vào <code>MQL5\Experts</code>, Refresh Navigator.</li>
+<li>Mở chart <b>XAUUSD</b> (khung nào cũng được — tín hiệu tính nội bộ trên M1).</li>
+<li>Kéo EA vào chart → tab <b>Inputs → Load</b> → chọn setfile đúng vốn.</li>
+<li>Bật <b>Algo Trading</b>.</li>
+</ol>
+<h3>Kích hoạt License (BẮT BUỘC khi chạy demo/live)</h3>
+<ol>
+<li><b>Lấy key:</b> GoldWave thuộc <b>gói Free</b> — liên hệ <b>admin Telegram @edgardinh86</b> để nhận License key (cung cấp số tài khoản MT5 của bạn; key khóa theo đúng tài khoản).</li>
+<li><b>Whitelist WebRequest</b> (hay quên nhất): Tools → Options → Expert Advisors → tick <b>☑ Allow WebRequest</b> → thêm <code>https://www.dralvo.com</code>.</li>
+<li>Điền <code>InpLicenseKey</code> + <code>InpMT5Account</code> (khớp số tài khoản) vào tab Inputs → OK.</li>
+</ol>
+<div class="callout good">Backtest KHÔNG cần key — cổng license tự bỏ qua trong Strategy Tester. Thiếu bước whitelist là nguyên nhân số 1 EA báo <code>Liên hệ telegram : @edgardinh86</code> dù key đúng.</div></section>
+
+<section><h2><span class="n">4</span>Bảng tham số chính</h2>
+<table><tr><th>Tham số</th><th>Ý nghĩa</th></tr>
+<tr><td><code>InpBaseLot</code></td><td>Lot gốc (bước 1) — scale theo vốn (xem mục 3)</td></tr>
+<tr><td><code>InpMultiplier</code></td><td>Hệ số nhân sau mỗi lệnh thua (Safe 2.0 / HighProfit 2.75)</td></tr>
+<tr><td><code>InpMaxSteps</code></td><td>Trần số bước — chạm là cắt chuỗi (Safe 8 / HighProfit 10)</td></tr>
+<tr><td><code>InpSL_Points</code> / <code>InpTP_Points</code></td><td>Stop-loss / Take-profit cố định (điểm). TP ≥ SL để gỡ đủ chuỗi</td></tr>
+<tr><td><code>InpADX_Max</code></td><td>ADX &lt; mức này = sideway (mặc định 28)</td></tr>
+<tr><td><code>InpSideLookback</code></td><td>Số nến M1 xác định range (120)</td></tr>
+<tr><td><code>InpEdgeZone</code></td><td>Vào lệnh khi giá ≤x% biên range (0.45)</td></tr>
+<tr><td><code>InpEquityGuardPct</code></td><td>Equity tụt quá %này → đóng &amp; NGỪNG (phanh cứng)</td></tr>
+<tr><td><code>InpMaxSpread</code></td><td>Spread tối đa cho vào lệnh (điểm)</td></tr>
+<tr><td><code>InpLicenseKey</code> / <code>InpMT5Account</code></td><td>License key (từ admin @edgardinh86) + số tài khoản MT5 khớp key</td></tr></table>
+<div class="callout">Broker <b>3 số</b>: nhân ×10 các input theo điểm (SL/TP/MaxSpread) như mọi EA khác.</div>
+</section>
+
+<section><h2><span class="n">5</span>Rủi ro &amp; lưu ý</h2>
+<ul>
+<li><b>Bản chất là martingale:</b> đường cong vốn đẹp phần lớn thời gian, nhưng 1 chuỗi thua vượt cap = lỗ lớn/cháy. Cap + equity-guard giảm thiểu chứ không loại bỏ.</li>
+<li><b>Lot đuôi nổ theo cấp số nhân:</b> multiplier càng cao, lot ở bước sâu càng khủng (HighProfit bước 10 = 90 lot). Vốn PHẢI ôm nổi.</li>
+<li><b>Chỉ chạy khi sideway</b> nên có giai đoạn EA "đứng im" chờ range — bình thường, không phải lỗi.</li>
+<li><b>Broker spread thấp</b> cho Vàng; backtest 34 tháng nhưng thị trường tương lai có thể khác.</li>
+</ul></section>
+
+<p class="disc">⚠️ Backtest quá khứ KHÔNG đảm bảo tương lai. GoldWave là EA martingale — có rủi ro cháy tài khoản khi trend mạnh kéo dài vượt cap. Vốn phải đủ ôm lot ở bước đuôi.<br>© 2026 Dralvo Capital</p>
+</div></body></html>
