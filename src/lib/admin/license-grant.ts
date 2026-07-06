@@ -7,12 +7,12 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
  * idempotent — re-running tops up missing EAs without clobbering existing keys.
  */
 
-export const GRANT_PRODUCTS = ["goldmaster", "goldscalp", "tigold"] as const;
+export const GRANT_PRODUCTS = ["goldmaster", "goldscalp", "tigold", "goldwave"] as const;
 export type GrantProduct = (typeof GRANT_PRODUCTS)[number];
 export const GRANT_PLANS = ["tigold", "unlimited"] as const;
 export type GrantPlan = (typeof GRANT_PLANS)[number];
 
-const DEFAULT_MAX: Record<GrantProduct, number> = { goldmaster: 2, goldscalp: 2, tigold: 1 };
+const DEFAULT_MAX: Record<GrantProduct, number> = { goldmaster: 2, goldscalp: 2, tigold: 1, goldwave: 1 };
 
 export const isGrantProduct = (p: unknown): p is GrantProduct =>
   typeof p === "string" && (GRANT_PRODUCTS as readonly string[]).includes(p);

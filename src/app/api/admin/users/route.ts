@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, ...payload } = body;
 
-    const PRODUCTS = ["goldmaster", "goldscalp", "tigold"] as const;
+    const PRODUCTS = ["goldmaster", "goldscalp", "tigold", "goldwave"] as const;
     const isProduct = (p: unknown): p is (typeof PRODUCTS)[number] =>
       typeof p === "string" && (PRODUCTS as readonly string[]).includes(p);
 

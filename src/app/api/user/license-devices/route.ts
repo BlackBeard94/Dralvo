@@ -8,7 +8,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const PRODUCTS = new Set(["goldmaster", "goldscalp", "tigold"]);
+const PRODUCTS = new Set(["goldmaster", "goldscalp", "tigold", "goldwave"]);
 // An account is considered "live" if the EA validated within this window.
 const ACTIVE_WINDOW_MS = 15 * 60 * 1000;
 

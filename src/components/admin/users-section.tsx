@@ -35,7 +35,7 @@ interface UserRow {
   trafficSource?: { channel: string; medium: string | null } | null;
 }
 
-const PRODUCTS = ["goldmaster", "goldscalp", "tigold"] as const;
+const PRODUCTS = ["goldmaster", "goldscalp", "tigold", "goldwave"] as const;
 const DEFAULT_MAX_ACCOUNTS: Record<string, number> = { goldmaster: 2, goldscalp: 2, tigold: 1 };
 
 type Tier = "VIP" | "TiGold" | "Free";

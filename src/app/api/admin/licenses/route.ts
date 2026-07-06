@@ -14,13 +14,13 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getAdmin, can, batchGetEmails } from "@/lib/admin/auth";
 import { reconcilePreboundLock } from "@/lib/license-binding";
 
-const PRODUCTS = ["goldmaster", "goldscalp", "tigold"] as const;
+const PRODUCTS = ["goldmaster", "goldscalp", "tigold", "goldwave"] as const;
 const PLANS = ["tigold", "unlimited"] as const;
 type Product = (typeof PRODUCTS)[number];
 type Plan = (typeof PLANS)[number];
 
 // Anti-share defaults per EA. A VIP bundle uses these unless overridden.
-const DEFAULT_MAX: Record<Product, number> = { goldmaster: 2, goldscalp: 2, tigold: 1 };
+const DEFAULT_MAX: Record<Product, number> = { goldmaster: 2, goldscalp: 2, tigold: 1, goldwave: 1 };
 
 const isProduct = (p: unknown): p is Product =>
   typeof p === "string" && (PRODUCTS as readonly string[]).includes(p);

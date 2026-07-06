@@ -5,7 +5,7 @@
  *  - TiGold:     an emerald adaptive node / atom (M1 adaptive engine)
  */
 
-export type EaId = "goldmaster" | "goldscalp" | "tigold";
+export type EaId = "goldmaster" | "goldscalp" | "tigold" | "goldwave";
 
 export function EaLogo({ ea, size = 48 }: { ea: EaId; size?: number }) {
   const common = {
@@ -64,6 +64,26 @@ export function EaLogo({ ea, size = 48 }: { ea: EaId; size?: number }) {
         />
         <path d="M12 18 H17" stroke="#5aa9e6" strokeOpacity="0.6" strokeWidth="1.6" strokeLinecap="round" />
         <path d="M11 23 H15" stroke="#5aa9e6" strokeOpacity="0.4" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (ea === "goldwave") {
+    return (
+      <svg {...common}>
+        <defs>
+          <linearGradient id="gw-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#123a5a" />
+            <stop offset="1" stopColor="#0a1622" />
+          </linearGradient>
+          <linearGradient id="gw-wave" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#8fd0ff" />
+            <stop offset="1" stopColor="#2b7fbf" />
+          </linearGradient>
+        </defs>
+        <rect x="1.5" y="1.5" width="45" height="45" rx="13" fill="url(#gw-bg)" stroke="#2b7fbf" strokeOpacity="0.55" />
+        <path d="M8 26 Q14 16 20 23 T32 23 T40 20" fill="none" stroke="url(#gw-wave)" strokeWidth="2.7" strokeLinecap="round" />
+        <path d="M8 33 Q14 24 20 30 T32 30 T40 27" fill="none" stroke="#2b7fbf" strokeOpacity="0.5" strokeWidth="2.1" strokeLinecap="round" />
       </svg>
     );
   }

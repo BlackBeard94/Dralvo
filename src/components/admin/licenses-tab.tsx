@@ -25,7 +25,7 @@ import { planLabel } from "@/components/admin/admin-ui";
 /*  Types                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const PRODUCTS = ["goldmaster", "goldscalp", "tigold"] as const;
+const PRODUCTS = ["goldmaster", "goldscalp", "tigold", "goldwave"] as const;
 const PLANS = ["tigold", "unlimited"] as const;
 
 interface Device {
@@ -609,7 +609,7 @@ function CreateForm({
       </div>
       {vip && (
         <p className="text-sm text-text-muted">
-          Tạo đồng thời 3 key <span className="font-mono text-text-secondary">goldmaster</span>, <span className="font-mono text-text-secondary">goldscalp</span>, <span className="font-mono text-text-secondary">tigold</span> (plan <span className="text-green">unlimited</span>, cùng hạn dùng). Chạy lại sẽ bổ sung EA còn thiếu, giữ nguyên key đã có.
+          Tạo đồng thời key cho tất cả EA <span className="font-mono text-text-secondary">goldmaster</span>, <span className="font-mono text-text-secondary">goldscalp</span>, <span className="font-mono text-text-secondary">tigold</span>, <span className="font-mono text-text-secondary">goldwave</span> (plan <span className="text-green">unlimited</span>, cùng hạn dùng). Chạy lại sẽ bổ sung EA còn thiếu, giữ nguyên key đã có.
         </p>
       )}
 

@@ -13,7 +13,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getAdmin, batchGetEmails } from "@/lib/admin/auth";
 import { getStripe } from "@/lib/stripe";
 
-const PRODUCTS = ["goldmaster", "goldscalp", "tigold"] as const;
+const PRODUCTS = ["goldmaster", "goldscalp", "tigold", "goldwave"] as const;
 
 /** Parse a YYYY-MM-DD (or ISO) param into an ISO string, or null if invalid. */
 function parseDate(raw: string | null): string | null {
