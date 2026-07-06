@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Dralvo GoldWave — Guía de uso</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1f2733;--muted:#5b6675;--line:#e4e8ef;
+--accent:#2b7fbf;--good:#0e7c66;--warn:#b4341f;--chipbg:#e7f0f7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px}
+header.top{background:linear-gradient(135deg,#123a5a,#1f6aa5);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+header.top .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8fd0ff;font-weight:700}
+header.top h1{margin:6px 0 4px;font-size:26px}
+header.top .sub{color:#cfe3f2;font-size:14px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:600}
+.badge.good{background:rgba(16,124,102,.9);border-color:transparent}
+.badge.warn{background:rgba(180,52,31,.92);border-color:transparent}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0}
+h2{font-size:18px;margin:2px 0 14px;display:flex;align-items:center;gap:9px}
+h2 .n{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;background:var(--chipbg);color:#1f6aa5;border-radius:8px;font-size:13px;font-weight:800}
+h3{font-size:15px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#eef3f8;font-weight:700}
+td.r,th.r{text-align:right}
+tr.hl td{background:#eef7f4;font-weight:700}
+code{background:#eef1f5;padding:1.5px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+ul,ol{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.callout{border-left:4px solid var(--accent);background:#eef5fb;padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+.callout.warn{border-color:var(--warn);background:#fdf1ee}
+.callout.good{border-color:var(--good);background:#eef7f4}
+.disc{color:var(--muted);font-size:12.5px;margin-top:18px;text-align:center}
+</style></head><body><div class="wrap">
+<header class="top"><span class="tag">Dralvo GoldWave</span><h1>GoldWave — Guía de uso</h1><div class="sub">Scalp de Oro en rango + SAR-martingala · MT5</div>
+<div class="badges"><span class="badge good">Rango M1</span><span class="badge good">XAUUSD</span><span class="badge ">2 preajustes: Safe / HighProfit</span><span class="badge warn">Martingala — riesgo de cola</span></div></header>
+
+<section><h2><span class="n">1</span>Resumen</h2>
+<p><b>Dralvo GoldWave</b> es un EA de scalping de <b>XAUUSD (Oro)</b> para MetaTrader 5, que opera con ticks reales. La idea: una estrategia de recuperación (martingala invertida) <b>gana cuando el mercado va lateral</b> y <b>muere en una tendencia fuerte</b> — por eso GoldWave <b>solo entra cuando detecta mercado LATERAL en M1</b>.</p>
+<ul><li><b>Símbolo/Temporalidad:</b> XAUUSD, señales calculadas en M1.</li><li><b>Tipo:</b> Scalp en rango + SAR-martingala (una posición a la vez).</li><li><b>Escudos:</b> límite de pasos (frena la cola) + equity-guard (freno duro).</li></ul></section>
+
+<section><h2><span class="n">2</span>Mecanismo de entrada</h2>
+<ol><li><b>Detectar lateral (M1):</b> ADX &lt; umbral (sin tendencia) + precio contenido en un rango de N velas. Fuera de lateral → NO entra.</li><li><b>Reversión a la media en los bordes:</b> el precio toca el <b>suelo</b> del rango → COMPRA, toca el <b>techo</b> → VENTA. Lote = base.</li><li><b>Recuperación (SAR-martingala):</b> si salta el SL → <b>invierte dirección + multiplica el lote</b> (×2.0 o ×2.75) y reentra de inmediato. Repite hasta ganar.</li><li><b>Ganancia → reinicia</b> el lote a base, espera una nueva señal lateral.</li><li><b>Al alcanzar el límite de pasos → CORTA la cadena</b> (asume la pérdida, reinicia) — frena el riesgo de cola.</li></ol>
+<div class="callout">¿Por qué NO hay trailing / corte por tendencia? Backtesteado: <b>rompen la matemática de recuperación</b> de la martingala (una operación ganadora debe llegar a su TP completo para recuperar la cadena) → empeoran el resultado. Protección de capital correcta = límite de pasos + equity-guard + capital suficiente.</div>
+</section>
+
+<section><h2><span class="n">3</span>Instalación &amp; elegir setfile según CAPITAL</h2>
+<p>Este es el punto crítico de una martingala: <b>el capital debe cubrir el lote del paso de cola</b>. Elige el setfile que corresponda a tu capital.</p>
+<h3>🟢 GoldWave Safe — más seguro (recomendado)</h3>
+<table><tr><th>Capital mínimo</th><th>Setfile</th><th class="r">Lote base</th></tr>
+<tr><td>$43.000</td><td><code>setfiles/GoldWave_Safe_43k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$86.000</td><td><code>GoldWave_Safe_86k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$130.000</td><td><code>GoldWave_Safe_130k.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$215.000</td><td><code>GoldWave_Safe_215k.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$430.000</td><td><code>GoldWave_Safe_430k.set</code></td><td class="r">0.10</td></tr>
+<tr><td>$860.000</td><td><code>GoldWave_Safe_860k.set</code></td><td class="r">0.20</td></tr>
+</table>
+<h3>🔴 GoldWave HighProfit — alta ganancia (solo capital MUY grande)</h3>
+<table><tr><th>Capital mínimo</th><th>Setfile</th><th class="r">Lote base</th></tr>
+<tr><td>$434.000</td><td><code>GoldWave_HighProfit_434k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$870.000</td><td><code>GoldWave_HighProfit_870k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$1.300.000</td><td><code>GoldWave_HighProfit_1.3M.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$2.170.000</td><td><code>GoldWave_HighProfit_2.2M.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$4.340.000</td><td><code>GoldWave_HighProfit_4.3M.set</code></td><td class="r">0.10</td></tr>
+</table>
+<div class="callout warn"><b>No uses HighProfit si no tienes el capital.</b> HighProfit carga hasta <b>90 lotes</b> en el paso de cola → poco capital = margin call = cuenta reventada. El backtest corrió con capital grande, así que "ocultó" esto.</div>
+<h3>Adjuntar el EA</h3>
+<ol><li>Copia <code>Dralvo_GoldWave.ex5</code> en <code>MQL5\Experts</code>, refresca el Navegador.</li><li>Abre un gráfico <b>XAUUSD</b> (cualquier temporalidad — la señal se calcula internamente en M1).</li><li>Arrastra el EA al gráfico → <b>Inputs → Load</b> → elige el setfile de tu capital.</li><li>Activa <b>Algo Trading</b>.</li></ol>
+<h3>Activar la Licencia (OBLIGATORIO en demo/real)</h3>
+<ol><li><b>Obtener clave:</b> GoldWave está en el paquete <b>Free</b> — contacta al <b>admin de Telegram @edgardinh86</b> para una clave de licencia (indica tu número de cuenta MT5; la clave se bloquea a esa cuenta).</li><li><b>Autoriza WebRequest</b> (el paso más olvidado): Tools → Options → Expert Advisors → marca <b>☑ Allow WebRequest</b> → añade <code>https://www.dralvo.com</code>.</li><li>Rellena <code>InpLicenseKey</code> + <code>InpMT5Account</code> (cuenta que coincida) en la pestaña Inputs → OK.</li></ol>
+<div class="callout good">El backtest NO necesita clave — la puerta de licencia se omite en el Strategy Tester. Falta de whitelist es la causa n.º 1 de que el EA muestre <code>Contact telegram : @edgardinh86</code> aun con clave correcta.</div></section>
+
+<section><h2><span class="n">4</span>Parámetros principales</h2>
+<table><tr><th>Parámetro</th><th>Significado</th></tr>
+<tr><td><code>InpBaseLot</code></td><td>Lote base (paso 1) — escala según capital (ver sección 3)</td></tr>
+<tr><td><code>InpMultiplier</code></td><td>Multiplicador tras cada operación perdedora (Safe 2.0 / HighProfit 2.75)</td></tr>
+<tr><td><code>InpMaxSteps</code></td><td>Límite de pasos — alcanzarlo corta la cadena (Safe 8 / HighProfit 10)</td></tr>
+<tr><td><code>InpSL_Points</code> / <code>InpTP_Points</code></td><td>Stop-loss / take-profit fijos (puntos). TP ≥ SL para recuperar la cadena</td></tr>
+<tr><td><code>InpADX_Max</code></td><td>ADX por debajo de esto = lateral (por defecto 28)</td></tr>
+<tr><td><code>InpSideLookback</code></td><td>Velas M1 que definen el rango (120)</td></tr>
+<tr><td><code>InpEdgeZone</code></td><td>Entra cuando el precio está dentro de x% del borde del rango (0.45)</td></tr>
+<tr><td><code>InpEquityGuardPct</code></td><td>La equity cae más de este % → cierra &amp; DETIENE (freno duro)</td></tr>
+<tr><td><code>InpMaxSpread</code></td><td>Spread máximo permitido para entrar (puntos)</td></tr>
+<tr><td><code>InpLicenseKey</code> / <code>InpMT5Account</code></td><td>Clave de licencia (del admin @edgardinh86) + cuenta MT5 que coincide con la clave</td></tr>
+</table>
+<div class="callout">Bróker de <b>3 dígitos</b>: multiplica ×10 las entradas por puntos (SL/TP/MaxSpread), como en cualquier EA.</div>
+</section>
+
+<section><h2><span class="n">5</span>Riesgo &amp; notas</h2>
+<ul><li><b>Es una martingala:</b> la curva de capital luce genial casi siempre, pero una cadena perdedora más allá del límite = gran pérdida / cuenta reventada. Límite + equity-guard mitigan, no eliminan.</li><li><b>El lote de cola crece exponencialmente:</b> a mayor multiplicador, más brutal el lote en pasos profundos (HighProfit paso 10 = 90 lotes). El capital DEBE absorberlo.</li><li><b>Solo opera en lateral</b>, así que hay periodos donde el EA "se queda quieto" esperando un rango — normal, no es un fallo.</li><li><b>Bróker de spread bajo</b> para el Oro; backtesteado 34 meses, pero el mercado futuro puede diferir.</li></ul></section>
+
+<p class="disc">⚠️ Los backtests del pasado NO garantizan el futuro. GoldWave es un EA de martingala — conlleva riesgo de reventar la cuenta cuando una tendencia fuerte supera el límite. El capital debe cubrir el lote del paso de cola.<br>© 2026 Dralvo Capital</p>
+</div></body></html>

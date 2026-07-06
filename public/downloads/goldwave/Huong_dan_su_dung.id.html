@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="id" dir="ltr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Dralvo GoldWave — Panduan Penggunaan</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1f2733;--muted:#5b6675;--line:#e4e8ef;
+--accent:#2b7fbf;--good:#0e7c66;--warn:#b4341f;--chipbg:#e7f0f7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px}
+header.top{background:linear-gradient(135deg,#123a5a,#1f6aa5);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+header.top .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8fd0ff;font-weight:700}
+header.top h1{margin:6px 0 4px;font-size:26px}
+header.top .sub{color:#cfe3f2;font-size:14px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:600}
+.badge.good{background:rgba(16,124,102,.9);border-color:transparent}
+.badge.warn{background:rgba(180,52,31,.92);border-color:transparent}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0}
+h2{font-size:18px;margin:2px 0 14px;display:flex;align-items:center;gap:9px}
+h2 .n{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;background:var(--chipbg);color:#1f6aa5;border-radius:8px;font-size:13px;font-weight:800}
+h3{font-size:15px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#eef3f8;font-weight:700}
+td.r,th.r{text-align:right}
+tr.hl td{background:#eef7f4;font-weight:700}
+code{background:#eef1f5;padding:1.5px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+ul,ol{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.callout{border-left:4px solid var(--accent);background:#eef5fb;padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+.callout.warn{border-color:var(--warn);background:#fdf1ee}
+.callout.good{border-color:var(--good);background:#eef7f4}
+.disc{color:var(--muted);font-size:12.5px;margin-top:18px;text-align:center}
+</style></head><body><div class="wrap">
+<header class="top"><span class="tag">Dralvo GoldWave</span><h1>GoldWave — Panduan Penggunaan</h1><div class="sub">Scalp Emas sideways + SAR-martingale · MT5</div>
+<div class="badges"><span class="badge good">Sideways M1</span><span class="badge good">XAUUSD</span><span class="badge ">2 preset: Safe / HighProfit</span><span class="badge warn">Martingale — risiko ekor</span></div></header>
+
+<section><h2><span class="n">1</span>Ikhtisar</h2>
+<p><b>Dralvo GoldWave</b> adalah EA scalping <b>XAUUSD (Emas)</b> untuk MetaTrader 5, berjalan pada tick nyata. Idenya: strategi pemulihan (martingale balik arah) <b>menghasilkan saat pasar menyamping</b> dan <b>mati saat tren kuat</b> — maka GoldWave <b>hanya masuk saat mendeteksi pasar SIDEWAYS di M1</b>.</p>
+<ul><li><b>Simbol/Timeframe:</b> XAUUSD, sinyal dihitung di M1.</li><li><b>Tipe:</b> Scalp sideways + SAR-martingale (satu posisi dalam satu waktu).</li><li><b>Perisai:</b> batas langkah (menahan ekor) + equity-guard (rem keras).</li></ul></section>
+
+<section><h2><span class="n">2</span>Mekanisme masuk</h2>
+<ol><li><b>Deteksi sideways (M1):</b> ADX &lt; ambang (tanpa tren) + harga berada dalam range N candle. Di luar sideways → TIDAK masuk.</li><li><b>Mean-reversion di tepi:</b> harga menyentuh <b>dasar</b> range → BUY, menyentuh <b>puncak</b> → SELL. Lot = base.</li><li><b>Pemulihan (SAR-martingale):</b> jika kena SL → <b>balik arah + kalikan lot</b> (×2.0 atau ×2.75) dan masuk lagi seketika. Ulangi sampai menang.</li><li><b>Menang → reset</b> lot ke base, tunggu sinyal sideways baru.</li><li><b>Mencapai batas langkah → PUTUS rantai</b> (terima rugi, reset) — menahan risiko ekor.</li></ol>
+<div class="callout">Kenapa TANPA trailing / potong-tren? Sudah di-backtest: keduanya <b>merusak matematika pemulihan</b> martingale (order menang harus mencapai TP penuh untuk memulihkan rantai) → memperburuk hasil. Proteksi modal yang benar = batas langkah + equity-guard + modal cukup.</div>
+</section>
+
+<section><h2><span class="n">3</span>Pemasangan &amp; memilih setfile berdasarkan MODAL</h2>
+<p>Ini titik hidup-mati martingale: <b>modal harus menutup lot pada langkah ekor</b>. Pilih setfile yang sesuai modal Anda.</p>
+<h3>🟢 GoldWave Safe — lebih aman (disarankan)</h3>
+<table><tr><th>Modal minimum</th><th>Setfile</th><th class="r">Lot dasar</th></tr>
+<tr><td>$43,000</td><td><code>setfiles/GoldWave_Safe_43k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$86,000</td><td><code>GoldWave_Safe_86k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$130,000</td><td><code>GoldWave_Safe_130k.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$215,000</td><td><code>GoldWave_Safe_215k.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$430,000</td><td><code>GoldWave_Safe_430k.set</code></td><td class="r">0.10</td></tr>
+<tr><td>$860,000</td><td><code>GoldWave_Safe_860k.set</code></td><td class="r">0.20</td></tr>
+</table>
+<h3>🔴 GoldWave HighProfit — profit tinggi (hanya modal SANGAT besar)</h3>
+<table><tr><th>Modal minimum</th><th>Setfile</th><th class="r">Lot dasar</th></tr>
+<tr><td>$434,000</td><td><code>GoldWave_HighProfit_434k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$870,000</td><td><code>GoldWave_HighProfit_870k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$1,300,000</td><td><code>GoldWave_HighProfit_1.3M.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$2,170,000</td><td><code>GoldWave_HighProfit_2.2M.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$4,340,000</td><td><code>GoldWave_HighProfit_4.3M.set</code></td><td class="r">0.10</td></tr>
+</table>
+<div class="callout warn"><b>Jangan pakai HighProfit bila modal tak cukup.</b> HighProfit menanggung sampai <b>90 lot</b> di langkah ekor → modal kurang = margin call = akun hangus. Backtest berjalan pada modal besar sehingga "menyembunyikan" hal ini.</div>
+<h3>Memasang EA</h3>
+<ol><li>Salin <code>Dralvo_GoldWave.ex5</code> ke <code>MQL5\Experts</code>, refresh Navigator.</li><li>Buka chart <b>XAUUSD</b> (timeframe apa pun — sinyal dihitung internal di M1).</li><li>Seret EA ke chart → <b>Inputs → Load</b> → pilih setfile sesuai modal.</li><li>Aktifkan <b>Algo Trading</b>.</li></ol>
+<h3>Aktivasi Lisensi (WAJIB saat demo/live)</h3>
+<ol><li><b>Ambil key:</b> GoldWave ada di paket <b>Free</b> — hubungi <b>admin Telegram @edgardinh86</b> untuk License key (sertakan nomor akun MT5 Anda; key dikunci ke akun tersebut).</li><li><b>Whitelist WebRequest</b> (langkah paling sering terlupa): Tools → Options → Expert Advisors → centang <b>☑ Allow WebRequest</b> → tambahkan <code>https://www.dralvo.com</code>.</li><li>Isi <code>InpLicenseKey</code> + <code>InpMT5Account</code> (akun yang cocok) di tab Inputs → OK.</li></ol>
+<div class="callout good">Backtest TIDAK butuh key — gerbang lisensi dilewati di Strategy Tester. Lupa whitelist adalah penyebab nomor 1 EA menampilkan <code>Contact telegram : @edgardinh86</code> walau key benar.</div></section>
+
+<section><h2><span class="n">4</span>Parameter utama</h2>
+<table><tr><th>Parameter</th><th>Arti</th></tr>
+<tr><td><code>InpBaseLot</code></td><td>Lot dasar (langkah 1) — skalakan sesuai modal (lihat bagian 3)</td></tr>
+<tr><td><code>InpMultiplier</code></td><td>Pengali setelah tiap order rugi (Safe 2.0 / HighProfit 2.75)</td></tr>
+<tr><td><code>InpMaxSteps</code></td><td>Batas langkah — jika tercapai memutus rantai (Safe 8 / HighProfit 10)</td></tr>
+<tr><td><code>InpSL_Points</code> / <code>InpTP_Points</code></td><td>Stop-loss / take-profit tetap (poin). TP ≥ SL agar rantai pulih</td></tr>
+<tr><td><code>InpADX_Max</code></td><td>ADX di bawah ini = sideways (default 28)</td></tr>
+<tr><td><code>InpSideLookback</code></td><td>Candle M1 yang menentukan range (120)</td></tr>
+<tr><td><code>InpEdgeZone</code></td><td>Masuk saat harga dalam x% dari tepi range (0.45)</td></tr>
+<tr><td><code>InpEquityGuardPct</code></td><td>Equity turun melebihi % ini → tutup &amp; BERHENTI (rem keras)</td></tr>
+<tr><td><code>InpMaxSpread</code></td><td>Spread maksimum untuk boleh masuk (poin)</td></tr>
+<tr><td><code>InpLicenseKey</code> / <code>InpMT5Account</code></td><td>License key (dari admin @edgardinh86) + akun MT5 yang cocok dengan key</td></tr>
+</table>
+<div class="callout">Broker <b>3 digit</b>: kalikan ×10 input berbasis poin (SL/TP/MaxSpread), seperti EA lain.</div>
+</section>
+
+<section><h2><span class="n">5</span>Risiko &amp; catatan</h2>
+<ul><li><b>Ini martingale:</b> kurva ekuitas terlihat bagus hampir selalu, tapi satu rantai rugi melewati batas = rugi besar / akun hangus. Batas + equity-guard mengurangi, bukan menghilangkan.</li><li><b>Lot ekor meledak eksponensial:</b> makin tinggi pengali, makin brutal lot di langkah dalam (HighProfit langkah 10 = 90 lot). Modal HARUS menyerapnya.</li><li><b>Hanya jalan saat sideways</b>, jadi ada masa EA "diam" menunggu range — wajar, bukan bug.</li><li><b>Broker spread rendah</b> untuk Emas; di-backtest 34 bulan, tapi pasar ke depan bisa berbeda.</li></ul></section>
+
+<p class="disc">⚠️ Backtest masa lalu TIDAK menjamin masa depan. GoldWave adalah EA martingale — berisiko akun hangus saat tren kuat berjalan melewati batas. Modal harus menutup lot pada langkah ekor.<br>© 2026 Dralvo Capital</p>
+</div></body></html>

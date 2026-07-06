@@ -55,7 +55,7 @@ const GUIDE_LOCALES: Partial<Record<EaKey, SupportedLocale[]>> = {
   goldmaster: ["vi", "en", "pt-BR", "es", "id", "ar"],
   goldscalp: ["vi", "en", "pt-BR", "es", "id", "ar"],
   tigold: ["vi", "en", "pt-BR", "es", "id", "ar"],
-  goldwave: ["vi"],
+  goldwave: ["vi", "en", "pt-BR", "es", "id", "ar"],
 };
 
 function resolveGuide(id: EaKey, locale: SupportedLocale): string | undefined {

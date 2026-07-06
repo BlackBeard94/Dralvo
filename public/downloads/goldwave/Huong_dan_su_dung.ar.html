@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Dralvo GoldWave — دليل الاستخدام</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1f2733;--muted:#5b6675;--line:#e4e8ef;
+--accent:#2b7fbf;--good:#0e7c66;--warn:#b4341f;--chipbg:#e7f0f7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px}
+header.top{background:linear-gradient(135deg,#123a5a,#1f6aa5);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+header.top .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8fd0ff;font-weight:700}
+header.top h1{margin:6px 0 4px;font-size:26px}
+header.top .sub{color:#cfe3f2;font-size:14px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:600}
+.badge.good{background:rgba(16,124,102,.9);border-color:transparent}
+.badge.warn{background:rgba(180,52,31,.92);border-color:transparent}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0}
+h2{font-size:18px;margin:2px 0 14px;display:flex;align-items:center;gap:9px}
+h2 .n{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;background:var(--chipbg);color:#1f6aa5;border-radius:8px;font-size:13px;font-weight:800}
+h3{font-size:15px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#eef3f8;font-weight:700}
+td.r,th.r{text-align:right}
+tr.hl td{background:#eef7f4;font-weight:700}
+code{background:#eef1f5;padding:1.5px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+ul,ol{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.callout{border-left:4px solid var(--accent);background:#eef5fb;padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+.callout.warn{border-color:var(--warn);background:#fdf1ee}
+.callout.good{border-color:var(--good);background:#eef7f4}
+.disc{color:var(--muted);font-size:12.5px;margin-top:18px;text-align:center}
+body{direction:rtl}
+th,td{text-align:right}
+td.r,th.r{text-align:left}
+ul,ol{padding-left:0;padding-right:22px}
+.callout{border-left:none;border-right:4px solid var(--accent);border-radius:8px 0 0 8px}
+.callout.warn{border-right-color:var(--warn);border-left:none}
+.callout.good{border-right-color:var(--good);border-left:none}
+header.top .tag{letter-spacing:0}
+</style></head><body><div class="wrap">
+<header class="top"><span class="tag">Dralvo GoldWave</span><h1>GoldWave — دليل الاستخدام</h1><div class="sub">سكالب الذهب في السوق العرضي + مارتينجيل SAR · MT5</div>
+<div class="badges"><span class="badge good">عرضي M1</span><span class="badge good">XAUUSD</span><span class="badge ">إعدادان: Safe / HighProfit</span><span class="badge warn">مارتينجيل — مخاطر الذيل</span></div></header>
+
+<section><h2><span class="n">1</span>نظرة عامة</h2>
+<p><b>Dralvo GoldWave</b> هو إكسبيرت سكالب لِـ <b>الذهب XAUUSD</b> على MetaTrader 5، يعمل على التِّكات الحقيقية. الفكرة: استراتيجية استرداد (مارتينجيل عكسي) <b>تربح عندما يتحرك السوق عرضيًا</b> و<b>تنهار في الترند القوي</b> — لذا يدخل GoldWave <b>فقط عند اكتشاف سوق عرضي على M1</b>.</p>
+<ul><li><b>الرمز/الفريم:</b> XAUUSD، تُحتسب الإشارات على M1.</li><li><b>النوع:</b> سكالب عرضي + مارتينجيل SAR (صفقة واحدة في كل مرة).</li><li><b>الدروع:</b> سقف الخطوات (يكبح الذيل) + حارس الأسهم equity-guard (مكبح صلب).</li></ul></section>
+
+<section><h2><span class="n">2</span>آلية الدخول</h2>
+<ol><li><b>اكتشاف العرضي (M1):</b> ADX أقل من عتبة (لا ترند) + السعر محصور داخل نطاق N شمعة. خارج العرضي → لا دخول.</li><li><b>ارتداد للمتوسط عند الحواف:</b> يلمس السعر <b>قاع</b> النطاق → شراء، يلمس <b>القمة</b> → بيع. اللوت = الأساس.</li><li><b>الاسترداد (مارتينجيل SAR):</b> عند ضرب وقف الخسارة → <b>عكس الاتجاه + مضاعفة اللوت</b> (×2.0 أو ×2.75) والدخول فورًا. يتكرر حتى الربح.</li><li><b>ربح → إعادة ضبط</b> اللوت للأساس، وانتظار إشارة عرضي جديدة.</li><li><b>بلوغ سقف الخطوات → قطع السلسلة</b> (تحمّل الخسارة، إعادة ضبط) — لكبح مخاطر الذيل.</li></ol>
+<div class="callout">لماذا لا يوجد تريلينغ / قطع بالترند؟ تم اختباره: فهما <b>يكسران رياضيات الاسترداد</b> للمارتينجيل (يجب أن تبلغ الصفقة الرابحة كامل TP لتسترد السلسلة) → يزيدان النتيجة سوءًا. الحماية الصحيحة لرأس المال = سقف الخطوات + equity-guard + رأس مال كافٍ.</div>
+</section>
+
+<section><h2><span class="n">3</span>التثبيت واختيار ملف الإعداد حسب رأس المال</h2>
+<p>هذه هي النقطة الحاسمة في المارتينجيل: <b>يجب أن يغطي رأس المال اللوت عند خطوة الذيل</b>. اختر ملف الإعداد المطابق لرأس مالك.</p>
+<h3>🟢 GoldWave Safe — الأكثر أمانًا (مُوصى به)</h3>
+<table><tr><th>أدنى رأس مال</th><th>ملف الإعداد</th><th class="r">اللوت الأساسي</th></tr>
+<tr><td>$43,000</td><td><code>setfiles/GoldWave_Safe_43k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$86,000</td><td><code>GoldWave_Safe_86k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$130,000</td><td><code>GoldWave_Safe_130k.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$215,000</td><td><code>GoldWave_Safe_215k.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$430,000</td><td><code>GoldWave_Safe_430k.set</code></td><td class="r">0.10</td></tr>
+<tr><td>$860,000</td><td><code>GoldWave_Safe_860k.set</code></td><td class="r">0.20</td></tr>
+</table>
+<h3>🔴 GoldWave HighProfit — ربح عالٍ (لرأس مال ضخم جدًا فقط)</h3>
+<table><tr><th>أدنى رأس مال</th><th>ملف الإعداد</th><th class="r">اللوت الأساسي</th></tr>
+<tr><td>$434,000</td><td><code>GoldWave_HighProfit_434k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$870,000</td><td><code>GoldWave_HighProfit_870k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$1,300,000</td><td><code>GoldWave_HighProfit_1.3M.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$2,170,000</td><td><code>GoldWave_HighProfit_2.2M.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$4,340,000</td><td><code>GoldWave_HighProfit_4.3M.set</code></td><td class="r">0.10</td></tr>
+</table>
+<div class="callout warn"><b>لا تستخدم HighProfit ما لم يتوفر رأس المال.</b> يحمل HighProfit حتى <b>90 لوت</b> عند خطوة الذيل → رأس مال قليل = نداء هامش = تفجير الحساب. جرى الاختبار على رأس مال كبير فأخفى ذلك.</div>
+<h3>إرفاق الإكسبيرت</h3>
+<ol><li>انسخ <code>Dralvo_GoldWave.ex5</code> إلى <code>MQL5\Experts</code>، ثم حدّث الـ Navigator.</li><li>افتح شارت <b>XAUUSD</b> (أي فريم — تُحتسب الإشارة داخليًا على M1).</li><li>اسحب الإكسبيرت إلى الشارت → <b>Inputs → Load</b> → اختر ملف الإعداد المطابق لرأس مالك.</li><li>فعّل <b>Algo Trading</b>.</li></ol>
+<h3>تفعيل الترخيص (إلزامي على الديمو/الحقيقي)</h3>
+<ol><li><b>احصل على المفتاح:</b> GoldWave ضمن باقة <b>Free</b> — تواصل مع <b>الأدمن على تيليجرام @edgardinh86</b> للحصول على مفتاح ترخيص (قدّم رقم حساب MT5؛ المفتاح مقفول على الحساب).</li><li><b>أضف WebRequest للقائمة البيضاء</b> (الخطوة الأكثر نسيانًا): Tools → Options → Expert Advisors → فعّل <b>☑ Allow WebRequest</b> → أضف <code>https://www.dralvo.com</code>.</li><li>املأ <code>InpLicenseKey</code> + <code>InpMT5Account</code> (حساب مطابق) في تبويب Inputs → OK.</li></ol>
+<div class="callout good">الباك تيست لا يحتاج مفتاحًا — تُتخطى بوابة الترخيص في Strategy Tester. غياب القائمة البيضاء هو السبب الأول لظهور <code>Contact telegram : @edgardinh86</code> رغم صحة المفتاح.</div></section>
+
+<section><h2><span class="n">4</span>المعاملات الرئيسية</h2>
+<table><tr><th>المعامل</th><th>المعنى</th></tr>
+<tr><td><code>InpBaseLot</code></td><td>اللوت الأساسي (الخطوة 1) — يُقاس حسب رأس المال (انظر القسم 3)</td></tr>
+<tr><td><code>InpMultiplier</code></td><td>المُضاعِف بعد كل صفقة خاسرة (Safe 2.0 / HighProfit 2.75)</td></tr>
+<tr><td><code>InpMaxSteps</code></td><td>سقف الخطوات — بلوغه يقطع السلسلة (Safe 8 / HighProfit 10)</td></tr>
+<tr><td><code>InpSL_Points</code> / <code>InpTP_Points</code></td><td>وقف خسارة / جني أرباح ثابت (نقاط). TP ≥ SL لاسترداد السلسلة</td></tr>
+<tr><td><code>InpADX_Max</code></td><td>ADX أقل من هذا = عرضي (افتراضي 28)</td></tr>
+<tr><td><code>InpSideLookback</code></td><td>شموع M1 التي تحدد النطاق (120)</td></tr>
+<tr><td><code>InpEdgeZone</code></td><td>الدخول عندما يكون السعر ضمن x% من حافة النطاق (0.45)</td></tr>
+<tr><td><code>InpEquityGuardPct</code></td><td>هبوط الأسهم أكثر من هذه النسبة → إغلاق وإيقاف (مكبح صلب)</td></tr>
+<tr><td><code>InpMaxSpread</code></td><td>أقصى سبريد مسموح للدخول (نقاط)</td></tr>
+<tr><td><code>InpLicenseKey</code> / <code>InpMT5Account</code></td><td>مفتاح الترخيص (من الأدمن @edgardinh86) + حساب MT5 المطابق للمفتاح</td></tr>
+</table>
+<div class="callout">وسيط بـ <b>3 خانات</b>: اضرب ×10 المدخلات المعتمدة على النقاط (SL/TP/MaxSpread)، مثل أي إكسبيرت.</div>
+</section>
+
+<section><h2><span class="n">5</span>المخاطر والملاحظات</h2>
+<ul><li><b>إنه مارتينجيل:</b> منحنى رأس المال يبدو رائعًا معظم الوقت، لكن سلسلة خاسرة واحدة تتجاوز السقف = خسارة كبيرة / تفجير الحساب. السقف + equity-guard يخففان ولا يلغيان.</li><li><b>لوت الذيل ينفجر أُسّيًا:</b> كلما زاد المُضاعِف زاد اللوت وحشيةً في الخطوات العميقة (HighProfit الخطوة 10 = 90 لوت). يجب أن يستوعبه رأس المال.</li><li><b>يعمل فقط في العرضي</b>، فتوجد فترات يقف فيها الإكسبيرت "ساكنًا" منتظرًا نطاقًا — أمر طبيعي وليس خللًا.</li><li><b>وسيط بسبريد منخفض</b> للذهب؛ اختُبر 34 شهرًا، لكن السوق المستقبلي قد يختلف.</li></ul></section>
+
+<p class="disc">⚠️ اختبارات الماضي لا تضمن المستقبل. GoldWave إكسبيرت مارتينجيل — يحمل خطر تفجير الحساب حين يمتد ترند قوي أبعد من السقف. يجب أن يغطي رأس المال اللوت عند خطوة الذيل.<br>© 2026 Dralvo Capital</p>
+</div></body></html>

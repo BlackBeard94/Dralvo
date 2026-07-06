@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Dralvo GoldWave — User Guide</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1f2733;--muted:#5b6675;--line:#e4e8ef;
+--accent:#2b7fbf;--good:#0e7c66;--warn:#b4341f;--chipbg:#e7f0f7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px}
+header.top{background:linear-gradient(135deg,#123a5a,#1f6aa5);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+header.top .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8fd0ff;font-weight:700}
+header.top h1{margin:6px 0 4px;font-size:26px}
+header.top .sub{color:#cfe3f2;font-size:14px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:600}
+.badge.good{background:rgba(16,124,102,.9);border-color:transparent}
+.badge.warn{background:rgba(180,52,31,.92);border-color:transparent}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0}
+h2{font-size:18px;margin:2px 0 14px;display:flex;align-items:center;gap:9px}
+h2 .n{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;background:var(--chipbg);color:#1f6aa5;border-radius:8px;font-size:13px;font-weight:800}
+h3{font-size:15px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#eef3f8;font-weight:700}
+td.r,th.r{text-align:right}
+tr.hl td{background:#eef7f4;font-weight:700}
+code{background:#eef1f5;padding:1.5px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+ul,ol{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.callout{border-left:4px solid var(--accent);background:#eef5fb;padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+.callout.warn{border-color:var(--warn);background:#fdf1ee}
+.callout.good{border-color:var(--good);background:#eef7f4}
+.disc{color:var(--muted);font-size:12.5px;margin-top:18px;text-align:center}
+</style></head><body><div class="wrap">
+<header class="top"><span class="tag">Dralvo GoldWave</span><h1>GoldWave — User Guide</h1><div class="sub">Sideway Gold scalp + SAR-martingale · MT5</div>
+<div class="badges"><span class="badge good">Sideway M1</span><span class="badge good">XAUUSD</span><span class="badge ">2 presets: Safe / HighProfit</span><span class="badge warn">Martingale — tail risk</span></div></header>
+
+<section><h2><span class="n">1</span>Overview</h2>
+<p><b>Dralvo GoldWave</b> is an <b>XAUUSD (Gold)</b> scalping EA for MetaTrader 5, running on real ticks. The idea: a recovery (reverse-martingale) strategy <b>makes money when the market ranges</b> and <b>dies in a strong trend</b> — so GoldWave <b>only enters when it detects a SIDEWAY market on M1</b>.</p>
+<ul><li><b>Symbol/Timeframe:</b> XAUUSD, signals computed on M1.</li><li><b>Type:</b> Sideway scalp + SAR-martingale (one position at a time).</li><li><b>Shields:</b> step cap (caps the tail) + equity-guard (hard brake).</li></ul></section>
+
+<section><h2><span class="n">2</span>Entry mechanism</h2>
+<ol><li><b>Detect sideway (M1):</b> ADX &lt; threshold (no trend) + price contained in an N-candle range. Outside a sideway → NO entry.</li><li><b>Mean-reversion at the edges:</b> price touches the range <b>bottom</b> → BUY, touches the <b>top</b> → SELL. Lot = base.</li><li><b>Recovery (SAR-martingale):</b> if SL is hit → <b>reverse direction + scale the lot</b> (×2.0 or ×2.75) and re-enter immediately. Repeat until a win.</li><li><b>Win → reset</b> lot back to base, wait for a new sideway signal.</li><li><b>Hitting the step cap → CUT the chain</b> (take the loss, reset) — caps the tail risk.</li></ol>
+<div class="callout">Why NO trailing / trend-cut? Backtested: they <b>break the recovery math</b> of the martingale (a winning trade must reach its full TP to recover the chain) → they worsen results. Proper capital protection = step cap + equity-guard + enough capital.</div>
+</section>
+
+<section><h2><span class="n">3</span>Setup &amp; choosing a setfile by CAPITAL</h2>
+<p>This is the make-or-break point of a martingale: <b>capital must cover the lot at the tail step</b>. Pick the setfile that matches your capital.</p>
+<h3>🟢 GoldWave Safe — safer (recommended)</h3>
+<table><tr><th>Min. capital</th><th>Setfile</th><th class="r">Base lot</th></tr>
+<tr><td>$43,000</td><td><code>setfiles/GoldWave_Safe_43k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$86,000</td><td><code>GoldWave_Safe_86k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$130,000</td><td><code>GoldWave_Safe_130k.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$215,000</td><td><code>GoldWave_Safe_215k.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$430,000</td><td><code>GoldWave_Safe_430k.set</code></td><td class="r">0.10</td></tr>
+<tr><td>$860,000</td><td><code>GoldWave_Safe_860k.set</code></td><td class="r">0.20</td></tr>
+</table>
+<h3>🔴 GoldWave HighProfit — high profit (VERY large capital only)</h3>
+<table><tr><th>Min. capital</th><th>Setfile</th><th class="r">Base lot</th></tr>
+<tr><td>$434,000</td><td><code>GoldWave_HighProfit_434k.set</code></td><td class="r">0.01</td></tr>
+<tr><td>$870,000</td><td><code>GoldWave_HighProfit_870k.set</code></td><td class="r">0.02</td></tr>
+<tr><td>$1,300,000</td><td><code>GoldWave_HighProfit_1.3M.set</code></td><td class="r">0.03</td></tr>
+<tr><td>$2,170,000</td><td><code>GoldWave_HighProfit_2.2M.set</code></td><td class="r">0.05</td></tr>
+<tr><td>$4,340,000</td><td><code>GoldWave_HighProfit_4.3M.set</code></td><td class="r">0.10</td></tr>
+</table>
+<div class="callout warn"><b>Don't use HighProfit unless you have the capital.</b> HighProfit carries up to <b>90 lots</b> at the tail step → too little capital = margin call = blown account. The backtest ran on large capital so it "hid" this.</div>
+<h3>Attaching the EA</h3>
+<ol><li>Copy <code>Dralvo_GoldWave.ex5</code> into <code>MQL5\Experts</code>, refresh the Navigator.</li><li>Open an <b>XAUUSD</b> chart (any timeframe — the signal is computed internally on M1).</li><li>Drag the EA onto the chart → <b>Inputs → Load</b> → choose the setfile matching your capital.</li><li>Enable <b>Algo Trading</b>.</li></ol>
+<h3>Activate the License (REQUIRED on demo/live)</h3>
+<ol><li><b>Get a key:</b> GoldWave is in the <b>Free</b> package — contact <b>admin Telegram @edgardinh86</b> for a License key (provide your MT5 account number; the key is account-locked).</li><li><b>Whitelist WebRequest</b> (most forgotten step): Tools → Options → Expert Advisors → tick <b>☑ Allow WebRequest</b> → add <code>https://www.dralvo.com</code>.</li><li>Fill <code>InpLicenseKey</code> + <code>InpMT5Account</code> (matching account) in the Inputs tab → OK.</li></ol>
+<div class="callout good">Backtest needs NO key — the license gate is skipped in the Strategy Tester. A missing whitelist is the #1 reason the EA shows <code>Contact telegram : @edgardinh86</code> even with a correct key.</div></section>
+
+<section><h2><span class="n">4</span>Main parameters</h2>
+<table><tr><th>Parameter</th><th>Meaning</th></tr>
+<tr><td><code>InpBaseLot</code></td><td>Base lot (step 1) — scale by capital (see section 3)</td></tr>
+<tr><td><code>InpMultiplier</code></td><td>Multiplier after each losing trade (Safe 2.0 / HighProfit 2.75)</td></tr>
+<tr><td><code>InpMaxSteps</code></td><td>Step cap — hitting it cuts the chain (Safe 8 / HighProfit 10)</td></tr>
+<tr><td><code>InpSL_Points</code> / <code>InpTP_Points</code></td><td>Fixed stop-loss / take-profit (points). TP ≥ SL to recover the chain</td></tr>
+<tr><td><code>InpADX_Max</code></td><td>ADX below this = sideway (default 28)</td></tr>
+<tr><td><code>InpSideLookback</code></td><td>M1 candles defining the range (120)</td></tr>
+<tr><td><code>InpEdgeZone</code></td><td>Enter when price is within x% of the range edge (0.45)</td></tr>
+<tr><td><code>InpEquityGuardPct</code></td><td>Equity drops beyond this % → close &amp; STOP (hard brake)</td></tr>
+<tr><td><code>InpMaxSpread</code></td><td>Max spread allowed to enter (points)</td></tr>
+<tr><td><code>InpLicenseKey</code> / <code>InpMT5Account</code></td><td>License key (from admin @edgardinh86) + MT5 account matching the key</td></tr>
+</table>
+<div class="callout"><b>3-digit</b> broker: multiply the point-based inputs (SL/TP/MaxSpread) ×10, like any other EA.</div>
+</section>
+
+<section><h2><span class="n">5</span>Risk &amp; notes</h2>
+<ul><li><b>It is a martingale:</b> the equity curve looks great most of the time, but one losing chain beyond the cap = a big loss / blown account. Cap + equity-guard mitigate, they don't eliminate.</li><li><b>Tail lot grows exponentially:</b> the higher the multiplier, the more brutal the lot at deep steps (HighProfit step 10 = 90 lots). Capital MUST absorb it.</li><li><b>Trades only in sideways</b>, so there are periods where the EA "sits still" waiting for a range — normal, not a bug.</li><li><b>Low-spread broker</b> for Gold; backtested over 34 months, but future markets may differ.</li></ul></section>
+
+<p class="disc">⚠️ Past backtests do NOT guarantee the future. GoldWave is a martingale EA — it carries blow-up risk when a strong trend runs beyond the cap. Capital must cover the lot at the tail step.<br>© 2026 Dralvo Capital</p>
+</div></body></html>
