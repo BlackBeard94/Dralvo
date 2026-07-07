@@ -22,7 +22,8 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
-import { grantLicense } from "@/lib/admin/license-grant";
+import { grantLicense, isGrantProduct, type GrantProduct } from "@/lib/admin/license-grant";
+import { EA_CATALOG } from "@/lib/ea-catalog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,11 +39,14 @@ const IB_LINKS = {
 };
 
 function signApprovePayload(secret: string, parts: {
-  chat: string; mt5: string; email: string; broker: string; action: string; exp: number;
+  chat: string; mt5: string; email: string; broker: string; product?: string; action: string; exp: number;
 }): string {
-  return createHmac("sha256", secret)
-    .update(`lic2.${parts.chat}.${parts.mt5}.${parts.email}.${parts.broker}.${parts.action}.${parts.exp}`)
-    .digest("hex");
+  // A link that carries a product is bound to that EA (lic3). Links without a
+  // product keep the legacy lic2 payload so in-flight TiGold links still verify.
+  const base = parts.product
+    ? `lic3.${parts.chat}.${parts.mt5}.${parts.email}.${parts.broker}.${parts.product}.${parts.action}.${parts.exp}`
+    : `lic2.${parts.chat}.${parts.mt5}.${parts.email}.${parts.broker}.${parts.action}.${parts.exp}`;
+  return createHmac("sha256", secret).update(base).digest("hex");
 }
 
 function html(title: string, body: string, ok: boolean) {
@@ -68,6 +72,14 @@ export async function GET(request: NextRequest) {
   const action = (q.get("action") ?? "") as Action;
   const exp = Number(q.get("exp") ?? 0);
   const sig = (q.get("sig") ?? "").trim();
+  // Optional product — links that carry one grant that EA (lic3); links without
+  // one stay the legacy tigold flow (lic2). Reject an unknown product outright.
+  const productParam = (q.get("product") ?? "").trim();
+  if (productParam && !isGrantProduct(productParam)) {
+    return html("Link không hợp lệ", "Sản phẩm không hợp lệ.", false);
+  }
+  const product: GrantProduct = isGrantProduct(productParam) ? productParam : "tigold";
+  const ea = EA_CATALOG[product];
 
   // chat must be a real Telegram chat_id (integer). Non-numeric ids come from
   // internal /test calls and must never mint a license.
@@ -78,7 +90,7 @@ export async function GET(request: NextRequest) {
   if (Date.now() / 1000 > exp) {
     return html("Link đã hết hạn", "Nút duyệt này quá 72 giờ. Nhờ khách xác nhận lại để nhận nút mới.", false);
   }
-  const expected = signApprovePayload(secret, { chat, mt5, email, broker, action, exp });
+  const expected = signApprovePayload(secret, { chat, mt5, email, broker, product: productParam || undefined, action, exp });
   const a = Buffer.from(sig, "utf8");
   const b = Buffer.from(expected, "utf8");
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
@@ -107,7 +119,9 @@ export async function GET(request: NextRequest) {
 
   // action === "approve" — grant the license INTO the customer's Dralvo account
   // (looked up by email → user_id), pinned to their verified MT5 account.
-  const grant = await grantLicense({ email, plan: "tigold", product: "tigold", mt5Account: mt5, managedBy: null });
+  // plan stays "tigold" (free-tier) for every EA here so a free grant never
+  // flips the customer to full VIP.
+  const grant = await grantLicense({ email, plan: "tigold", product, mt5Account: mt5, managedBy: null });
   if (!grant.ok) {
     if (grant.error === "user_not_found") {
       await sendTelegramMessage(
@@ -128,18 +142,18 @@ export async function GET(request: NextRequest) {
   let licenseKey: string | null = null;
   if (supabase) {
     const { data } = await supabase
-      .from("license_keys").select("key").eq("mt5_account", mt5).eq("product", "tigold").maybeSingle();
+      .from("license_keys").select("key").eq("mt5_account", mt5).eq("product", product).maybeSingle();
     licenseKey = data?.key ?? null;
   }
 
   const sent = await sendTelegramMessage(
     chat,
-    `🎉 <b>License TiGold đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n👤 Tài khoản: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n\n🔐 Vì bảo mật, <b>license key KHÔNG gửi qua chat</b>. Bạn vui lòng:\n1️⃣ Đăng nhập <b>${SITE}/dashboard</b>\n2️⃣ Mở thẻ <b>TiGold Free</b> → <b>copy license key</b> + tải EA & preset\n3️⃣ Cài EA vào MT5 → nhập key → chạy XAUUSD M1\n\n❓ Cần hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
+    `🎉 <b>License ${ea.name} đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n🤖 EA: <b>${ea.name}</b>\n👤 Tài khoản: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n\n🔐 Vì bảo mật, <b>license key KHÔNG gửi qua chat</b>. Bạn vui lòng:\n1️⃣ Đăng nhập <b>${SITE}/dashboard</b>\n2️⃣ Mở thẻ <b>${ea.name}</b> → <b>copy license key</b> + tải EA & preset\n3️⃣ Cài EA vào MT5 → cho phép WebRequest tới dralvo.com → nhập key → chạy theo hướng dẫn\n\n❓ Cần hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
   );
-  console.warn(`[AUDIT license-approve] APPROVED email=${email} mt5=${mt5} chat=${chat} key=${(licenseKey ?? "?").slice(0, 8)}… dm_sent=${sent}`);
+  console.warn(`[AUDIT license-approve] APPROVED product=${product} email=${email} mt5=${mt5} chat=${chat} key=${(licenseKey ?? "?").slice(0, 8)}… dm_sent=${sent}`);
   return html(
     "Đã cấp license ✅",
-    `${who}\nLicense TiGold vĩnh viễn đã cấp vào tài khoản Dralvo, gắn MT5 ${mt5}${sent ? " và đã nhắn khách qua @dralvo_bot." : " — NHƯNG nhắn khách thất bại, kiểm tra log."}`,
+    `${who}\nLicense <b>${ea.name}</b> vĩnh viễn đã cấp vào tài khoản Dralvo, gắn MT5 ${mt5}${sent ? " và đã nhắn khách qua @dralvo_bot." : " — NHƯNG nhắn khách thất bại, kiểm tra log."}`,
     true,
   );
 }
