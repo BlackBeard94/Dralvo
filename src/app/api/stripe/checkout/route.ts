@@ -92,8 +92,24 @@ async function createCheckoutSession(
 
   const baseUrl = getCheckoutBaseUrl(request);
 
+  // Stripe Tax — auto-calculates VAT/sales tax from the customer's billing
+  // address and collects it at checkout (and on every renewal invoice). Gated
+  // by an env flag so it stays OFF until Stripe Tax is configured in the
+  // Dashboard (origin address + registrations) and each price has a
+  // tax_behavior — otherwise Stripe would reject the session and break checkout.
+  const taxEnabled = process.env.STRIPE_TAX_ENABLED === "true";
+
   const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
+    ...(taxEnabled
+      ? {
+          automatic_tax: { enabled: true },
+          // Tax needs an address; also let business customers enter a VAT/Tax ID
+          // (enables EU reverse-charge etc.).
+          billing_address_collection: "required" as const,
+          tax_id_collection: { enabled: true },
+        }
+      : {}),
     subscription_data: {
       metadata: {
         user_id: user.id,
