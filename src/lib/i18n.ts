@@ -1589,7 +1589,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Bóveda de EA",
       gateDescription:
         "La bóveda de robots de trading reconocidos es exclusiva del plan Dralvo VIP.",
-      upgradeCta: "Actualizar a VIP",
+      upgradeCta: "Contactar al admin",
       emptyState: "Aún no hay EA.",
       descriptionPlaceholder:
         "Robot de trading automatizado — descripción de ejemplo, editable en el panel de administración.",
@@ -1599,7 +1599,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       signInCta: "Iniciar sesión",
       freeBadge: "Gratis",
       vipRequiredBadge: "Requiere VIP",
-      vipLockedHint: "Actualice a VIP para descargar este EA",
+      vipLockedHint: "Contacta al admin para desbloquear el acervo de EA (VIP)",
     },
     dashboardHome: {
       contactPrompt:
@@ -2015,7 +2015,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Brankas EA",
       gateDescription:
         "Brankas robot trading ternama ini eksklusif untuk paket Dralvo VIP.",
-      upgradeCta: "Tingkatkan ke VIP",
+      upgradeCta: "Hubungi admin",
       emptyState: "Belum ada EA.",
       descriptionPlaceholder:
         "Robot trading otomatis — keterangan contoh, dapat diedit di admin.",
@@ -2025,7 +2025,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       signInCta: "Masuk",
       freeBadge: "Gratis",
       vipRequiredBadge: "Perlu VIP",
-      vipLockedHint: "Tingkatkan ke VIP untuk mengunduh EA ini",
+      vipLockedHint: "Hubungi admin untuk membuka Kho EA (VIP)",
     },
     dashboardHome: {
       contactPrompt:
@@ -2438,7 +2438,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
     khoPage: {
       title: "خزنة الـ EA",
       gateDescription: "خزنة روبوتات التداول الشهيرة حصرية لخطة Dralvo VIP.",
-      upgradeCta: "الترقية إلى VIP",
+      upgradeCta: "تواصل مع المشرف",
       emptyState: "لا توجد EAs بعد.",
       descriptionPlaceholder:
         "روبوت تداول آلي — وصف تجريبي قابل للتعديل في لوحة الإدارة.",
@@ -2448,7 +2448,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       signInCta: "تسجيل الدخول",
       freeBadge: "مجاني",
       vipRequiredBadge: "يتطلب VIP",
-      vipLockedHint: "قم بالترقية إلى VIP لتنزيل هذا الـ EA",
+      vipLockedHint: "تواصل مع المشرف لفتح مكتبة EA (VIP)",
     },
     dashboardHome: {
       contactPrompt:
@@ -3033,7 +3033,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Kho EA",
       gateDescription:
         "Kho EA các robot nổi tiếng chỉ dành cho gói Dralvo VIP.",
-      upgradeCta: "Nâng cấp lên VIP",
+      upgradeCta: "Liên hệ admin",
       emptyState: "Chưa có EA nào.",
       descriptionPlaceholder:
         "Robot giao dịch tự động — chú thích mẫu, cập nhật trong admin.",
@@ -3043,7 +3043,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       signInCta: "Đăng nhập",
       freeBadge: "Miễn phí",
       vipRequiredBadge: "Cần VIP",
-      vipLockedHint: "Nâng cấp VIP để tải EA này",
+      vipLockedHint: "Liên hệ admin để được mở khóa Kho EA (VIP)",
     },
     dashboardHome: {
       contactPrompt:
@@ -3455,7 +3455,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "EA Vault",
       gateDescription:
         "The vault of renowned trading robots is exclusive to the Dralvo VIP plan.",
-      upgradeCta: "Upgrade to VIP",
+      upgradeCta: "Contact admin",
       emptyState: "No EAs yet.",
       descriptionPlaceholder:
         "Automated trading robot — sample caption, editable in admin.",
@@ -3465,7 +3465,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       signInCta: "Sign in",
       freeBadge: "Free",
       vipRequiredBadge: "VIP required",
-      vipLockedHint: "Upgrade to VIP to download this EA",
+      vipLockedHint: "Contact the admin to unlock the EA vault (VIP)",
     },
     dashboardHome: {
       contactPrompt:
@@ -3703,7 +3703,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       title: "Cofre de EAs",
       gateDescription:
         "O cofre de robôs de trading renomados é exclusivo do plano Dralvo VIP.",
-      upgradeCta: "Fazer upgrade para VIP",
+      upgradeCta: "Falar com o admin",
       emptyState: "Ainda não há EAs.",
       descriptionPlaceholder:
         "Robô de trading automatizado — legenda de exemplo, editável no admin.",
@@ -3713,7 +3713,7 @@ export const DASHBOARD_COPY = withLocaleFallback({
       signInCta: "Entrar",
       freeBadge: "Grátis",
       vipRequiredBadge: "Requer VIP",
-      vipLockedHint: "Faça upgrade para VIP para baixar este EA",
+      vipLockedHint: "Fale com o admin para desbloquear o acervo de EA (VIP)",
     },
     dashboardHome: {
       contactPrompt:

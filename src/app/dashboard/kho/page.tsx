@@ -124,12 +124,14 @@ export default async function KhoEAPage() {
                       <span className="inline-flex items-center gap-1.5 text-[11px] text-white/70">
                         <Lock size={12} /> {c.vipLockedHint}
                       </span>
-                      <Link
-                        href="/pricing"
+                      <a
+                        href="https://t.me/edgardinh86"
+                        target="_blank"
+                        rel="noreferrer"
                         className="shrink-0 inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gold-action text-[#060609] no-underline hover:scale-[1.03] transition-transform"
                       >
                         {c.upgradeCta}
-                      </Link>
+                      </a>
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
