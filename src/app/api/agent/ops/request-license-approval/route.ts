@@ -18,7 +18,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getReferralSource } from "@/lib/referral-source";
 import { signGrantToken } from "@/lib/license-approval-token";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
-import { isGrantProduct, type GrantProduct } from "@/lib/admin/license-grant";
+import { isGrantProduct, TRIAL_DAYS, type GrantProduct } from "@/lib/admin/license-grant";
 import { EA_CATALOG } from "@/lib/ea-catalog";
 
 export const runtime = "nodejs";
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     `🤖 EA: <b>${eaName}</b>`,
     src,
     ``,
-    `Bấm nút bên dưới để cấp license <b>${eaName}</b> vào đúng tài khoản Dralvo của khách. Khách sẽ nhận key + link tải ngay trong chat.`,
+    `✅ Kiểm tra khách đã <b>mở tài khoản GTC dưới IB Dralvo</b> (không cần nạp tiền). Bấm nút bên dưới để cấp license <b>${eaName}</b> dùng thử <b>${TRIAL_DAYS} ngày</b> vào đúng tài khoản Dralvo của khách. Khách sẽ nhận key + link tải ngay trong chat.`,
   ].join("\n");
 
   // Send via the owner-notification bot (same one TiGold approvals use) so the

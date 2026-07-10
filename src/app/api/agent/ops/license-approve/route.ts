@@ -1,17 +1,17 @@
 /**
- * GET /api/agent/ops/license-approve — one-tap owner approval for the TiGold
- * free-license flow.
+ * GET /api/agent/ops/license-approve — one-tap owner approval for the free-EA
+ * flow.
  *
  * The VPS support bot walks a customer through opening a GTC account under
- * Dralvo's IB and depositing the minimum ($100 / 10,000 cent). When the customer
- * confirms, the bot messages the OWNER (via the Hermes Telegram bot) with three
- * URL buttons pointing here. The owner eyeballs the GTC IB portal (GTC has no
- * API) and taps one:
+ * Dralvo's IB (no deposit required). When the customer confirms, the bot messages
+ * the OWNER (via the Hermes Telegram bot) with URL buttons pointing here. The
+ * owner eyeballs the GTC IB portal (GTC has no API) and taps one:
  *
- *   action=approve      → grant lifetime license bound to the MT5 account
- *                         (idempotent, 1 account per key) + DM the customer
- *                         the key and download links via @dralvo_bot.
- *   action=deposit_wait → DM the customer that the deposit is still short.
+ *   action=approve      → grant a TRIAL_DAYS-day trial license bound to the MT5
+ *                         account (idempotent, 1 account per key) + DM the
+ *                         customer the key and download links via @dralvo_bot.
+ *   action=deposit_wait → DM the customer their account isn't showing as active
+ *                         under the IB yet (legacy action name; no deposit).
  *   action=not_found    → DM the customer that no account was found under the IB.
  *
  * Auth: HMAC-signed link (LICENSE_APPROVE_SECRET) with expiry — no session.
@@ -22,13 +22,15 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
-import { grantLicense, isGrantProduct, type GrantProduct } from "@/lib/admin/license-grant";
+import { grantLicense, isGrantProduct, TRIAL_DAYS, type GrantProduct } from "@/lib/admin/license-grant";
 import { EA_CATALOG } from "@/lib/ea-catalog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.dralvo.com";
+// Admin handle for getting a fresh key / renewing after the trial expires.
+const RENEW_ADMIN = "https://t.me/edgardinh86";
 
 const ACTIONS = ["approve", "deposit_wait", "not_found"] as const;
 type Action = (typeof ACTIONS)[number];
@@ -102,10 +104,10 @@ export async function GET(request: NextRequest) {
   if (action === "deposit_wait") {
     await sendTelegramMessage(
       chat,
-      `⏳ <b>Dralvo đã kiểm tra tài khoản MT5 ${mt5}</b>\n\nHiện chưa thấy đủ mức nạp tối thiểu <b>$100</b> (tài khoản USD) / <b>10.000 cent</b> (tài khoản Cent).\n\nBạn kiểm tra lại giao dịch nạp giúp mình nhé — tiền vào tài khoản xong bạn nhắn lại "đã nạp" là mình báo admin duyệt ngay. 🙏\n\n<i>If you need English support, just reply in English.</i>`,
+      `⏳ <b>Dralvo đang kiểm tra tài khoản MT5 ${mt5}</b>\n\nTài khoản của bạn hiện chưa hiển thị là đã kích hoạt dưới IB Dralvo. Sau khi mở tài khoản GTC, thường mất vài phút để hệ thống cập nhật.\n\nBạn đợi ít phút rồi nhắn lại "đã mở" giúp mình nhé — mình sẽ báo admin duyệt cấp key ngay. Không cần nạp tiền. 🙏\n\n<i>If you need English support, just reply in English.</i>`,
     );
     console.warn(`[AUDIT license-approve] deposit_wait mt5=${mt5} chat=${chat}`);
-    return html("Đã báo khách nạp thêm", `Đã nhắn ${who}: chưa đủ mức nạp tối thiểu, kiểm tra lại và xác nhận sau.`, true);
+    return html("Đã báo khách đợi xác minh", `Đã nhắn ${who}: tài khoản chưa hiển thị active dưới IB, đợi ít phút rồi xác nhận lại.`, true);
   }
 
   if (action === "not_found") {
@@ -120,8 +122,8 @@ export async function GET(request: NextRequest) {
   // action === "approve" — grant the license INTO the customer's Dralvo account
   // (looked up by email → user_id), pinned to their verified MT5 account.
   // plan stays "tigold" (free-tier) for every EA here so a free grant never
-  // flips the customer to full VIP.
-  const grant = await grantLicense({ email, plan: "tigold", product, mt5Account: mt5, managedBy: null });
+  // flips the customer to full VIP. Every IB grant is a TRIAL_DAYS-day trial.
+  const grant = await grantLicense({ email, plan: "tigold", product, mt5Account: mt5, managedBy: null, expiresInDays: TRIAL_DAYS });
   if (!grant.ok) {
     if (grant.error === "user_not_found") {
       await sendTelegramMessage(
@@ -137,23 +139,25 @@ export async function GET(request: NextRequest) {
   }
 
   // Security: the key is NOT sent over Telegram — the customer reads it in the
-  // authenticated dashboard only. Fetch just for the audit log.
+  // authenticated dashboard only. Fetch key + expiry for the message/audit log.
   const supabase = getSupabaseAdminClient();
   let licenseKey: string | null = null;
+  let expiryLabel: string | null = null;
   if (supabase) {
     const { data } = await supabase
-      .from("license_keys").select("key").eq("mt5_account", mt5).eq("product", product).maybeSingle();
+      .from("license_keys").select("key, expires_at").eq("mt5_account", mt5).eq("product", product).maybeSingle();
     licenseKey = data?.key ?? null;
+    expiryLabel = data?.expires_at ? new Date(data.expires_at as string).toLocaleDateString("vi-VN") : null;
   }
 
   const sent = await sendTelegramMessage(
     chat,
-    `🎉 <b>License ${ea.name} đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n🤖 EA: <b>${ea.name}</b>\n👤 Tài khoản: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n\n🔐 Vì bảo mật, <b>license key KHÔNG gửi qua chat</b>. Bạn vui lòng:\n1️⃣ Đăng nhập <b>${SITE}/dashboard</b>\n2️⃣ Mở thẻ <b>${ea.name}</b> → <b>copy license key</b> + tải EA & preset\n3️⃣ Cài EA vào MT5 → cho phép WebRequest tới dralvo.com → nhập key → chạy theo hướng dẫn\n\n❓ Cần hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
+    `🎉 <b>License ${ea.name} đã được cấp vào tài khoản Dralvo của bạn!</b>\n\n🤖 EA: <b>${ea.name}</b>\n👤 Tài khoản: <code>${email}</code>\n🖥 Gắn với MT5: <code>${mt5}</code> (license chỉ chạy trên đúng tài khoản này)\n⏳ Key dùng thử <b>${TRIAL_DAYS} ngày</b>${expiryLabel ? ` — hết hạn <b>${expiryLabel}</b>` : ""}.\n\n🔐 Vì bảo mật, <b>license key KHÔNG gửi qua chat</b>. Bạn vui lòng:\n1️⃣ Đăng nhập <b>${SITE}/dashboard</b>\n2️⃣ Mở thẻ <b>${ea.name}</b> → <b>copy license key</b> + tải EA & preset\n3️⃣ Cài EA vào MT5 → cho phép WebRequest tới dralvo.com → nhập key → chạy theo hướng dẫn\n\n🔄 Hết hạn muốn lấy key mới / gia hạn: nhắn admin ${RENEW_ADMIN}\n❓ Cần hỗ trợ: nhắn tại đây hoặc @dralvoea\n\n⚠️ <i>Công cụ giao dịch, không phải lời khuyên tài chính. Backtest quá khứ không bảo đảm tương lai — luôn quản lý rủi ro.</i>`,
   );
   console.warn(`[AUDIT license-approve] APPROVED product=${product} email=${email} mt5=${mt5} chat=${chat} key=${(licenseKey ?? "?").slice(0, 8)}… dm_sent=${sent}`);
   return html(
     "Đã cấp license ✅",
-    `${who}\nLicense <b>${ea.name}</b> vĩnh viễn đã cấp vào tài khoản Dralvo, gắn MT5 ${mt5}${sent ? " và đã nhắn khách qua @dralvo_bot." : " — NHƯNG nhắn khách thất bại, kiểm tra log."}`,
+    `${who}\nLicense <b>${ea.name}</b> dùng thử ${TRIAL_DAYS} ngày đã cấp vào tài khoản Dralvo, gắn MT5 ${mt5}${sent ? " và đã nhắn khách qua @dralvo_bot." : " — NHƯNG nhắn khách thất bại, kiểm tra log."}`,
     true,
   );
 }

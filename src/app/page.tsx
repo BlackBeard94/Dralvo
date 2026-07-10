@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Activity, Layers, ScanLine } from "lucide-react";
 
@@ -10,7 +10,7 @@ import { mainNavLinks } from "@/components/shared/nav-links";
 import { MainNavActions } from "@/components/shared/site-nav";
 import { InstallAppButton } from "@/components/shared/install-app-button";
 import { SocialLinks } from "@/components/shared/social-links";
-import { COMMON_COPY } from "@/lib/common-copy";
+import { PRICING_FREE_COPY, RENEW_ADMIN_URL, SUPPORT_TELEGRAM_URL } from "@/lib/pricing-free-copy";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { useLocale } from "@/hooks/use-locale";
 import { LANDING_COPY } from "@/lib/landing-copy";
@@ -29,21 +29,6 @@ const accent = (a: EaProduct["accent"], al: number) => `rgba(${rgb(a)},${al})`;
 const accentText = (a: EaProduct["accent"]) => (a === "steel" ? "#7dc0f0" : a === "emerald" ? "#00c98d" : "var(--gold-bright)");
 
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
-
-const PERIODS = [
-  { id: "monthly", months: 1 },
-  { id: "sixmo", months: 6 },
-  { id: "yearly", months: 12 },
-] as const;
-type PeriodId = (typeof PERIODS)[number]["id"];
-
-/* Dralvo VIP price by billing period (the Free tier is always $0).
- * total = charged now for the period · perMo = per-month equivalent · off = % saved. */
-const UNLIMITED_PRICING: Record<PeriodId, { total: number; perMo: number; off: number }> = {
-  monthly: { total: 59, perMo: 59, off: 0 },
-  sixmo: { total: 319, perMo: 53, off: 10 },
-  yearly: { total: 599, perMo: 50, off: 15 },
-};
 
 /* -------------------------------------------------------------------------- */
 /*  Small parts                                                                */
@@ -153,12 +138,9 @@ function EaPlate({ ea, copy, onGet, badge }: { ea: EaProduct; copy: (typeof LAND
 export default function LandingPage() {
   const { locale } = useLocale();
   const t = LANDING_COPY[locale];
-  const c = COMMON_COPY[locale];
+  const f = PRICING_FREE_COPY[locale];
   const [scrolled, setScrolled] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<EaProduct["id"]>("goldmaster");
-  const [period, setPeriod] = useState<PeriodId>("monthly");
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -166,32 +148,8 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const checkout = useCallback(
-    async (plan: "unlimited") => {
-      setLoading(true);
-      setCheckoutError(null);
-      try {
-        const res = await fetch("/api/stripe/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan, period }),
-        });
-        if (res.status === 401) { window.location.href = "/signup?redirect=pricing"; return; }
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.url) { window.location.href = data.url; return; }
-        setCheckoutError(data.error || c.errors.checkoutFailed);
-        setLoading(false);
-      } catch {
-        setCheckoutError(c.errors.connection);
-        setLoading(false);
-      }
-    },
-    [period, c],
-  );
-
   const activeEa = tab === "goldmaster" ? GOLDMASTER : tab === "scalp" ? GOLD_SCALP : TIGOLD;
   const p = t.products;
-  const unlimitedPrice = UNLIMITED_PRICING[period];
 
   return (
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
@@ -229,21 +187,17 @@ export default function LandingPage() {
               },
               {
                 "@type": "Product",
-                name: "Dralvo VIP",
+                name: "Dralvo EA Suite",
                 brand: { "@id": "https://www.dralvo.com/#org" },
                 category: "Automated trading software (MetaTrader 5 Expert Advisor)",
                 operatingSystem: "Windows (MetaTrader 5)",
                 description:
-                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M15 momentum) and TiGold robots for XAUUSD. No martingale, no grid.",
+                  "The full Dralvo ecosystem — GoldMaster (D1 swing), GoldScalp (M15 momentum), TiGold and GoldWave robots for XAUUSD. Free to try for 3 days via the Dralvo IB partnership. No martingale, no grid.",
                 offers: {
                   "@type": "Offer",
                   priceCurrency: "USD",
-                  price: "59",
+                  price: "0",
                   availability: "https://schema.org/InStock",
-                  priceSpecification: [
-                    { "@type": "UnitPriceSpecification", price: "59", priceCurrency: "USD", referenceQuantity: { "@type": "QuantitativeValue", value: "1", unitCode: "MON" }, name: "Monthly" },
-                    { "@type": "UnitPriceSpecification", price: "599", priceCurrency: "USD", referenceQuantity: { "@type": "QuantitativeValue", value: "12", unitCode: "MON" }, name: "Yearly" },
-                  ],
                 },
               },
               {
@@ -482,51 +436,57 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing — subscription */}
+        {/* Pricing — every EA is a free 3-day trial via the IB */}
         <section id="pricing" className="relative py-20 px-6 overflow-hidden">
           <GlowOrb className="w-[600px] h-[600px] top-10 left-1/2 -translate-x-1/2 opacity-40" />
-          <div className="max-w-[1100px] mx-auto relative z-10">
+          <div className="max-w-[960px] mx-auto relative z-10">
             <div className="text-center mb-9">
-              <Eyebrow>{t.pricing.eyebrow}</Eyebrow>
-              <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>{t.pricing.title}</h2>
-              <p className="text-text-secondary max-w-[560px] mx-auto mb-7">{t.pricing.intro}</p>
-              <div className="inline-flex rounded-lg border border-border bg-card p-1 gap-1">
-                {PERIODS.map((pr) => {
-                  const on = period === pr.id;
-                  const off = UNLIMITED_PRICING[pr.id].off;
-                  return (
-                    <button key={pr.id} type="button" aria-pressed={on} onClick={() => setPeriod(pr.id)} className={cn("px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer border-none flex items-center gap-1.5", on ? "bg-gold text-[#060609]" : "bg-transparent text-text-muted hover:text-text-primary")}>
-                      {t.pricing.periods[pr.id]}{off > 0 && <span className={cn("text-[10px] font-mono", on ? "text-[#060609]/70" : "text-green")}>−{off}%</span>}
-                    </button>
-                  );
-                })}
-              </div>
+              <Eyebrow>{f.eyebrow}</Eyebrow>
+              <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.015em] mt-5 mb-4 text-balance" style={{ fontFamily: SERIF }}>{f.title}</h2>
+              <p className="text-text-secondary max-w-[560px] mx-auto">{f.intro}</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 items-stretch max-w-[820px] mx-auto">
-              {t.pricing.tiers.map((tier) => {
-                const isFree = tier.id === "free";
-                const popular = tier.id === "unlimited";
-                return (
-                  <div key={tier.id} className={cn("lift rounded-xl border p-6 sm:p-7 flex flex-col relative", popular ? "" : "border-border bg-card")} style={popular ? { borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" } : undefined}>
-                    {popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold-bright text-[#060609] text-[11px] font-semibold rounded-full">{t.pricing.popular}</span>}
-                    <h3 className={cn("text-lg font-semibold", popular ? "text-gold-bright" : "text-text-primary")}>{tier.name}</h3>
-                    <p className="text-[12px] text-text-muted mt-1 mb-4">{tier.tagline}</p>
-                    <div className="mb-1 flex items-baseline gap-1.5">
-                      <span className={cn("font-mono text-4xl font-bold", popular ? "text-gold-bright" : "text-text-primary")}>${isFree ? 0 : unlimitedPrice.total}</span>
-                      {!isFree && <span className="text-text-muted text-sm">/ {t.pricing.periods[period]}</span>}
-                    </div>
-                    <p className="text-[11px] text-text-muted mb-5 h-4">{!isFree && unlimitedPrice.off > 0 ? `≈ $${unlimitedPrice.perMo}${t.pricing.perMonth} · −${unlimitedPrice.off}%` : " "}</p>
-                    <ul className="space-y-2.5 mb-7 flex-1">
-                      {tier.features.map((f) => (<li key={f} className="flex items-start gap-2 text-[13px] text-text-secondary"><Check size={14} className={cn("shrink-0 mt-0.5", popular ? "text-gold-bright" : "text-green")} /><span>{f}</span></li>))}
-                    </ul>
-                    <button type="button" onClick={isFree ? () => { window.location.href = "/signup?redirect=/dashboard"; } : () => checkout("unlimited")} disabled={loading} className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50", popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>{tier.cta}</button>
-                  </div>
-                );
-              })}
+            <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+              {/* The single free offer */}
+              <div className="lift relative rounded-xl border p-6 sm:p-7 flex flex-col"
+                style={{ borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" }}>
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold-bright text-[#060609] text-[11px] font-semibold rounded-full">{f.trialBadge}</span>
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {f.eas.map((ea) => (
+                    <span key={ea} className="text-[11px] font-semibold px-2 py-1 rounded-md border border-gold/25 text-gold" style={{ background: "rgba(212,168,67,0.06)" }}>{ea}</span>
+                  ))}
+                </div>
+                <div className="mb-5 flex items-baseline gap-2">
+                  <span className="font-mono text-4xl font-bold text-gold-bright">$0</span>
+                  <span className="text-text-muted text-sm">· {f.priceWord}</span>
+                </div>
+                <ul className="space-y-2.5 mb-7 flex-1">
+                  {f.features.map((feat) => (
+                    <li key={feat} className="flex items-start gap-2 text-[13px] text-text-secondary"><Check size={14} className="shrink-0 mt-0.5 text-gold-bright" /><span>{feat}</span></li>
+                  ))}
+                </ul>
+                <Link href="/signup?redirect=/dashboard" className="w-full py-3 rounded-md text-sm font-semibold text-center bg-gold-bright text-[#060609] no-underline transition-transform hover:scale-[1.02]">{f.primaryCta}</Link>
+                <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="mt-2.5 w-full py-2.5 rounded-md text-sm font-semibold text-center border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold inline-flex items-center justify-center gap-1.5">{f.telegramCta}<ArrowUpRight size={15} /></a>
+              </div>
+
+              {/* How it works — 3 steps */}
+              <div className="lift rounded-xl border border-border bg-card p-6 sm:p-7 flex flex-col">
+                <h3 className="text-lg font-semibold text-text-primary mb-5">{f.stepsTitle}</h3>
+                <ol className="space-y-4 flex-1">
+                  {f.steps.map((step, i) => (
+                    <li key={step} className="flex items-start gap-3">
+                      <span className="shrink-0 grid place-items-center w-7 h-7 rounded-full bg-gold/10 border border-gold/25 text-gold text-sm font-bold">{i + 1}</span>
+                      <span className="text-sm text-text-secondary leading-relaxed pt-0.5">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                <div className="mt-6 pt-5 border-t border-border">
+                  <p className="text-[12px] text-text-muted leading-relaxed mb-2.5">{f.renewNote}</p>
+                  <a href={RENEW_ADMIN_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-gold hover:text-gold-bright transition-colors font-medium text-sm no-underline">{f.renewCta}<ArrowUpRight size={15} /></a>
+                </div>
+              </div>
             </div>
-            <p className="text-[12px] text-center text-text-muted mt-7">{t.pricing.cancelNote}</p>
-            {checkoutError && <p role="alert" className="text-[12px] text-center text-red mt-2">{checkoutError}</p>}
+            <p className="text-[11px] text-center text-text-muted mt-8 max-w-[560px] mx-auto leading-relaxed">{f.disclaimer}</p>
           </div>
         </section>
 

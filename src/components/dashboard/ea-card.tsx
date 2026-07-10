@@ -35,15 +35,22 @@ type DevicesState = {
   devices: Device[];
 };
 
-// Inline copy for the TiGold "activate via bot" CTA (kept out of the big i18n
-// file since it's a single self-contained widget).
-const ACTIVATE_COPY: Record<string, { hint: string; btn: string; opening: string; err: string }> = {
-  vi: { hint: "Bấm để chat với bot Dralvo & nhận license miễn phí. Key sẽ hiện tại đây sau khi admin duyệt.", btn: "Kích hoạt qua Telegram", opening: "Đang mở…", err: "Không tạo được link, thử lại." },
-  en: { hint: "Tap to chat with the Dralvo bot & get your free license. The key appears here once approved.", btn: "Activate via Telegram", opening: "Opening…", err: "Couldn't create the link, try again." },
-  "pt-BR": { hint: "Toque para falar com o bot da Dralvo e receber sua licença grátis. A chave aparece aqui após a aprovação.", btn: "Ativar via Telegram", opening: "Abrindo…", err: "Não foi possível criar o link, tente de novo." },
-  es: { hint: "Toca para chatear con el bot de Dralvo y obtener tu licencia gratis. La clave aparece aquí tras la aprobación.", btn: "Activar por Telegram", opening: "Abriendo…", err: "No se pudo crear el enlace, inténtalo de nuevo." },
-  id: { hint: "Ketuk untuk chat dengan bot Dralvo & dapatkan lisensi gratis. Kunci muncul di sini setelah disetujui.", btn: "Aktifkan via Telegram", opening: "Membuka…", err: "Gagal membuat tautan, coba lagi." },
-  ar: { hint: "اضغط للدردشة مع بوت Dralvo والحصول على ترخيصك المجاني. يظهر المفتاح هنا بعد الموافقة.", btn: "تفعيل عبر تيليجرام", opening: "جارٍ الفتح…", err: "تعذّر إنشاء الرابط، حاول مجدداً." },
+// Admin handle for getting a fresh key / renewing after the 3-day trial expires.
+const RENEW_ADMIN = "https://t.me/edgardinh86";
+
+// Inline copy for the "activate via bot" CTA (kept out of the big i18n file since
+// it's a single self-contained widget). Every EA is now a free 3-day trial:
+// activate via the bot, and once the trial expires, renew by contacting the admin.
+const ACTIVATE_COPY: Record<string, {
+  hint: string; btn: string; opening: string; err: string;
+  expiredTitle: string; expiredHint: string; renewBtn: string;
+}> = {
+  vi: { hint: "Bấm để chat với bot Dralvo & nhận key dùng thử 3 ngày miễn phí. Key sẽ hiện tại đây sau khi admin duyệt.", btn: "Kích hoạt qua Telegram", opening: "Đang mở…", err: "Không tạo được link, thử lại.", expiredTitle: "Key dùng thử đã hết hạn", expiredHint: "Bản dùng thử 3 ngày đã kết thúc. Nhắn admin để lấy key mới / gia hạn.", renewBtn: "Liên hệ admin gia hạn" },
+  en: { hint: "Tap to chat with the Dralvo bot & get a free 3-day trial key. The key appears here once approved.", btn: "Activate via Telegram", opening: "Opening…", err: "Couldn't create the link, try again.", expiredTitle: "Trial key expired", expiredHint: "Your 3-day trial has ended. Message the admin for a new key / renewal.", renewBtn: "Contact admin to renew" },
+  "pt-BR": { hint: "Toque para falar com o bot da Dralvo e receber uma chave de teste grátis de 3 dias. A chave aparece aqui após a aprovação.", btn: "Ativar via Telegram", opening: "Abrindo…", err: "Não foi possível criar o link, tente de novo.", expiredTitle: "Chave de teste expirada", expiredHint: "Seu teste de 3 dias terminou. Fale com o admin para uma nova chave / renovação.", renewBtn: "Falar com o admin" },
+  es: { hint: "Toca para chatear con el bot de Dralvo y obtener una clave de prueba gratis de 3 días. La clave aparece aquí tras la aprobación.", btn: "Activar por Telegram", opening: "Abriendo…", err: "No se pudo crear el enlace, inténtalo de nuevo.", expiredTitle: "Clave de prueba caducada", expiredHint: "Tu prueba de 3 días terminó. Escribe al admin para una nueva clave / renovación.", renewBtn: "Contactar al admin" },
+  id: { hint: "Ketuk untuk chat dengan bot Dralvo & dapatkan kunci uji coba gratis 3 hari. Kunci muncul di sini setelah disetujui.", btn: "Aktifkan via Telegram", opening: "Membuka…", err: "Gagal membuat tautan, coba lagi.", expiredTitle: "Kunci uji coba kedaluwarsa", expiredHint: "Uji coba 3 hari Anda berakhir. Hubungi admin untuk kunci baru / perpanjangan.", renewBtn: "Hubungi admin" },
+  ar: { hint: "اضغط للدردشة مع بوت Dralvo والحصول على مفتاح تجريبي مجاني لمدة 3 أيام. يظهر المفتاح هنا بعد الموافقة.", btn: "تفعيل عبر تيليجرام", opening: "جارٍ الفتح…", err: "تعذّر إنشاء الرابط، حاول مجدداً.", expiredTitle: "انتهت صلاحية المفتاح التجريبي", expiredHint: "انتهت تجربتك المجانية لمدة 3 أيام. راسل المشرف للحصول على مفتاح جديد / تجديد.", renewBtn: "تواصل مع المشرف" },
 };
 
 export interface EaCardProps {
@@ -55,6 +62,8 @@ export interface EaCardProps {
   set?: string;
   guide?: string;
   license: { key: string; expiresAt: string | null } | null;
+  /** True when the user held a key for this EA but the trial has expired. */
+  trialExpired?: boolean;
 }
 
 function timeAgo(iso: string, locale: string): string {
@@ -68,7 +77,7 @@ function timeAgo(iso: string, locale: string): string {
   return rtf.format(-Math.floor(h / 24), "day");
 }
 
-export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCardProps) {
+export function EaCard({ id, name, tf, accent, ex5, set, guide, license, trialExpired = false }: EaCardProps) {
   const { locale } = useLocale();
   const c = DASHBOARD_COPY[locale].eaCard;
   const [copied, setCopied] = useState(false);
@@ -225,7 +234,27 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
             {c.expires}: {license.expiresAt ? new Date(license.expiresAt).toLocaleDateString(locale) : c.forever}
           </p>
         </div>
-      ) : id === "tigold" || id === "goldwave" ? (
+      ) : trialExpired ? (
+        <div className="mb-3 rounded-xl border border-dashed px-3 py-3" style={{ borderColor: `${accent}66`, background: `${accent}08` }}>
+          <div className="flex items-start gap-2">
+            <Sparkles className="h-4 w-4 mt-0.5 shrink-0" style={{ color: accent }} />
+            <div className="min-w-0">
+              <p className="text-[13px] font-semibold text-text-primary">{act.expiredTitle}</p>
+              <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">{act.expiredHint}</p>
+            </div>
+          </div>
+          <a
+            href={RENEW_ADMIN}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 w-full inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#060609] no-underline transition-transform hover:scale-[1.02]"
+            style={{ background: accent }}
+          >
+            <Send className="h-4 w-4" />
+            {act.renewBtn}
+          </a>
+        </div>
+      ) : (
         <div
           className="mb-3 rounded-xl border px-3 py-3"
           style={{
@@ -255,15 +284,6 @@ export function EaCard({ id, name, tf, accent, ex5, set, guide, license }: EaCar
             {activating ? act.opening : act.btn}
           </button>
           {actErr && <p className="text-[11px] text-red mt-1.5 text-center">{actErr}</p>}
-        </div>
-      ) : (
-        <div className="mb-3 rounded-xl border border-dashed border-border bg-deep/20 px-3 py-2.5">
-          <p className="text-[11px] text-text-muted">
-            {c.noKey}{" "}
-            <a href="https://t.me/dralvoea" target="_blank" rel="noreferrer" className="text-gold hover:underline">
-              {c.contactAdmin}
-            </a>
-          </p>
         </div>
       )}
 

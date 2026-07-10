@@ -89,6 +89,8 @@ export default async function DashboardPage() {
 
   // product → its active license row (key + expiry + tier)
   const keysByProduct: Partial<Record<EaKey, KeyInfo>> = {};
+  // products where the user held a key but the 3-day trial has expired
+  const expiredProducts = new Set<EaKey>();
 
   try {
     const supabase = await createServerSupabaseClient();
@@ -105,16 +107,19 @@ export default async function DashboardPage() {
       for (const row of data ?? []) {
         const product = row.product as EaKey | null;
         if (!product || !(product in EA_DOWNLOADS)) continue;
-        if (!isLicenseActive(row)) continue;
-        keysByProduct[product] = { key: row.key, plan: row.plan, expires_at: row.expires_at };
+        if (isLicenseActive(row)) {
+          keysByProduct[product] = { key: row.key, plan: row.plan, expires_at: row.expires_at };
+        } else {
+          // Row exists but expired → show the "trial ended, renew" state.
+          expiredProducts.add(product);
+        }
       }
     }
   } catch { /* table may not exist — show free UI */ }
 
-  // Show every EA the user has a key for; free EAs (TiGold, GoldWave) always show.
+  // Every EA is now a free 3-day trial, so show all of them to everyone.
   // GoldWave is pinned first (featured EA).
   const eaList = (Object.keys(EA_DOWNLOADS) as EaKey[])
-    .filter((id) => keysByProduct[id] || id === "tigold" || id === "goldwave")
     .sort((a, b) => (a === "goldwave" ? -1 : b === "goldwave" ? 1 : 0));
 
   return (
@@ -141,6 +146,7 @@ export default async function DashboardPage() {
               set={ea.set}
               guide={resolveGuide(id, locale)}
               license={lic ? { key: lic.key, expiresAt: lic.expires_at } : null}
+              trialExpired={!lic && expiredProducts.has(id)}
             />
           );
         })}

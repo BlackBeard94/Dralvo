@@ -99,8 +99,8 @@ export const LANDING_COPY = withLocaleFallback({
       popular: "الأكثر رواجاً",
       cancelNote: "ألغِ في أي وقت · بلا عقد · دعم التثبيت مشمول.",
       tiers: [
-        { id: "free", name: "Free", tagline: "احصل على EA مجاناً عبر Dralvo IB", cta: "افتح حساباً واحصل على EA", features: ["TiGold EA مجاناً", "حساب MT5 حقيقي واحد عبر IB", "حاسبة اللوت", "مجتمع Telegram", "تحديثات EA أساسية"] },
-        { id: "unlimited", name: "Dralvo VIP", tagline: "كامل منظومة Dralvo", cta: "افتح كل Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "GoldWave", "Telegram VIP", "تحديثات EA مستمرة", "دعم التثبيت", "VPS واحد مشمول", "وصول مبكر إلى EA الجديدة", "دعم ذو أولوية"] },
+        { id: "free", name: "Free", tagline: "احصل على EA مجاناً عبر Dralvo IB", cta: "افتح حساباً واحصل على EA", features: ["TiGold EA مجاناً", "GoldWave EA مجاناً", "حساب MT5 حقيقي واحد عبر IB", "حاسبة اللوت", "مجتمع Telegram", "تحديثات EA أساسية"] },
+        { id: "unlimited", name: "Dralvo VIP", tagline: "كامل منظومة Dralvo", cta: "افتح كل Dralvo", features: ["GoldMaster", "GoldScalp", "أهم مكتبة EA في السوق", "كل مزايا الباقة المجانية", "Telegram VIP", "تحديثات EA مستمرة", "دعم التثبيت", "VPS واحد مشمول", "وصول مبكر إلى EA الجديدة", "دعم ذو أولوية"] },
       ],
     },
     faq: {
@@ -237,8 +237,8 @@ export const LANDING_COPY = withLocaleFallback({
       popular: "Phổ biến",
       cancelNote: "Hủy bất cứ lúc nào · không ràng buộc hợp đồng · hỗ trợ cài đặt.",
       tiers: [
-        { id: "free", name: "Free", tagline: "Nhận EA miễn phí qua Dralvo IB", cta: "Mở tài khoản nhận EA", features: ["TiGold EA miễn phí", "1 tài khoản MT5 thật qua IB", "Công cụ tính lot", "Telegram Community", "Cập nhật EA cơ bản"] },
-        { id: "unlimited", name: "Dralvo VIP", tagline: "Toàn bộ hệ sinh thái Dralvo", cta: "Mở khóa toàn bộ Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "GoldWave", "Telegram VIP", "Cập nhật EA liên tục", "Hỗ trợ cài đặt", "Truy cập sớm EA mới", "Ưu tiên hỗ trợ"] },
+        { id: "free", name: "Free", tagline: "Nhận EA miễn phí qua Dralvo IB", cta: "Mở tài khoản nhận EA", features: ["TiGold EA miễn phí", "GoldWave EA miễn phí", "1 tài khoản MT5 thật qua IB", "Công cụ tính lot", "Telegram Community", "Cập nhật EA cơ bản"] },
+        { id: "unlimited", name: "Dralvo VIP", tagline: "Toàn bộ hệ sinh thái Dralvo", cta: "Mở khóa toàn bộ Dralvo", features: ["GoldMaster", "GoldScalp", "Kho EA hot nhất thị trường", "Toàn bộ tính năng gói Free", "Telegram VIP", "Cập nhật EA liên tục", "Hỗ trợ cài đặt", "Truy cập sớm EA mới", "Ưu tiên hỗ trợ"] },
       ],
     },
     faq: {
@@ -374,8 +374,8 @@ export const LANDING_COPY = withLocaleFallback({
       popular: "Popular",
       cancelNote: "Cancel anytime · no contract · install support included.",
       tiers: [
-        { id: "free", name: "Free", tagline: "Get the EA free via Dralvo IB", cta: "Open account, get the EA", features: ["TiGold EA free", "1 real MT5 account via IB", "Lot calculator", "Telegram community", "Basic EA updates"] },
-        { id: "unlimited", name: "Dralvo VIP", tagline: "The entire Dralvo ecosystem", cta: "Unlock all of Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "GoldWave", "Telegram VIP", "Continuous EA updates", "Install support", "1 VPS included", "Early access to new EAs", "Priority support"] },
+        { id: "free", name: "Free", tagline: "Get the EA free via Dralvo IB", cta: "Open account, get the EA", features: ["TiGold EA free", "GoldWave EA free", "1 real MT5 account via IB", "Lot calculator", "Telegram community", "Basic EA updates"] },
+        { id: "unlimited", name: "Dralvo VIP", tagline: "The entire Dralvo ecosystem", cta: "Unlock all of Dralvo", features: ["GoldMaster", "GoldScalp", "The market's hottest EA library", "Everything in the Free plan", "Telegram VIP", "Continuous EA updates", "Install support", "1 VPS included", "Early access to new EAs", "Priority support"] },
       ],
     },
     faq: {
@@ -495,8 +495,8 @@ export const LANDING_COPY = withLocaleFallback({
       perMonth: "/mes", popular: "Popular",
       cancelNote: "Cancela cuando quieras · sin contrato · soporte de instalación incluido.",
       tiers: [
-        { id: "free", name: "Free", tagline: "Recibe el EA gratis vía Dralvo IB", cta: "Abrir cuenta y recibir el EA", features: ["TiGold EA gratis", "1 cuenta real MT5 vía IB", "Calculadora de lotes", "Comunidad de Telegram", "Actualizaciones básicas de EA"] },
-        { id: "unlimited", name: "Dralvo VIP", tagline: "Todo el ecosistema Dralvo", cta: "Desbloquear todo Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "GoldWave", "Telegram VIP", "Actualizaciones continuas de EA", "Soporte de instalación", "1 VPS incluido", "Acceso anticipado a nuevos EA", "Soporte prioritario"] },
+        { id: "free", name: "Free", tagline: "Recibe el EA gratis vía Dralvo IB", cta: "Abrir cuenta y recibir el EA", features: ["TiGold EA gratis", "GoldWave EA gratis", "1 cuenta real MT5 vía IB", "Calculadora de lotes", "Comunidad de Telegram", "Actualizaciones básicas de EA"] },
+        { id: "unlimited", name: "Dralvo VIP", tagline: "Todo el ecosistema Dralvo", cta: "Desbloquear todo Dralvo", features: ["GoldMaster", "GoldScalp", "La biblioteca de EA más popular del mercado", "Todo lo del plan Free", "Telegram VIP", "Actualizaciones continuas de EA", "Soporte de instalación", "1 VPS incluido", "Acceso anticipado a nuevos EA", "Soporte prioritario"] },
       ],
     },
     finalCta: {
@@ -584,8 +584,8 @@ export const LANDING_COPY = withLocaleFallback({
       perMonth: "/bln", popular: "Populer",
       cancelNote: "Batalkan kapan saja · tanpa kontrak · termasuk bantuan instalasi.",
       tiers: [
-        { id: "free", name: "Free", tagline: "Dapatkan EA gratis via Dralvo IB", cta: "Buka akun, dapatkan EA", features: ["TiGold EA gratis", "1 akun live MT5 via IB", "Kalkulator lot", "Komunitas Telegram", "Pembaruan EA dasar"] },
-        { id: "unlimited", name: "Dralvo VIP", tagline: "Seluruh ekosistem Dralvo", cta: "Buka semua Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "GoldWave", "Telegram VIP", "Pembaruan EA berkelanjutan", "Bantuan instalasi", "1 VPS termasuk", "Akses awal EA baru", "Dukungan prioritas"] },
+        { id: "free", name: "Free", tagline: "Dapatkan EA gratis via Dralvo IB", cta: "Buka akun, dapatkan EA", features: ["TiGold EA gratis", "GoldWave EA gratis", "1 akun live MT5 via IB", "Kalkulator lot", "Komunitas Telegram", "Pembaruan EA dasar"] },
+        { id: "unlimited", name: "Dralvo VIP", tagline: "Seluruh ekosistem Dralvo", cta: "Buka semua Dralvo", features: ["GoldMaster", "GoldScalp", "Pustaka EA terpanas di pasar", "Semua fitur paket Free", "Telegram VIP", "Pembaruan EA berkelanjutan", "Bantuan instalasi", "1 VPS termasuk", "Akses awal EA baru", "Dukungan prioritas"] },
       ],
     },
     finalCta: {
@@ -673,8 +673,8 @@ export const LANDING_COPY = withLocaleFallback({
       perMonth: "/mês", popular: "Popular",
       cancelNote: "Cancele quando quiser · sem contrato · suporte de instalação incluído.",
       tiers: [
-        { id: "free", name: "Free", tagline: "Receba o EA grátis via Dralvo IB", cta: "Abrir conta e receber o EA", features: ["TiGold EA grátis", "1 conta real MT5 via IB", "Calculadora de lote", "Comunidade no Telegram", "Atualizações básicas de EA"] },
-        { id: "unlimited", name: "Dralvo VIP", tagline: "Todo o ecossistema Dralvo", cta: "Desbloquear todo o Dralvo", features: ["GoldMaster", "GoldScalp", "TiGold", "GoldWave", "Telegram VIP", "Atualizações contínuas de EA", "Suporte de instalação", "1 VPS incluído", "Acesso antecipado a novos EAs", "Suporte prioritário"] },
+        { id: "free", name: "Free", tagline: "Receba o EA grátis via Dralvo IB", cta: "Abrir conta e receber o EA", features: ["TiGold EA grátis", "GoldWave EA grátis", "1 conta real MT5 via IB", "Calculadora de lote", "Comunidade no Telegram", "Atualizações básicas de EA"] },
+        { id: "unlimited", name: "Dralvo VIP", tagline: "Todo o ecossistema Dralvo", cta: "Desbloquear todo o Dralvo", features: ["GoldMaster", "GoldScalp", "A biblioteca de EA mais quente do mercado", "Tudo do plano Free", "Telegram VIP", "Atualizações contínuas de EA", "Suporte de instalação", "1 VPS incluído", "Acesso antecipado a novos EAs", "Suporte prioritário"] },
       ],
     },
     finalCta: {

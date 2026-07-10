@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { User, LogOut, CreditCard, Crown, ChevronDown, Settings, Rocket } from "lucide-react";
+import { User, LogOut, CreditCard, Crown, ChevronDown, Settings } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -175,36 +175,10 @@ export function UserMenu({
     }
   }, [canManageBilling, copy.billingError, isPaid, router]);
 
-  /* ---- upgrade: start a Stripe checkout for the chosen period ---- */
-  const upgrade = useCallback(async (period: "monthly" | "sixmo" | "yearly") => {
-    setBillingError(null);
-    setBillingLoading(true);
-    try {
-      const r = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: "unlimited", period }),
-      });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.url) throw new Error(d.error || copy.billingError);
-      window.location.href = d.url;
-    } catch (error) {
-      setBillingError(error instanceof Error ? error.message : copy.billingError);
-      setOpen(true);
-      setBillingLoading(false);
-    }
-  }, [copy.billingError]);
-
   const goSettings = useCallback(() => {
     setOpen(false);
     router.push("/dashboard/settings");
   }, [router]);
-
-  const UPGRADE_PERIODS: { id: "monthly" | "sixmo" | "yearly"; label: string }[] = [
-    { id: "monthly", label: c.periodMonthly },
-    { id: "sixmo", label: c.periodSixMonths },
-    { id: "yearly", label: c.periodYearly },
-  ];
 
   return (
     <div className="relative flex items-center">
@@ -281,9 +255,11 @@ export function UserMenu({
               <PlanIcon size={10} />
               {plan.label}
             </span>
-            <p className="mt-2 text-[13px] text-text-muted">
-              {isPaid ? copy.activeSubscription : copy.upgradeDescription}
-            </p>
+            {isPaid && (
+              <p className="mt-2 text-[13px] text-text-muted">
+                {copy.activeSubscription}
+              </p>
+            )}
           </div>
 
           {/* Actions */}
@@ -298,28 +274,6 @@ export function UserMenu({
               <Settings size={15} className="text-text-muted" />
               <span>{c.settings}</span>
             </button>
-
-            {/* Upgrade — free users pick a billing period (incl. 6 tháng) */}
-            {!isPaid && (
-              <div className="border-t border-border mt-1 pt-1">
-                <p className="px-4 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.08em] text-text-muted flex items-center gap-1.5">
-                  <Rocket size={12} className="text-gold" /> {c.upgradeVip}
-                </p>
-                {UPGRADE_PERIODS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => upgrade(p.id)}
-                    disabled={billingLoading}
-                    className="flex w-full items-center justify-between px-4 py-2 text-sm text-text-secondary hover:text-gold hover:bg-gold/5 transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait"
-                  >
-                    <span>{p.label}</span>
-                    <span className="text-[11px] text-text-muted">{c.choose}</span>
-                  </button>
-                ))}
-              </div>
-            )}
 
             {/* Paid Stripe subscriber — manage / change plan via portal */}
             {isPaid && canManageBilling && (

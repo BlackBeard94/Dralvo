@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check } from "lucide-react";
 
@@ -10,50 +10,20 @@ import { SocialLinks } from "@/components/shared/social-links";
 import { NavBar } from "@/components/shared/nav-bar";
 import { MainNavActions } from "@/components/shared/site-nav";
 import { mainNavLinks } from "@/components/shared/nav-links";
-import { COMMON_COPY } from "@/lib/common-copy";
 import { GlowOrb, GridPattern } from "@/components/shared/decor";
 import { useLocale } from "@/hooks/use-locale";
 import { LANDING_COPY } from "@/lib/landing-copy";
-import { trackInitiateCheckout } from "@/lib/marketing/track";
+import {
+  PRICING_FREE_COPY,
+  RENEW_ADMIN_URL,
+  SUPPORT_TELEGRAM_URL,
+} from "@/lib/pricing-free-copy";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
-/*  Constants (same as landing page)                                           */
+/*  Constants                                                                  */
 /* -------------------------------------------------------------------------- */
 const SERIF = "'DM Serif Display', 'Playfair Display', 'Times New Roman', 'Noto Serif', serif";
-
-const PERIODS = [
-  { id: "monthly", months: 1 },
-  { id: "sixmo", months: 6 },
-  { id: "yearly", months: 12 },
-] as const;
-type PeriodId = (typeof PERIODS)[number]["id"];
-
-const UNLIMITED_PRICING: Record<PeriodId, { total: number; perMo: number; off: number }> = {
-  monthly: { total: 59, perMo: 59, off: 0 },
-  sixmo: { total: 319, perMo: 53, off: 10 },
-  yearly: { total: 599, perMo: 50, off: 15 },
-};
-
-/* -------------------------------------------------------------------------- */
-/*  Scroll reveal                                                              */
-/* -------------------------------------------------------------------------- */
-function useScrollReveal<T extends HTMLElement = HTMLDivElement>(threshold = 0.12) {
-  const ref = useRef<T>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setVisible(true); return; }
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } },
-      { threshold },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
 
 /* -------------------------------------------------------------------------- */
 /*  Sub-components                                                             */
@@ -88,12 +58,8 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 export default function PricingPage() {
   const { locale } = useLocale();
   const t = LANDING_COPY[locale];
-  const c = COMMON_COPY[locale];
-  const p = t.pricing;
+  const f = PRICING_FREE_COPY[locale];
   const [scrolled, setScrolled] = useState(false);
-  const [period, setPeriod] = useState<PeriodId>("monthly");
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -101,32 +67,6 @@ export default function PricingPage() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const checkout = useCallback(
-    async () => {
-      setCheckoutLoading(true);
-      setCheckoutError(null);
-      trackInitiateCheckout(UNLIMITED_PRICING[period].total, "USD");
-      try {
-        const res = await fetch("/api/stripe/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: "unlimited", period }),
-        });
-        if (res.status === 401) { window.location.href = `/signup?redirect=pricing`; return; }
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.url) { window.location.href = data.url; return; }
-        setCheckoutError(data.error || c.errors.checkoutFailed);
-      } catch {
-        setCheckoutError(c.errors.connection);
-      } finally {
-        if (!window.location.href.startsWith("http")) setCheckoutLoading(false);
-      }
-    },
-    [period, c],
-  );
-
-  const unlimitedPrice = UNLIMITED_PRICING[period];
 
   return (
     <div className="min-h-screen overflow-x-hidden antialiased bg-deep text-text-primary">
@@ -145,66 +85,74 @@ export default function PricingPage() {
 
       <main style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
         {/* Hero */}
-        <section className="relative pt-32 pb-16 lg:pb-24 px-6 overflow-hidden">
+        <section className="relative pt-32 pb-12 lg:pb-16 px-6 overflow-hidden">
           <GridPattern />
           <GlowOrb className="w-[900px] h-[700px] -top-80 -right-40" />
           <GlowOrb className="w-[500px] h-[500px] -bottom-20 -left-20" />
           <div className="max-w-[860px] mx-auto relative z-10 text-center">
-            <SectionTag>{p.eyebrow}</SectionTag>
+            <SectionTag>{f.eyebrow}</SectionTag>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] tracking-[-0.015em] mb-5 text-balance" style={{ fontFamily: SERIF }}>
-              {p.title}
+              {f.title}
             </h1>
-            <p className="text-lg text-text-secondary leading-relaxed max-w-[620px] mx-auto">{p.intro}</p>
+            <p className="text-lg text-text-secondary leading-relaxed max-w-[620px] mx-auto">{f.intro}</p>
           </div>
         </section>
 
-        {/* Pricing — period selector + tiers */}
+        {/* Free offer card + steps */}
         <section className="relative pb-20 lg:pb-28 px-6">
           <GlowOrb className="w-[600px] h-[600px] top-10 left-1/2 -translate-x-1/2 opacity-40" />
-          <div className="max-w-[1100px] mx-auto relative z-10">
-            {/* Period toggle */}
-            <div className="flex justify-center mb-9">
-              <div className="inline-flex rounded-lg border border-border bg-card p-1 gap-1">
-                {PERIODS.map((pr) => {
-                  const on = period === pr.id;
-                  const off = UNLIMITED_PRICING[pr.id].off;
-                  return (
-                    <button key={pr.id} type="button" aria-pressed={on} onClick={() => setPeriod(pr.id)}
-                      className={cn("px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer border-none flex items-center gap-1.5",
-                        on ? "bg-gold text-[#060609]" : "bg-transparent text-text-muted hover:text-text-primary")}>
-                      {p.periods[pr.id]}{off > 0 && <span className={cn("text-[10px] font-mono", on ? "text-[#060609]/70" : "text-green")}>−{off}%</span>}
-                    </button>
-                  );
-                })}
+          <div className="max-w-[960px] mx-auto relative z-10 grid lg:grid-cols-2 gap-6 items-stretch">
+            {/* The single free offer */}
+            <div className="relative rounded-xl border p-7 flex flex-col"
+              style={{ borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" }}>
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold-bright text-[#060609] text-[11px] font-semibold rounded-full">{f.trialBadge}</span>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {f.eas.map((ea) => (
+                  <span key={ea} className="text-[11px] font-semibold px-2 py-1 rounded-md border border-gold/25 text-gold" style={{ background: "rgba(212,168,67,0.06)" }}>{ea}</span>
+                ))}
               </div>
+              <div className="mb-5 flex items-baseline gap-2">
+                <span className="font-mono text-4xl font-bold text-gold-bright">$0</span>
+                <span className="text-text-muted text-sm">· {f.priceWord}</span>
+              </div>
+              <ul className="space-y-2.5 mb-7 flex-1">
+                {f.features.map((feat) => (
+                  <li key={feat} className="flex items-start gap-2 text-[13px] text-text-secondary">
+                    <Check size={14} className="shrink-0 mt-0.5 text-gold-bright" />
+                    <span>{feat}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup?redirect=/dashboard" className="w-full py-3 rounded-md text-sm font-semibold text-center bg-gold-bright text-[#060609] no-underline transition-transform hover:scale-[1.02]">
+                {f.primaryCta}
+              </Link>
+              <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+                className="mt-2.5 w-full py-2.5 rounded-md text-sm font-semibold text-center border border-border text-text-primary no-underline transition-colors hover:border-gold/30 hover:text-gold inline-flex items-center justify-center gap-1.5">
+                {f.telegramCta}<ArrowUpRight size={15} />
+              </a>
             </div>
 
-            {/* Tier cards */}
-            <div className="grid md:grid-cols-2 gap-6 items-stretch max-w-[820px] mx-auto">
-              {p.tiers.map((tier) => {
-                const isFree = tier.id === "free";
-                const popular = tier.id === "unlimited";
-                return (
-                  <PricingCard key={tier.id}
-                    name={tier.name} tagline={tier.tagline} features={tier.features}
-                    price={isFree ? 0 : unlimitedPrice.total}
-                    perMo={!isFree && unlimitedPrice.off > 0 ? unlimitedPrice.perMo : undefined}
-                    off={!isFree ? unlimitedPrice.off : undefined}
-                    periodLabel={!isFree ? p.periods[period] : undefined}
-                    perMonthLabel={p.perMonth}
-                    cta={tier.cta}
-                    redirecting={c.actions.redirecting}
-                    popular={popular}
-                    popularLabel={p.popular}
-                    loading={!isFree && checkoutLoading}
-                    onCta={isFree ? () => { window.location.href = "/tigold"; } : checkout}
-                  />
-                );
-              })}
+            {/* How it works — 3 steps */}
+            <div className="rounded-xl border border-border bg-card p-7 flex flex-col">
+              <h2 className="text-lg font-semibold text-text-primary mb-5">{f.stepsTitle}</h2>
+              <ol className="space-y-4 flex-1">
+                {f.steps.map((step, i) => (
+                  <li key={step} className="flex items-start gap-3">
+                    <span className="shrink-0 grid place-items-center w-7 h-7 rounded-full bg-gold/10 border border-gold/25 text-gold text-sm font-bold">{i + 1}</span>
+                    <span className="text-sm text-text-secondary leading-relaxed pt-0.5">{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-6 pt-5 border-t border-border">
+                <p className="text-[12px] text-text-muted leading-relaxed mb-2.5">{f.renewNote}</p>
+                <a href={RENEW_ADMIN_URL} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-gold hover:text-gold-bright transition-colors font-medium text-sm no-underline">
+                  {f.renewCta}<ArrowUpRight size={15} />
+                </a>
+              </div>
             </div>
-            <p className="text-[12px] text-center text-text-muted mt-7">{p.cancelNote}</p>
-            {checkoutError && <p role="alert" className="text-[12px] text-center text-red mt-2">{checkoutError}</p>}
           </div>
+          <p className="text-[11px] text-center text-text-muted mt-8 max-w-[560px] mx-auto leading-relaxed">{f.disclaimer}</p>
         </section>
 
         {/* FAQ */}
@@ -216,7 +164,7 @@ export default function PricingPage() {
                 {t.faq.title}
               </h2>
               <p className="text-text-secondary max-w-[520px] mx-auto">{t.faq.notFound}</p>
-              <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
+              <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-gold hover:text-gold-bright transition-colors font-medium text-sm no-underline mt-3">
                 {t.faq.telegram}<ArrowUpRight size={15} />
               </a>
@@ -238,11 +186,11 @@ export default function PricingPage() {
             </h2>
             <p className="text-text-secondary mb-7 text-lg leading-relaxed max-w-[560px] mx-auto">{t.finalCta.body}</p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
-              <button type="button" onClick={checkout} disabled={checkoutLoading}
-                className="px-8 py-3.5 rounded-md text-[15px] font-semibold bg-gold-bright text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03] disabled:opacity-50">
-                {checkoutLoading ? c.actions.redirecting : t.finalCta.primaryCta}
-              </button>
-              <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer"
+              <Link href="/signup?redirect=/dashboard"
+                className="px-8 py-3.5 rounded-md text-[15px] font-semibold bg-gold-bright text-[#060609] no-underline transition-all duration-200 hover:scale-[1.03]">
+                {f.primaryCta}
+              </Link>
+              <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
                 className="px-8 py-3.5 rounded-md text-[15px] font-semibold border border-border text-text-primary no-underline transition-all duration-200 hover:border-gold/30 hover:text-gold">
                 {t.finalCta.secondaryCta}<ArrowUpRight size={17} className="ml-1.5" />
               </a>
@@ -278,7 +226,7 @@ export default function PricingPage() {
             <div>
               <div className="text-[11px] tracking-[0.15em] uppercase text-text-muted font-semibold mb-4">{t.footer.company}</div>
               <div className="flex flex-col gap-2.5">
-                <a href="https://t.me/dralvoea" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.telegram}</a>
+                <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.telegram}</a>
                 <Link href="/pricing" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.nav.pricing}</Link>
                 <Link href="/login" className="text-sm text-text-secondary hover:text-gold transition-colors no-underline">{t.footer.login}</Link>
               </div>
@@ -297,50 +245,6 @@ export default function PricingPage() {
           </div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  PricingCard                                                                */
-/* -------------------------------------------------------------------------- */
-function PricingCard({ name, tagline, features, price, perMo, off, periodLabel, perMonthLabel, cta, redirecting, popular = false, popularLabel, loading = false, onCta }: {
-  name: string; tagline: string; features: string[];
-  price: number; perMo?: number; off?: number;
-  periodLabel?: string; perMonthLabel: string;
-  cta: string; redirecting: string; popular?: boolean; popularLabel: string;
-  loading?: boolean; onCta: () => void;
-}) {
-  const { ref, visible } = useScrollReveal(0.1);
-
-  return (
-    <div ref={ref} className={cn("relative rounded-xl border p-6 sm:p-7 flex flex-col transition-all duration-500",
-      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-      popular ? "" : "border-border bg-card")}
-      style={popular ? { borderColor: "rgba(212,168,67,0.4)", background: "linear-gradient(168deg, rgba(212,168,67,0.08), var(--bg-card) 60%)" } : undefined}>
-      {popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold-bright text-[#060609] text-[11px] font-semibold rounded-full">{popularLabel}</span>}
-      <h3 className={cn("text-lg font-semibold", popular ? "text-gold-bright" : "text-text-primary")}>{name}</h3>
-      <p className="text-[12px] text-text-muted mt-1 mb-4">{tagline}</p>
-      <div className="mb-1 flex items-baseline gap-1.5">
-        <span className={cn("font-mono text-4xl font-bold", popular ? "text-gold-bright" : "text-text-primary")}>${price}</span>
-        {periodLabel && <span className="text-text-muted text-sm">/ {periodLabel}</span>}
-      </div>
-      <p className="text-[11px] text-text-muted mb-5 h-4">
-        {perMo && off ? `≈ $${perMo}${perMonthLabel} · −${off}%` : " "}
-      </p>
-      <ul className="space-y-2.5 mb-7 flex-1">
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-2 text-[13px] text-text-secondary">
-            <Check size={14} className={cn("shrink-0 mt-0.5", popular ? "text-gold-bright" : "text-green")} />
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-      <button type="button" onClick={onCta} disabled={loading}
-        className={cn("w-full py-3 rounded-md text-sm font-semibold cursor-pointer transition-transform disabled:opacity-50",
-          popular ? "bg-gold-bright text-[#060609] hover:scale-[1.02] border-none" : "border border-border text-gold hover:bg-gold/5")}>
-        {loading ? redirecting : cta}
-      </button>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { verifyGrantToken } from "@/lib/license-approval-token";
-import { grantLicense, isGrantProduct, type GrantProduct } from "@/lib/admin/license-grant";
+import { grantLicense, isGrantProduct, TRIAL_DAYS, type GrantProduct } from "@/lib/admin/license-grant";
 import { EA_CATALOG } from "@/lib/ea-catalog";
 import { sendTelegramMessage } from "@/lib/notifications/telegram";
 
@@ -20,6 +20,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.dralvo.com";
+// Admin handle for getting a fresh key / renewing after the trial expires.
+const RENEW_ADMIN = "https://t.me/edgardinh86";
 
 function html(title: string, body: string, ok: boolean) {
   return new NextResponse(
@@ -60,21 +62,23 @@ export async function GET(request: NextRequest) {
   const ea = EA_CATALOG[product];
 
   // Grant the requested EA into this Dralvo account (idempotent). plan="tigold"
-  // marks it a free-tier single-EA license — NOT "unlimited", so this admin
-  // grant never accidentally flips the customer to full VIP.
-  const result = await grantLicense({ email, plan: "tigold", product });
+  // marks it a free-tier single-EA license — NOT "unlimited". Every IB grant is a
+  // TRIAL_DAYS-day trial key (expires, then renew by contacting the admin).
+  const result = await grantLicense({ email, plan: "tigold", product, expiresInDays: TRIAL_DAYS });
   if (!result.ok) {
     return html("Lỗi cấp license", `Không cấp được license (${result.error}). Thử lại sau.`, false);
   }
 
-  // Fetch the granted key to hand to the customer.
+  // Fetch the granted key + expiry to hand to the customer.
   const { data: lic } = await sb
     .from("license_keys")
-    .select("key")
+    .select("key, expires_at")
     .eq("user_id", uid)
     .eq("product", product)
     .maybeSingle();
   const licenseKey = (lic?.key as string | undefined) ?? null;
+  const expiresAt = (lic?.expires_at as string | null | undefined) ?? null;
+  const expiryLabel = expiresAt ? new Date(expiresAt).toLocaleDateString("vi-VN") : null;
 
   // DM the customer their key + downloads (best-effort).
   let dmSent = false;
@@ -94,6 +98,7 @@ export async function GET(request: NextRequest) {
         `🤖 EA: <b>${ea.name}</b>`,
         `🔑 License key: <code>${licenseKey}</code>`,
         `👤 Gắn với tài khoản Dralvo: <code>${email}</code>`,
+        `⏳ Key dùng thử <b>${TRIAL_DAYS} ngày</b>${expiryLabel ? ` — hết hạn <b>${expiryLabel}</b>` : ""}.`,
         ``,
         `📥 <b>Tải về:</b>`,
         `• EA: ${enc(ea.ex5)}`,
@@ -101,6 +106,7 @@ export async function GET(request: NextRequest) {
         `• Hướng dẫn: ${enc(ea.guide)}`,
         ``,
         `⚙️ Cài EA vào MT5 → cho phép WebRequest tới dralvo.com → nhập license key → chạy theo hướng dẫn.`,
+        `🔄 Hết hạn muốn lấy key mới / gia hạn: nhắn admin ${RENEW_ADMIN}`,
         `❓ Cần hỗ trợ: @dralvoea`,
       ].join("\n"),
     );
